@@ -1,0 +1,85 @@
+<% content_for :title, "Simulacao - TributaLab" %>
+
+<div class="mx-auto flex w-full max-w-6xl flex-col gap-6">
+  <header class="border-b border-zinc-200 pb-5">
+    <div class="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+      <div>
+        <p class="text-sm font-medium uppercase tracking-wide text-teal-700">TributaLab</p>
+        <h1 class="mt-1 text-3xl font-semibold tracking-normal text-zinc-950"><%= @simulation.name %></h1>
+        <p class="mt-2 text-sm leading-6 text-zinc-600"><%= @simulation.operation.name %> / regra <%= @simulation.rule_version %></p>
+      </div>
+      <div class="flex flex-wrap gap-3">
+        <%= link_to "Nova simulacao", new_simulation_path(operation_code: @simulation.operation.code), class: "rounded bg-zinc-950 px-4 py-2 text-sm font-semibold text-white hover:bg-zinc-800" %>
+        <%= link_to "Painel", root_path, class: "rounded border border-zinc-300 bg-white px-4 py-2 text-sm font-semibold text-zinc-700 hover:bg-zinc-100" %>
+      </div>
+    </div>
+  </header>
+
+  <% if notice.present? %>
+    <section class="border border-teal-300 bg-teal-50 p-4 text-sm font-medium text-teal-900"><%= notice %></section>
+  <% end %>
+
+  <section class="grid gap-4 lg:grid-cols-4">
+    <div class="border border-zinc-200 bg-white p-4">
+      <p class="text-sm text-zinc-500">Base bruta</p>
+      <p class="mt-1 text-xl font-semibold text-zinc-950"><%= number_to_currency(@simulation_result.base_gross, unit: "R$ ", separator: ",", delimiter: ".") %></p>
+    </div>
+    <div class="border border-zinc-200 bg-white p-4">
+      <p class="text-sm text-zinc-500">Base liquida</p>
+      <p class="mt-1 text-xl font-semibold text-zinc-950"><%= number_to_currency(@simulation_result.base_net, unit: "R$ ", separator: ",", delimiter: ".") %></p>
+    </div>
+    <div class="border border-zinc-200 bg-white p-4">
+      <p class="text-sm text-zinc-500">Aliquota efetiva</p>
+      <p class="mt-1 text-xl font-semibold text-zinc-950"><%= number_to_percentage(@simulation_result.effective_rate * 100, precision: 2, separator: ",") %></p>
+    </div>
+    <div class="border border-zinc-200 bg-white p-4">
+      <p class="text-sm text-zinc-500">Imposto liquido</p>
+      <p class="mt-1 text-xl font-semibold text-zinc-950"><%= number_to_currency(@simulation_result.tax_due, unit: "R$ ", separator: ",", delimiter: ".") %></p>
+    </div>
+  </section>
+
+  <section class="grid gap-6 xl:grid-cols-2">
+    <div class="border border-zinc-200 bg-white">
+      <div class="border-b border-zinc-200 px-4 py-3"><h2 class="text-base font-semibold text-zinc-950">Resultado estruturado</h2></div>
+      <dl class="grid gap-3 p-4 text-sm sm:grid-cols-2">
+        <div><dt class="text-zinc-500">Redutor/deducao</dt><dd class="font-semibold text-zinc-950"><%= number_to_currency(@simulation_result.applied_deduction, unit: "R$ ", separator: ",", delimiter: ".") %></dd></div>
+        <div><dt class="text-zinc-500">Aliquota cheia</dt><dd class="font-semibold text-zinc-950"><%= number_to_percentage(@simulation_result.full_rate * 100, precision: 2, separator: ",") %></dd></div>
+        <div><dt class="text-zinc-500">Reducao aplicada</dt><dd class="font-semibold text-zinc-950"><%= number_to_percentage(@simulation_result.applied_reduction * 100, precision: 2, separator: ",") %></dd></div>
+        <div><dt class="text-zinc-500">Debito IBS/CBS</dt><dd class="font-semibold text-zinc-950"><%= number_to_currency(@simulation_result.tax_debit, unit: "R$ ", separator: ",", delimiter: ".") %></dd></div>
+        <div><dt class="text-zinc-500">Creditos</dt><dd class="font-semibold text-zinc-950"><%= number_to_currency(@simulation_result.credits, unit: "R$ ", separator: ",", delimiter: ".") %></dd></div>
+        <div><dt class="text-zinc-500">Criada em</dt><dd class="font-semibold text-zinc-950"><%= @simulation.created_at.strftime("%Y-%m-%d %H:%M") %></dd></div>
+      </dl>
+    </div>
+
+    <div class="border border-amber-300 bg-amber-50">
+      <div class="border-b border-amber-200 px-4 py-3"><h2 class="text-base font-semibold text-amber-950">Alertas e assumptions</h2></div>
+      <div class="divide-y divide-amber-200">
+        <% @simulation.alerts_snapshot.each do |alert| %>
+          <article class="px-4 py-3 text-sm text-amber-950">
+            <p class="font-semibold"><%= alert["title"] %> <span class="font-normal">(<%= alert["status"] %>)</span></p>
+            <p class="mt-1 leading-6"><%= alert["description"] %></p>
+          </article>
+        <% end %>
+      </div>
+    </div>
+  </section>
+
+  <section class="grid gap-6 xl:grid-cols-2">
+    <div class="border border-zinc-200 bg-white">
+      <div class="border-b border-zinc-200 px-4 py-3"><h2 class="text-base font-semibold text-zinc-950">Inputs usados</h2></div>
+      <pre class="overflow-x-auto p-4 text-sm text-zinc-700"><%= JSON.pretty_generate(@simulation.input_data) %></pre>
+    </div>
+    <div class="border border-zinc-200 bg-white">
+      <div class="border-b border-zinc-200 px-4 py-3"><h2 class="text-base font-semibold text-zinc-950">Parametros usados</h2></div>
+      <pre class="overflow-x-auto p-4 text-sm text-zinc-700"><%= JSON.pretty_generate(@simulation.parameters_snapshot) %></pre>
+    </div>
+    <div class="border border-zinc-200 bg-white">
+      <div class="border-b border-zinc-200 px-4 py-3"><h2 class="text-base font-semibold text-zinc-950">Versao de regra</h2></div>
+      <pre class="overflow-x-auto p-4 text-sm text-zinc-700"><%= JSON.pretty_generate(@simulation.rule_version_snapshot) %></pre>
+    </div>
+    <div class="border border-zinc-200 bg-white">
+      <div class="border-b border-zinc-200 px-4 py-3"><h2 class="text-base font-semibold text-zinc-950">Detalhes do calculo</h2></div>
+      <pre class="overflow-x-auto p-4 text-sm text-zinc-700"><%= JSON.pretty_generate(@simulation_result.calculation_details) %></pre>
+    </div>
+  </section>
+</div>

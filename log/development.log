@@ -1,0 +1,936 @@
+  [1m[35m (996.6ms)[0m  [1m[35mCREATE DATABASE "tributa_lab_development" ENCODING = 'unicode' /*application='TributaLab'*/[0m
+  [1m[35mSQL (0.4ms)[0m  [1m[35mSET search_path TO public /*application='TributaLab'*/[0m
+  [1m[35m (190.0ms)[0m  [1m[35mCREATE DATABASE "tributa_lab_development" ENCODING = 'unicode' /*application='TributaLab'*/[0m
+  [1m[35mSQL (0.4ms)[0m  [1m[35mSET search_path TO public /*application='TributaLab'*/[0m
+  [1m[35m (139.1ms)[0m  [1m[35mCREATE DATABASE "tributa_lab_test" ENCODING = 'unicode' /*application='TributaLab'*/[0m
+  [1m[35m (13.9ms)[0m  [1m[35mCREATE TABLE "schema_migrations" ("version" character varying NOT NULL PRIMARY KEY) /*application='TributaLab'*/[0m
+  [1m[35m (13.3ms)[0m  [1m[35mCREATE TABLE "ar_internal_metadata" ("key" character varying NOT NULL PRIMARY KEY, "value" character varying, "created_at" timestamp(6) NOT NULL, "updated_at" timestamp(6) NOT NULL) /*application='TributaLab'*/[0m
+  [1m[35m (1.0ms)[0m  [1m[34mSELECT pg_try_advisory_lock(1322158557162245565) /*application='TributaLab'*/[0m
+  [1m[36mActiveRecord::SchemaMigration Load (1.2ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC /*application='TributaLab'*/[0m
+  [1m[36mActiveRecord::InternalMetadata Load (1.1ms)[0m  [1m[34mSELECT * FROM "ar_internal_metadata" WHERE "ar_internal_metadata"."key" = 'environment' ORDER BY "ar_internal_metadata"."key" ASC LIMIT 1 /*application='TributaLab'*/[0m
+  [1m[36mActiveRecord::InternalMetadata Create (2.5ms)[0m  [1m[32mINSERT INTO "ar_internal_metadata" ("key", "value", "created_at", "updated_at") VALUES ('environment', 'development', '2026-05-28 18:39:16.617667', '2026-05-28 18:39:16.617670') RETURNING "key" /*application='TributaLab'*/[0m
+Migrating to CreateProductAreas (20260528182859)
+  [1m[36mTRANSACTION (0.6ms)[0m  [1m[35mBEGIN /*application='TributaLab'*/[0m
+  [1m[35m (6.0ms)[0m  [1m[35mCREATE TABLE "product_areas" ("id" bigserial primary key, "code" character varying NOT NULL, "name" character varying NOT NULL, "description" text, "position" integer DEFAULT 0 NOT NULL, "created_at" timestamp(6) NOT NULL, "updated_at" timestamp(6) NOT NULL) /*application='TributaLab'*/[0m
+  [1m[35m (4.1ms)[0m  [1m[35mCREATE UNIQUE INDEX "index_product_areas_on_code" ON "product_areas" ("code") /*application='TributaLab'*/[0m
+  [1m[36mActiveRecord::SchemaMigration Create (0.9ms)[0m  [1m[32mINSERT INTO "schema_migrations" ("version") VALUES ('20260528182859') RETURNING "version" /*application='TributaLab'*/[0m
+  [1m[36mTRANSACTION (1.9ms)[0m  [1m[35mCOMMIT /*application='TributaLab'*/[0m
+Migrating to CreateSectors (20260528182902)
+  [1m[36mTRANSACTION (0.8ms)[0m  [1m[35mBEGIN /*application='TributaLab'*/[0m
+  [1m[35m (6.6ms)[0m  [1m[35mCREATE TABLE "sectors" ("id" bigserial primary key, "code" character varying NOT NULL, "name" character varying NOT NULL, "description" text, "position" integer DEFAULT 0 NOT NULL, "created_at" timestamp(6) NOT NULL, "updated_at" timestamp(6) NOT NULL) /*application='TributaLab'*/[0m
+  [1m[35m (4.7ms)[0m  [1m[35mCREATE UNIQUE INDEX "index_sectors_on_code" ON "sectors" ("code") /*application='TributaLab'*/[0m
+  [1m[36mActiveRecord::SchemaMigration Create (0.9ms)[0m  [1m[32mINSERT INTO "schema_migrations" ("version") VALUES ('20260528182902') RETURNING "version" /*application='TributaLab'*/[0m
+  [1m[36mTRANSACTION (2.6ms)[0m  [1m[35mCOMMIT /*application='TributaLab'*/[0m
+Migrating to CreateTaxModules (20260528182906)
+  [1m[36mTRANSACTION (0.8ms)[0m  [1m[35mBEGIN /*application='TributaLab'*/[0m
+  [1m[35m (8.4ms)[0m  [1m[35mCREATE TABLE "tax_modules" ("id" bigserial primary key, "code" character varying NOT NULL, "name" character varying NOT NULL, "description" text, "product_area_id" bigint NOT NULL, "sector_id" bigint NOT NULL, "status" character varying DEFAULT 'active' NOT NULL, "position" integer DEFAULT 0 NOT NULL, "created_at" timestamp(6) NOT NULL, "updated_at" timestamp(6) NOT NULL, CONSTRAINT "fk_rails_bcde50eafd"
+FOREIGN KEY ("product_area_id")
+  REFERENCES "product_areas" ("id")
+, CONSTRAINT "fk_rails_9ece815deb"
+FOREIGN KEY ("sector_id")
+  REFERENCES "sectors" ("id")
+) /*application='TributaLab'*/[0m
+  [1m[35m (5.0ms)[0m  [1m[35mCREATE INDEX "index_tax_modules_on_product_area_id" ON "tax_modules" ("product_area_id") /*application='TributaLab'*/[0m
+  [1m[35m (2.8ms)[0m  [1m[35mCREATE INDEX "index_tax_modules_on_sector_id" ON "tax_modules" ("sector_id") /*application='TributaLab'*/[0m
+  [1m[35m (3.4ms)[0m  [1m[35mCREATE UNIQUE INDEX "index_tax_modules_on_code" ON "tax_modules" ("code") /*application='TributaLab'*/[0m
+  [1m[36mActiveRecord::SchemaMigration Create (1.2ms)[0m  [1m[32mINSERT INTO "schema_migrations" ("version") VALUES ('20260528182906') RETURNING "version" /*application='TributaLab'*/[0m
+  [1m[36mTRANSACTION (3.2ms)[0m  [1m[35mCOMMIT /*application='TributaLab'*/[0m
+Migrating to CreateOperations (20260528182909)
+  [1m[36mTRANSACTION (1.0ms)[0m  [1m[35mBEGIN /*application='TributaLab'*/[0m
+  [1m[35m (12.9ms)[0m  [1m[35mCREATE TABLE "operations" ("id" bigserial primary key, "code" character varying NOT NULL, "name" character varying NOT NULL, "description" text, "tax_module_id" bigint NOT NULL, "status" character varying DEFAULT 'active' NOT NULL, "position" integer DEFAULT 0 NOT NULL, "created_at" timestamp(6) NOT NULL, "updated_at" timestamp(6) NOT NULL, CONSTRAINT "fk_rails_95efa556d6"
+FOREIGN KEY ("tax_module_id")
+  REFERENCES "tax_modules" ("id")
+) /*application='TributaLab'*/[0m
+  [1m[35m (3.7ms)[0m  [1m[35mCREATE INDEX "index_operations_on_tax_module_id" ON "operations" ("tax_module_id") /*application='TributaLab'*/[0m
+  [1m[35m (4.2ms)[0m  [1m[35mCREATE UNIQUE INDEX "index_operations_on_tax_module_id_and_code" ON "operations" ("tax_module_id", "code") /*application='TributaLab'*/[0m
+  [1m[36mActiveRecord::SchemaMigration Create (1.2ms)[0m  [1m[32mINSERT INTO "schema_migrations" ("version") VALUES ('20260528182909') RETURNING "version" /*application='TributaLab'*/[0m
+  [1m[36mTRANSACTION (1.8ms)[0m  [1m[35mCOMMIT /*application='TributaLab'*/[0m
+Migrating to CreateTaxParameters (20260528182912)
+  [1m[36mTRANSACTION (0.6ms)[0m  [1m[35mBEGIN /*application='TributaLab'*/[0m
+  [1m[35m (6.8ms)[0m  [1m[35mCREATE TABLE "tax_parameters" ("id" bigserial primary key, "code" character varying NOT NULL, "name" character varying NOT NULL, "parameter_type" character varying NOT NULL, "value_decimal" decimal(18,6) DEFAULT 0.0 NOT NULL, "unit" character varying NOT NULL, "validation_status" character varying DEFAULT 'pending' NOT NULL, "effective_from" date, "effective_until" date, "legal_reference" character varying, "notes" text, "tax_module_id" bigint NOT NULL, "operation_id" bigint, "created_at" timestamp(6) NOT NULL, "updated_at" timestamp(6) NOT NULL, CONSTRAINT "fk_rails_1dc32a2e91"
+FOREIGN KEY ("tax_module_id")
+  REFERENCES "tax_modules" ("id")
+, CONSTRAINT "fk_rails_99415bb948"
+FOREIGN KEY ("operation_id")
+  REFERENCES "operations" ("id")
+) /*application='TributaLab'*/[0m
+  [1m[35m (3.2ms)[0m  [1m[35mCREATE INDEX "index_tax_parameters_on_tax_module_id" ON "tax_parameters" ("tax_module_id") /*application='TributaLab'*/[0m
+  [1m[35m (2.9ms)[0m  [1m[35mCREATE INDEX "index_tax_parameters_on_operation_id" ON "tax_parameters" ("operation_id") /*application='TributaLab'*/[0m
+  [1m[35m (4.0ms)[0m  [1m[35mCREATE UNIQUE INDEX "index_tax_parameters_on_module_code_operation" ON "tax_parameters" ("tax_module_id", "code", "operation_id") /*application='TributaLab'*/[0m
+  [1m[35m (3.0ms)[0m  [1m[35mCREATE INDEX "index_tax_parameters_on_validation_status" ON "tax_parameters" ("validation_status") /*application='TributaLab'*/[0m
+  [1m[36mActiveRecord::SchemaMigration Create (0.6ms)[0m  [1m[32mINSERT INTO "schema_migrations" ("version") VALUES ('20260528182912') RETURNING "version" /*application='TributaLab'*/[0m
+  [1m[36mTRANSACTION (2.1ms)[0m  [1m[35mCOMMIT /*application='TributaLab'*/[0m
+Migrating to CreateAssumptions (20260528182916)
+  [1m[36mTRANSACTION (0.7ms)[0m  [1m[35mBEGIN /*application='TributaLab'*/[0m
+  [1m[35m (6.3ms)[0m  [1m[35mCREATE TABLE "assumptions" ("id" bigserial primary key, "code" character varying NOT NULL, "title" character varying NOT NULL, "description" text, "status" character varying DEFAULT 'pending' NOT NULL, "impact" text, "source_reference" character varying, "position" integer DEFAULT 0 NOT NULL, "tax_module_id" bigint NOT NULL, "operation_id" bigint, "created_at" timestamp(6) NOT NULL, "updated_at" timestamp(6) NOT NULL, CONSTRAINT "fk_rails_0e3d8a8e15"
+FOREIGN KEY ("tax_module_id")
+  REFERENCES "tax_modules" ("id")
+, CONSTRAINT "fk_rails_8dc648eeb6"
+FOREIGN KEY ("operation_id")
+  REFERENCES "operations" ("id")
+) /*application='TributaLab'*/[0m
+  [1m[35m (2.9ms)[0m  [1m[35mCREATE INDEX "index_assumptions_on_tax_module_id" ON "assumptions" ("tax_module_id") /*application='TributaLab'*/[0m
+  [1m[35m (3.2ms)[0m  [1m[35mCREATE INDEX "index_assumptions_on_operation_id" ON "assumptions" ("operation_id") /*application='TributaLab'*/[0m
+  [1m[35m (3.0ms)[0m  [1m[35mCREATE UNIQUE INDEX "index_assumptions_on_tax_module_id_and_code" ON "assumptions" ("tax_module_id", "code") /*application='TributaLab'*/[0m
+  [1m[35m (3.0ms)[0m  [1m[35mCREATE INDEX "index_assumptions_on_status" ON "assumptions" ("status") /*application='TributaLab'*/[0m
+  [1m[36mActiveRecord::SchemaMigration Create (0.6ms)[0m  [1m[32mINSERT INTO "schema_migrations" ("version") VALUES ('20260528182916') RETURNING "version" /*application='TributaLab'*/[0m
+  [1m[36mTRANSACTION (3.7ms)[0m  [1m[35mCOMMIT /*application='TributaLab'*/[0m
+Migrating to CreateSimulations (20260528182919)
+  [1m[36mTRANSACTION (0.7ms)[0m  [1m[35mBEGIN /*application='TributaLab'*/[0m
+  [1m[35m (7.0ms)[0m  [1m[35mCREATE TABLE "simulations" ("id" bigserial primary key, "name" character varying NOT NULL, "tax_module_id" bigint NOT NULL, "operation_id" bigint NOT NULL, "input_data" jsonb DEFAULT '{}' NOT NULL, "output_data" jsonb DEFAULT '{}' NOT NULL, "parameters_snapshot" jsonb DEFAULT '{}' NOT NULL, "rule_version" character varying DEFAULT 'mvp-001' NOT NULL, "notes" text, "created_at" timestamp(6) NOT NULL, "updated_at" timestamp(6) NOT NULL, CONSTRAINT "fk_rails_edfbd81627"
+FOREIGN KEY ("tax_module_id")
+  REFERENCES "tax_modules" ("id")
+, CONSTRAINT "fk_rails_07b2ec05ff"
+FOREIGN KEY ("operation_id")
+  REFERENCES "operations" ("id")
+) /*application='TributaLab'*/[0m
+  [1m[35m (3.8ms)[0m  [1m[35mCREATE INDEX "index_simulations_on_tax_module_id" ON "simulations" ("tax_module_id") /*application='TributaLab'*/[0m
+  [1m[35m (3.0ms)[0m  [1m[35mCREATE INDEX "index_simulations_on_operation_id" ON "simulations" ("operation_id") /*application='TributaLab'*/[0m
+  [1m[35m (4.1ms)[0m  [1m[35mCREATE INDEX "index_simulations_on_rule_version" ON "simulations" ("rule_version") /*application='TributaLab'*/[0m
+  [1m[36mActiveRecord::SchemaMigration Create (0.8ms)[0m  [1m[32mINSERT INTO "schema_migrations" ("version") VALUES ('20260528182919') RETURNING "version" /*application='TributaLab'*/[0m
+  [1m[36mTRANSACTION (1.7ms)[0m  [1m[35mCOMMIT /*application='TributaLab'*/[0m
+Migrating to CreateSimulationResults (20260528182923)
+  [1m[36mTRANSACTION (0.6ms)[0m  [1m[35mBEGIN /*application='TributaLab'*/[0m
+  [1m[35m (7.6ms)[0m  [1m[35mCREATE TABLE "simulation_results" ("id" bigserial primary key, "simulation_id" bigint NOT NULL, "base_gross" decimal(18,2) DEFAULT 0.0 NOT NULL, "applied_deduction" decimal(18,2) DEFAULT 0.0 NOT NULL, "base_net" decimal(18,2) DEFAULT 0.0 NOT NULL, "full_rate" decimal(10,6) DEFAULT 0.0 NOT NULL, "applied_reduction" decimal(10,6) DEFAULT 0.0 NOT NULL, "effective_rate" decimal(10,6) DEFAULT 0.0 NOT NULL, "tax_debit" decimal(18,2) DEFAULT 0.0 NOT NULL, "credits" decimal(18,2) DEFAULT 0.0 NOT NULL, "tax_due" decimal(18,2) DEFAULT 0.0 NOT NULL, "validation_alerts" jsonb DEFAULT '[]' NOT NULL, "created_at" timestamp(6) NOT NULL, "updated_at" timestamp(6) NOT NULL, CONSTRAINT "fk_rails_553e104d4e"
+FOREIGN KEY ("simulation_id")
+  REFERENCES "simulations" ("id")
+) /*application='TributaLab'*/[0m
+  [1m[35m (3.1ms)[0m  [1m[35mCREATE INDEX "index_simulation_results_on_simulation_id" ON "simulation_results" ("simulation_id") /*application='TributaLab'*/[0m
+  [1m[36mActiveRecord::SchemaMigration Create (1.0ms)[0m  [1m[32mINSERT INTO "schema_migrations" ("version") VALUES ('20260528182923') RETURNING "version" /*application='TributaLab'*/[0m
+  [1m[36mTRANSACTION (1.4ms)[0m  [1m[35mCOMMIT /*application='TributaLab'*/[0m
+Migrating to CreateLegalBases (20260528182926)
+  [1m[36mTRANSACTION (0.8ms)[0m  [1m[35mBEGIN /*application='TributaLab'*/[0m
+  [1m[35m (7.4ms)[0m  [1m[35mCREATE TABLE "legal_bases" ("id" bigserial primary key, "code" character varying NOT NULL, "law" character varying NOT NULL, "article" character varying, "description" text NOT NULL, "source_reference" character varying, "status" character varying DEFAULT 'pending' NOT NULL, "notes" text, "created_at" timestamp(6) NOT NULL, "updated_at" timestamp(6) NOT NULL) /*application='TributaLab'*/[0m
+  [1m[35m (4.3ms)[0m  [1m[35mCREATE UNIQUE INDEX "index_legal_bases_on_code" ON "legal_bases" ("code") /*application='TributaLab'*/[0m
+  [1m[35m (4.1ms)[0m  [1m[35mCREATE INDEX "index_legal_bases_on_status" ON "legal_bases" ("status") /*application='TributaLab'*/[0m
+  [1m[36mActiveRecord::SchemaMigration Create (0.9ms)[0m  [1m[32mINSERT INTO "schema_migrations" ("version") VALUES ('20260528182926') RETURNING "version" /*application='TributaLab'*/[0m
+  [1m[36mTRANSACTION (1.6ms)[0m  [1m[35mCOMMIT /*application='TributaLab'*/[0m
+Migrating to CreateCreditCategories (20260528182929)
+  [1m[36mTRANSACTION (0.7ms)[0m  [1m[35mBEGIN /*application='TributaLab'*/[0m
+  [1m[35m (7.4ms)[0m  [1m[35mCREATE TABLE "credit_categories" ("id" bigserial primary key, "code" character varying NOT NULL, "name" character varying NOT NULL, "description" text, "validation_status" character varying DEFAULT 'pending' NOT NULL, "source_reference" character varying, "tax_module_id" bigint NOT NULL, "created_at" timestamp(6) NOT NULL, "updated_at" timestamp(6) NOT NULL, CONSTRAINT "fk_rails_6648be8729"
+FOREIGN KEY ("tax_module_id")
+  REFERENCES "tax_modules" ("id")
+) /*application='TributaLab'*/[0m
+  [1m[35m (2.7ms)[0m  [1m[35mCREATE INDEX "index_credit_categories_on_tax_module_id" ON "credit_categories" ("tax_module_id") /*application='TributaLab'*/[0m
+  [1m[35m (3.4ms)[0m  [1m[35mCREATE UNIQUE INDEX "index_credit_categories_on_tax_module_id_and_code" ON "credit_categories" ("tax_module_id", "code") /*application='TributaLab'*/[0m
+  [1m[35m (4.0ms)[0m  [1m[35mCREATE INDEX "index_credit_categories_on_validation_status" ON "credit_categories" ("validation_status") /*application='TributaLab'*/[0m
+  [1m[36mActiveRecord::SchemaMigration Create (0.8ms)[0m  [1m[32mINSERT INTO "schema_migrations" ("version") VALUES ('20260528182929') RETURNING "version" /*application='TributaLab'*/[0m
+  [1m[36mTRANSACTION (1.5ms)[0m  [1m[35mCOMMIT /*application='TributaLab'*/[0m
+  [1m[35m (0.7ms)[0m  [1m[34mSELECT pg_advisory_unlock(1322158557162245565) /*application='TributaLab'*/[0m
+  [1m[36mActiveRecord::SchemaMigration Load (1.0ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC /*application='TributaLab'*/[0m
+  [1m[35mSQL (0.9ms)[0m  [1m[35mSET search_path TO public /*application='TributaLab'*/[0m
+  [1m[35mSQL (0.4ms)[0m  [1m[35mSET search_path TO "$user", public /*application='TributaLab'*/[0m
+  [1m[35mSQL (0.4ms)[0m  [1m[35mSET search_path TO public /*application='TributaLab'*/[0m
+  [1m[35mSQL (1.2ms)[0m  [1m[35mSET search_path TO "$user", public /*application='TributaLab'*/[0m
+  [1m[36mActiveRecord::SchemaMigration Load (0.4ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC /*application='TributaLab'*/[0m
+  [1m[36mProductArea Load (1.0ms)[0m  [1m[34mSELECT "product_areas".* FROM "product_areas" WHERE "product_areas"."code" = 'tax_reform' LIMIT 1 /*application='TributaLab'*/[0m
+  [1m[36mTRANSACTION (0.8ms)[0m  [1m[35mBEGIN /*application='TributaLab'*/[0m
+  [1m[36mProductArea Exists? (4.2ms)[0m  [1m[34mSELECT 1 AS one FROM "product_areas" WHERE "product_areas"."code" = 'tax_reform' LIMIT 1 /*application='TributaLab'*/[0m
+  [1m[36mProductArea Create (1.3ms)[0m  [1m[32mINSERT INTO "product_areas" ("code", "name", "description", "position", "created_at", "updated_at") VALUES ('tax_reform', 'Reforma Tributaria', 'Tipo de trabalho voltado a simulacoes futuras de IBS/CBS, operacoes, redutores, creditos e cenarios.', 1, '2026-05-28 18:39:17.386722', '2026-05-28 18:39:17.386722') RETURNING "id" /*application='TributaLab'*/[0m
+  [1m[36mTRANSACTION (2.2ms)[0m  [1m[35mCOMMIT /*application='TributaLab'*/[0m
+  [1m[36mProductArea Load (1.2ms)[0m  [1m[34mSELECT "product_areas".* FROM "product_areas" WHERE "product_areas"."code" = 'credit_recovery' LIMIT 1 /*application='TributaLab'*/[0m
+  [1m[36mTRANSACTION (0.7ms)[0m  [1m[35mBEGIN /*application='TributaLab'*/[0m
+  [1m[36mProductArea Exists? (3.0ms)[0m  [1m[34mSELECT 1 AS one FROM "product_areas" WHERE "product_areas"."code" = 'credit_recovery' LIMIT 1 /*application='TributaLab'*/[0m
+  [1m[36mProductArea Create (1.0ms)[0m  [1m[32mINSERT INTO "product_areas" ("code", "name", "description", "position", "created_at", "updated_at") VALUES ('credit_recovery', 'Recuperacao de Credito', 'Tipo de trabalho voltado ao passado, com analise de verbas, rubricas, documentos, riscos e potencial de recuperacao.', 2, '2026-05-28 18:39:17.401850', '2026-05-28 18:39:17.401850') RETURNING "id" /*application='TributaLab'*/[0m
+  [1m[36mTRANSACTION (11.7ms)[0m  [1m[35mCOMMIT /*application='TributaLab'*/[0m
+  [1m[36mSector Load (1.3ms)[0m  [1m[34mSELECT "sectors".* FROM "sectors" WHERE "sectors"."code" = 'real_estate_construction' LIMIT 1 /*application='TributaLab'*/[0m
+  [1m[36mTRANSACTION (0.7ms)[0m  [1m[35mBEGIN /*application='TributaLab'*/[0m
+  [1m[36mSector Exists? (2.7ms)[0m  [1m[34mSELECT 1 AS one FROM "sectors" WHERE "sectors"."code" = 'real_estate_construction' LIMIT 1 /*application='TributaLab'*/[0m
+  [1m[36mSector Create (1.4ms)[0m  [1m[32mINSERT INTO "sectors" ("code", "name", "description", "position", "created_at", "updated_at") VALUES ('real_estate_construction', 'Imobiliario / Construcao Civil', 'Primeiro recorte operacional do TributaLab, derivado da call com Denis e da planilha-base de 2026-05-28.', 1, '2026-05-28 18:39:17.442960', '2026-05-28 18:39:17.442960') RETURNING "id" /*application='TributaLab'*/[0m
+  [1m[36mTRANSACTION (2.0ms)[0m  [1m[35mCOMMIT /*application='TributaLab'*/[0m
+  [1m[36mTaxModule Load (0.8ms)[0m  [1m[34mSELECT "tax_modules".* FROM "tax_modules" WHERE "tax_modules"."code" = 'real_estate_tax_reform' LIMIT 1 /*application='TributaLab'*/[0m
+  [1m[36mTRANSACTION (0.7ms)[0m  [1m[35mBEGIN /*application='TributaLab'*/[0m
+  [1m[36mTaxModule Exists? (2.9ms)[0m  [1m[34mSELECT 1 AS one FROM "tax_modules" WHERE "tax_modules"."code" = 'real_estate_tax_reform' LIMIT 1 /*application='TributaLab'*/[0m
+  [1m[36mTaxModule Create (1.6ms)[0m  [1m[32mINSERT INTO "tax_modules" ("code", "name", "description", "product_area_id", "sector_id", "status", "position", "created_at", "updated_at") VALUES ('real_estate_tax_reform', 'Reforma Tributaria Imobiliaria', 'Modulo inicial para operacoes imobiliarias e de construcao civil sob a Reforma Tributaria.', 1, 1, 'active', 1, '2026-05-28 18:39:17.493972', '2026-05-28 18:39:17.493972') RETURNING "id" /*application='TributaLab'*/[0m
+  [1m[36mTRANSACTION (1.6ms)[0m  [1m[35mCOMMIT /*application='TributaLab'*/[0m
+  [1m[36mOperation Load (0.8ms)[0m  [1m[34mSELECT "operations".* FROM "operations" WHERE "operations"."tax_module_id" = 1 AND "operations"."code" = 'sale_property' LIMIT 1 /*application='TributaLab'*/[0m
+  [1m[36mTRANSACTION (0.6ms)[0m  [1m[35mBEGIN /*application='TributaLab'*/[0m
+  [1m[36mOperation Exists? (2.5ms)[0m  [1m[34mSELECT 1 AS one FROM "operations" WHERE "operations"."code" = 'sale_property' AND "operations"."tax_module_id" = 1 LIMIT 1 /*application='TributaLab'*/[0m
+  [1m[36mOperation Create (1.3ms)[0m  [1m[32mINSERT INTO "operations" ("code", "name", "description", "tax_module_id", "status", "position", "created_at", "updated_at") VALUES ('sale_property', 'Venda de imovel / incorporacao', 'Operacao tributada sobre o valor da operacao, com redutor social e reducao de aliquota indicados na planilha.', 1, 'active', 1, '2026-05-28 18:39:17.516411', '2026-05-28 18:39:17.516411') RETURNING "id" /*application='TributaLab'*/[0m
+  [1m[36mTRANSACTION (6.4ms)[0m  [1m[35mCOMMIT /*application='TributaLab'*/[0m
+  [1m[36mOperation Load (0.8ms)[0m  [1m[34mSELECT "operations".* FROM "operations" WHERE "operations"."tax_module_id" = 1 AND "operations"."code" = 'sale_residential_lot' LIMIT 1 /*application='TributaLab'*/[0m
+  [1m[36mTRANSACTION (0.4ms)[0m  [1m[35mBEGIN /*application='TributaLab'*/[0m
+  [1m[36mOperation Exists? (2.4ms)[0m  [1m[34mSELECT 1 AS one FROM "operations" WHERE "operations"."code" = 'sale_residential_lot' AND "operations"."tax_module_id" = 1 LIMIT 1 /*application='TributaLab'*/[0m
+  [1m[36mOperation Create (1.1ms)[0m  [1m[32mINSERT INTO "operations" ("code", "name", "description", "tax_module_id", "status", "position", "created_at", "updated_at") VALUES ('sale_residential_lot', 'Venda de lote residencial', 'Operacao tributada sobre o valor da venda, com redutor por lote residencial.', 1, 'active', 2, '2026-05-28 18:39:17.540514', '2026-05-28 18:39:17.540514') RETURNING "id" /*application='TributaLab'*/[0m
+  [1m[36mTRANSACTION (4.9ms)[0m  [1m[35mCOMMIT /*application='TributaLab'*/[0m
+  [1m[36mOperation Load (1.0ms)[0m  [1m[34mSELECT "operations".* FROM "operations" WHERE "operations"."tax_module_id" = 1 AND "operations"."code" = 'lease_property' LIMIT 1 /*application='TributaLab'*/[0m
+  [1m[36mTRANSACTION (0.6ms)[0m  [1m[35mBEGIN /*application='TributaLab'*/[0m
+  [1m[36mOperation Exists? (2.5ms)[0m  [1m[34mSELECT 1 AS one FROM "operations" WHERE "operations"."code" = 'lease_property' AND "operations"."tax_module_id" = 1 LIMIT 1 /*application='TributaLab'*/[0m
+  [1m[36mOperation Create (1.7ms)[0m  [1m[32mINSERT INTO "operations" ("code", "name", "description", "tax_module_id", "status", "position", "created_at", "updated_at") VALUES ('lease_property', 'Locacao de imoveis', 'Operacao com redutor mensal e divergencia pendente sobre exclusao de IPTU e condominio da base.', 1, 'active', 3, '2026-05-28 18:39:17.558604', '2026-05-28 18:39:17.558604') RETURNING "id" /*application='TributaLab'*/[0m
+  [1m[36mTRANSACTION (9.0ms)[0m  [1m[35mCOMMIT /*application='TributaLab'*/[0m
+  [1m[36mOperation Load (1.0ms)[0m  [1m[34mSELECT "operations".* FROM "operations" WHERE "operations"."tax_module_id" = 1 AND "operations"."code" = 'civil_construction' LIMIT 1 /*application='TributaLab'*/[0m
+  [1m[36mTRANSACTION (1.1ms)[0m  [1m[35mBEGIN /*application='TributaLab'*/[0m
+  [1m[36mOperation Exists? (3.4ms)[0m  [1m[34mSELECT 1 AS one FROM "operations" WHERE "operations"."code" = 'civil_construction' AND "operations"."tax_module_id" = 1 LIMIT 1 /*application='TributaLab'*/[0m
+  [1m[36mOperation Create (0.5ms)[0m  [1m[32mINSERT INTO "operations" ("code", "name", "description", "tax_module_id", "status", "position", "created_at", "updated_at") VALUES ('civil_construction', 'Construcao civil', 'Operacao baseada no valor do contrato, com creditos vinculados a materiais, servicos e energia.', 1, 'active', 4, '2026-05-28 18:39:17.581914', '2026-05-28 18:39:17.581914') RETURNING "id" /*application='TributaLab'*/[0m
+  [1m[36mTRANSACTION (11.1ms)[0m  [1m[35mCOMMIT /*application='TributaLab'*/[0m
+  [1m[36mOperation Load (0.7ms)[0m  [1m[34mSELECT "operations".* FROM "operations" WHERE "operations"."tax_module_id" = 1 AND "operations"."code" = 'management_brokerage' LIMIT 1 /*application='TributaLab'*/[0m
+  [1m[36mTRANSACTION (0.6ms)[0m  [1m[35mBEGIN /*application='TributaLab'*/[0m
+  [1m[36mOperation Exists? (5.3ms)[0m  [1m[34mSELECT 1 AS one FROM "operations" WHERE "operations"."code" = 'management_brokerage' AND "operations"."tax_module_id" = 1 LIMIT 1 /*application='TributaLab'*/[0m
+  [1m[36mOperation Create (0.8ms)[0m  [1m[32mINSERT INTO "operations" ("code", "name", "description", "tax_module_id", "status", "position", "created_at", "updated_at") VALUES ('management_brokerage', 'Administracao / corretagem', 'Servicos imobiliarios com creditos vinculados a atividade, pendente confirmacao de ausencia de redutor.', 1, 'active', 5, '2026-05-28 18:39:17.606208', '2026-05-28 18:39:17.606208') RETURNING "id" /*application='TributaLab'*/[0m
+  [1m[36mTRANSACTION (11.9ms)[0m  [1m[35mCOMMIT /*application='TributaLab'*/[0m
+  [1m[36mOperation Load (0.7ms)[0m  [1m[34mSELECT "operations".* FROM "operations" WHERE "operations"."tax_module_id" = 1 AND "operations"."code" = 'rights_assignment' LIMIT 1 /*application='TributaLab'*/[0m
+  [1m[36mTRANSACTION (0.4ms)[0m  [1m[35mBEGIN /*application='TributaLab'*/[0m
+  [1m[36mOperation Exists? (3.6ms)[0m  [1m[34mSELECT 1 AS one FROM "operations" WHERE "operations"."code" = 'rights_assignment' AND "operations"."tax_module_id" = 1 LIMIT 1 /*application='TributaLab'*/[0m
+  [1m[36mOperation Create (0.6ms)[0m  [1m[32mINSERT INTO "operations" ("code", "name", "description", "tax_module_id", "status", "position", "created_at", "updated_at") VALUES ('rights_assignment', 'Cessao de direitos', 'Operacao com divergencia entre reducao de 70% indicada em aba geral e aliquota cheia usada na aba de calculo.', 1, 'active', 6, '2026-05-28 18:39:17.629786', '2026-05-28 18:39:17.629786') RETURNING "id" /*application='TributaLab'*/[0m
+  [1m[36mTRANSACTION (1.2ms)[0m  [1m[35mCOMMIT /*application='TributaLab'*/[0m
+  [1m[36mOperation Load (1.3ms)[0m  [1m[34mSELECT "operations".* FROM "operations" WHERE "operations"."tax_module_id" = 1 AND "operations"."code" = 'exchange_without_boot' LIMIT 1 /*application='TributaLab'*/[0m
+  [1m[36mTRANSACTION (0.7ms)[0m  [1m[35mBEGIN /*application='TributaLab'*/[0m
+  [1m[36mOperation Exists? (3.4ms)[0m  [1m[34mSELECT 1 AS one FROM "operations" WHERE "operations"."code" = 'exchange_without_boot' AND "operations"."tax_module_id" = 1 LIMIT 1 /*application='TributaLab'*/[0m
+  [1m[36mOperation Create (1.7ms)[0m  [1m[32mINSERT INTO "operations" ("code", "name", "description", "tax_module_id", "status", "position", "created_at", "updated_at") VALUES ('exchange_without_boot', 'Permuta sem torna', 'Operacao inicialmente tratada como sem incidencia, pendente definicao se tera tela propria.', 1, 'informational', 7, '2026-05-28 18:39:17.645421', '2026-05-28 18:39:17.645421') RETURNING "id" /*application='TributaLab'*/[0m
+  [1m[36mTRANSACTION (8.9ms)[0m  [1m[35mCOMMIT /*application='TributaLab'*/[0m
+  [1m[36mOperation Load (1.3ms)[0m  [1m[34mSELECT "operations".* FROM "operations" WHERE "operations"."tax_module_id" = 1 AND "operations"."code" = 'exchange_with_boot' LIMIT 1 /*application='TributaLab'*/[0m
+  [1m[36mTRANSACTION (0.8ms)[0m  [1m[35mBEGIN /*application='TributaLab'*/[0m
+  [1m[36mOperation Exists? (3.0ms)[0m  [1m[34mSELECT 1 AS one FROM "operations" WHERE "operations"."code" = 'exchange_with_boot' AND "operations"."tax_module_id" = 1 LIMIT 1 /*application='TributaLab'*/[0m
+  [1m[36mOperation Create (2.0ms)[0m  [1m[32mINSERT INTO "operations" ("code", "name", "description", "tax_module_id", "status", "position", "created_at", "updated_at") VALUES ('exchange_with_boot', 'Permuta com torna', 'Operacao com incidencia parcial sobre o valor da torna e creditos vinculados.', 1, 'active', 8, '2026-05-28 18:39:17.676625', '2026-05-28 18:39:17.676625') RETURNING "id" /*application='TributaLab'*/[0m
+  [1m[36mTRANSACTION (1.7ms)[0m  [1m[35mCOMMIT /*application='TributaLab'*/[0m
+  [1m[36mTaxParameter Load (2.0ms)[0m  [1m[34mSELECT "tax_parameters".* FROM "tax_parameters" WHERE "tax_parameters"."tax_module_id" = 1 AND "tax_parameters"."operation_id" IS NULL AND "tax_parameters"."code" = 'full_ibs_cbs_rate' LIMIT 1 /*application='TributaLab'*/[0m
+  [1m[36mTRANSACTION (1.1ms)[0m  [1m[35mBEGIN /*application='TributaLab'*/[0m
+  [1m[36mTaxParameter Exists? (3.8ms)[0m  [1m[34mSELECT 1 AS one FROM "tax_parameters" WHERE "tax_parameters"."code" = 'full_ibs_cbs_rate' AND "tax_parameters"."tax_module_id" = 1 AND "tax_parameters"."operation_id" IS NULL LIMIT 1 /*application='TributaLab'*/[0m
+  [1m[36mTaxParameter Create (1.5ms)[0m  [1m[32mINSERT INTO "tax_parameters" ("code", "name", "parameter_type", "value_decimal", "unit", "validation_status", "effective_from", "effective_until", "legal_reference", "notes", "tax_module_id", "operation_id", "created_at", "updated_at") VALUES ('full_ibs_cbs_rate', 'Aliquota cheia IBS/CBS', 'rate', 0.265, 'decimal', 'pending', NULL, NULL, 'Planilha Denis - parametro usado nas simulacoes', 'Aliquota citada como 26,5%; parametrizavel porque pode mudar.', 1, NULL, '2026-05-28 18:39:17.707201', '2026-05-28 18:39:17.707201') RETURNING "id" /*application='TributaLab'*/[0m
+  [1m[36mTRANSACTION (9.8ms)[0m  [1m[35mCOMMIT /*application='TributaLab'*/[0m
+  [1m[36mTaxParameter Load (0.7ms)[0m  [1m[34mSELECT "tax_parameters".* FROM "tax_parameters" WHERE "tax_parameters"."tax_module_id" = 1 AND "tax_parameters"."operation_id" = 1 AND "tax_parameters"."code" = 'sale_property_social_deduction' LIMIT 1 /*application='TributaLab'*/[0m
+  [1m[36mTRANSACTION (0.8ms)[0m  [1m[35mBEGIN /*application='TributaLab'*/[0m
+  [1m[36mTaxParameter Exists? (4.4ms)[0m  [1m[34mSELECT 1 AS one FROM "tax_parameters" WHERE "tax_parameters"."code" = 'sale_property_social_deduction' AND "tax_parameters"."tax_module_id" = 1 AND "tax_parameters"."operation_id" = 1 LIMIT 1 /*application='TributaLab'*/[0m
+  [1m[36mTaxParameter Create (0.7ms)[0m  [1m[32mINSERT INTO "tax_parameters" ("code", "name", "parameter_type", "value_decimal", "unit", "validation_status", "effective_from", "effective_until", "legal_reference", "notes", "tax_module_id", "operation_id", "created_at", "updated_at") VALUES ('sale_property_social_deduction', 'Redutor venda imovel residencial', 'deduction', 100000.0, 'BRL', 'pending', NULL, NULL, 'Art. 259 indicado na planilha', 'Deduz da base antes do imposto; base legal ainda depende de validacao LC 227/2026 vs LC 214/2025.', 1, 1, '2026-05-28 18:39:17.731690', '2026-05-28 18:39:17.731690') RETURNING "id" /*application='TributaLab'*/[0m
+  [1m[36mTRANSACTION (3.0ms)[0m  [1m[35mCOMMIT /*application='TributaLab'*/[0m
+  [1m[36mTaxParameter Load (0.6ms)[0m  [1m[34mSELECT "tax_parameters".* FROM "tax_parameters" WHERE "tax_parameters"."tax_module_id" = 1 AND "tax_parameters"."operation_id" = 2 AND "tax_parameters"."code" = 'sale_lot_social_deduction' LIMIT 1 /*application='TributaLab'*/[0m
+  [1m[36mTRANSACTION (1.6ms)[0m  [1m[35mBEGIN /*application='TributaLab'*/[0m
+  [1m[36mTaxParameter Exists? (5.1ms)[0m  [1m[34mSELECT 1 AS one FROM "tax_parameters" WHERE "tax_parameters"."code" = 'sale_lot_social_deduction' AND "tax_parameters"."tax_module_id" = 1 AND "tax_parameters"."operation_id" = 2 LIMIT 1 /*application='TributaLab'*/[0m
+  [1m[36mTaxParameter Create (0.8ms)[0m  [1m[32mINSERT INTO "tax_parameters" ("code", "name", "parameter_type", "value_decimal", "unit", "validation_status", "effective_from", "effective_until", "legal_reference", "notes", "tax_module_id", "operation_id", "created_at", "updated_at") VALUES ('sale_lot_social_deduction', 'Redutor venda lote residencial', 'deduction', 30000.0, 'BRL', 'pending', NULL, NULL, 'Art. 259 indicado na planilha', 'Deduz direto da base por lote residencial.', 1, 2, '2026-05-28 18:39:17.749230', '2026-05-28 18:39:17.749230') RETURNING "id" /*application='TributaLab'*/[0m
+  [1m[36mTRANSACTION (2.2ms)[0m  [1m[35mCOMMIT /*application='TributaLab'*/[0m
+  [1m[36mTaxParameter Load (0.7ms)[0m  [1m[34mSELECT "tax_parameters".* FROM "tax_parameters" WHERE "tax_parameters"."tax_module_id" = 1 AND "tax_parameters"."operation_id" = 3 AND "tax_parameters"."code" = 'lease_social_deduction' LIMIT 1 /*application='TributaLab'*/[0m
+  [1m[36mTRANSACTION (0.4ms)[0m  [1m[35mBEGIN /*application='TributaLab'*/[0m
+  [1m[36mTaxParameter Exists? (3.4ms)[0m  [1m[34mSELECT 1 AS one FROM "tax_parameters" WHERE "tax_parameters"."code" = 'lease_social_deduction' AND "tax_parameters"."tax_module_id" = 1 AND "tax_parameters"."operation_id" = 3 LIMIT 1 /*application='TributaLab'*/[0m
+  [1m[36mTaxParameter Create (0.7ms)[0m  [1m[32mINSERT INTO "tax_parameters" ("code", "name", "parameter_type", "value_decimal", "unit", "validation_status", "effective_from", "effective_until", "legal_reference", "notes", "tax_module_id", "operation_id", "created_at", "updated_at") VALUES ('lease_social_deduction', 'Redutor locacao residencial', 'deduction', 600.0, 'BRL', 'pending', NULL, NULL, 'Art. 260 indicado na planilha', 'Valor mensal por imovel; formula da locacao ainda precisa validar tratamento de IPTU e condominio.', 1, 3, '2026-05-28 18:39:17.762798', '2026-05-28 18:39:17.762798') RETURNING "id" /*application='TributaLab'*/[0m
+  [1m[36mTRANSACTION (1.3ms)[0m  [1m[35mCOMMIT /*application='TributaLab'*/[0m
+  [1m[36mTaxParameter Load (0.8ms)[0m  [1m[34mSELECT "tax_parameters".* FROM "tax_parameters" WHERE "tax_parameters"."tax_module_id" = 1 AND "tax_parameters"."operation_id" = 1 AND "tax_parameters"."code" = 'sale_incorporation_reduction' LIMIT 1 /*application='TributaLab'*/[0m
+  [1m[36mTRANSACTION (0.4ms)[0m  [1m[35mBEGIN /*application='TributaLab'*/[0m
+  [1m[36mTaxParameter Exists? (2.9ms)[0m  [1m[34mSELECT 1 AS one FROM "tax_parameters" WHERE "tax_parameters"."code" = 'sale_incorporation_reduction' AND "tax_parameters"."tax_module_id" = 1 AND "tax_parameters"."operation_id" = 1 LIMIT 1 /*application='TributaLab'*/[0m
+  [1m[36mTaxParameter Create (0.9ms)[0m  [1m[32mINSERT INTO "tax_parameters" ("code", "name", "parameter_type", "value_decimal", "unit", "validation_status", "effective_from", "effective_until", "legal_reference", "notes", "tax_module_id", "operation_id", "created_at", "updated_at") VALUES ('sale_incorporation_reduction', 'Reducao venda/incorporacao', 'reduction', 0.5, 'decimal', 'pending', NULL, NULL, 'Art. 261 caput indicado na planilha', 'Reducao inicial de 50% sobre a aliquota cheia.', 1, 1, '2026-05-28 18:39:17.778753', '2026-05-28 18:39:17.778753') RETURNING "id" /*application='TributaLab'*/[0m
+  [1m[36mTRANSACTION (7.6ms)[0m  [1m[35mCOMMIT /*application='TributaLab'*/[0m
+  [1m[36mTaxParameter Load (0.8ms)[0m  [1m[34mSELECT "tax_parameters".* FROM "tax_parameters" WHERE "tax_parameters"."tax_module_id" = 1 AND "tax_parameters"."operation_id" = 2 AND "tax_parameters"."code" = 'lot_sale_reduction' LIMIT 1 /*application='TributaLab'*/[0m
+  [1m[36mTRANSACTION (1.2ms)[0m  [1m[35mBEGIN /*application='TributaLab'*/[0m
+  [1m[36mTaxParameter Exists? (4.4ms)[0m  [1m[34mSELECT 1 AS one FROM "tax_parameters" WHERE "tax_parameters"."code" = 'lot_sale_reduction' AND "tax_parameters"."tax_module_id" = 1 AND "tax_parameters"."operation_id" = 2 LIMIT 1 /*application='TributaLab'*/[0m
+  [1m[36mTaxParameter Create (0.8ms)[0m  [1m[32mINSERT INTO "tax_parameters" ("code", "name", "parameter_type", "value_decimal", "unit", "validation_status", "effective_from", "effective_until", "legal_reference", "notes", "tax_module_id", "operation_id", "created_at", "updated_at") VALUES ('lot_sale_reduction', 'Reducao venda de lote residencial', 'reduction', 0.5, 'decimal', 'pending', NULL, NULL, 'Art. 261 caput indicado na planilha', 'Aplicada por analogia ao bloco de venda/incorporacao da planilha.', 1, 2, '2026-05-28 18:39:17.798972', '2026-05-28 18:39:17.798972') RETURNING "id" /*application='TributaLab'*/[0m
+  [1m[36mTRANSACTION (9.1ms)[0m  [1m[35mCOMMIT /*application='TributaLab'*/[0m
+  [1m[36mTaxParameter Load (0.8ms)[0m  [1m[34mSELECT "tax_parameters".* FROM "tax_parameters" WHERE "tax_parameters"."tax_module_id" = 1 AND "tax_parameters"."operation_id" = 3 AND "tax_parameters"."code" = 'lease_reduction' LIMIT 1 /*application='TributaLab'*/[0m
+  [1m[36mTRANSACTION (0.4ms)[0m  [1m[35mBEGIN /*application='TributaLab'*/[0m
+  [1m[36mTaxParameter Exists? (3.3ms)[0m  [1m[34mSELECT 1 AS one FROM "tax_parameters" WHERE "tax_parameters"."code" = 'lease_reduction' AND "tax_parameters"."tax_module_id" = 1 AND "tax_parameters"."operation_id" = 3 LIMIT 1 /*application='TributaLab'*/[0m
+  [1m[36mTaxParameter Create (1.0ms)[0m  [1m[32mINSERT INTO "tax_parameters" ("code", "name", "parameter_type", "value_decimal", "unit", "validation_status", "effective_from", "effective_until", "legal_reference", "notes", "tax_module_id", "operation_id", "created_at", "updated_at") VALUES ('lease_reduction', 'Reducao locacao', 'reduction', 0.7, 'decimal', 'pending', NULL, NULL, 'Art. 261, paragrafo unico indicado na planilha', 'Reducao inicial de 70%, pendente validacao final.', 1, 3, '2026-05-28 18:39:17.821349', '2026-05-28 18:39:17.821349') RETURNING "id" /*application='TributaLab'*/[0m
+  [1m[36mTRANSACTION (12.3ms)[0m  [1m[35mCOMMIT /*application='TributaLab'*/[0m
+  [1m[36mTaxParameter Load (1.8ms)[0m  [1m[34mSELECT "tax_parameters".* FROM "tax_parameters" WHERE "tax_parameters"."tax_module_id" = 1 AND "tax_parameters"."operation_id" = 6 AND "tax_parameters"."code" = 'rights_assignment_reduction' LIMIT 1 /*application='TributaLab'*/[0m
+  [1m[36mTRANSACTION (1.6ms)[0m  [1m[35mBEGIN /*application='TributaLab'*/[0m
+  [1m[36mTaxParameter Exists? (6.2ms)[0m  [1m[34mSELECT 1 AS one FROM "tax_parameters" WHERE "tax_parameters"."code" = 'rights_assignment_reduction' AND "tax_parameters"."tax_module_id" = 1 AND "tax_parameters"."operation_id" = 6 LIMIT 1 /*application='TributaLab'*/[0m
+  [1m[36mTaxParameter Create (0.9ms)[0m  [1m[32mINSERT INTO "tax_parameters" ("code", "name", "parameter_type", "value_decimal", "unit", "validation_status", "effective_from", "effective_until", "legal_reference", "notes", "tax_module_id", "operation_id", "created_at", "updated_at") VALUES ('rights_assignment_reduction', 'Reducao cessao de direitos', 'reduction', 0.7, 'decimal', 'divergent', NULL, NULL, 'Aba Reducoes de Aliquotas vs Calculo Cessao de direitos', 'A aba geral indica reducao de 70%, mas a aba de calculo usa aliquota cheia.', 1, 6, '2026-05-28 18:39:17.855195', '2026-05-28 18:39:17.855195') RETURNING "id" /*application='TributaLab'*/[0m
+  [1m[36mTRANSACTION (15.0ms)[0m  [1m[35mCOMMIT /*application='TributaLab'*/[0m
+  [1m[36mAssumption Load (2.5ms)[0m  [1m[34mSELECT "assumptions".* FROM "assumptions" WHERE "assumptions"."tax_module_id" = 1 AND "assumptions"."code" = 'legal_basis_lc_version' LIMIT 1 /*application='TributaLab'*/[0m
+  [1m[36mTRANSACTION (1.8ms)[0m  [1m[35mBEGIN /*application='TributaLab'*/[0m
+  [1m[36mAssumption Exists? (5.6ms)[0m  [1m[34mSELECT 1 AS one FROM "assumptions" WHERE "assumptions"."code" = 'legal_basis_lc_version' AND "assumptions"."tax_module_id" = 1 LIMIT 1 /*application='TributaLab'*/[0m
+  [1m[36mAssumption Create (1.5ms)[0m  [1m[32mINSERT INTO "assumptions" ("code", "title", "description", "status", "impact", "source_reference", "position", "tax_module_id", "operation_id", "created_at", "updated_at") VALUES ('legal_basis_lc_version', 'Confirmar LC 227/2026 vs LC 214/2025', 'A planilha esta nomeada como LC 227/2026, mas varias abas citam LC 214/2025.', 'pending', 'Define qual base legal e artigo devem aparecer nos calculos e relatorios.', 'PESQUISAS_CTE_2026-05-28 / leitura_tabela_denis_reforma_imobiliaria_2026-05-28.md', 1, 1, NULL, '2026-05-28 18:39:17.904293', '2026-05-28 18:39:17.904293') RETURNING "id" /*application='TributaLab'*/[0m
+  [1m[36mTRANSACTION (15.6ms)[0m  [1m[35mCOMMIT /*application='TributaLab'*/[0m
+  [1m[36mAssumption Load (2.3ms)[0m  [1m[34mSELECT "assumptions".* FROM "assumptions" WHERE "assumptions"."tax_module_id" = 1 AND "assumptions"."code" = 'lease_deduct_iptu_condo' LIMIT 1 /*application='TributaLab'*/[0m
+  [1m[36mTRANSACTION (2.6ms)[0m  [1m[35mBEGIN /*application='TributaLab'*/[0m
+  [1m[36mAssumption Exists? (6.8ms)[0m  [1m[34mSELECT 1 AS one FROM "assumptions" WHERE "assumptions"."code" = 'lease_deduct_iptu_condo' AND "assumptions"."tax_module_id" = 1 LIMIT 1 /*application='TributaLab'*/[0m
+  [1m[36mAssumption Create (1.8ms)[0m  [1m[32mINSERT INTO "assumptions" ("code", "title", "description", "status", "impact", "source_reference", "position", "tax_module_id", "operation_id", "created_at", "updated_at") VALUES ('lease_deduct_iptu_condo', 'Confirmar deducao de IPTU e condominio na locacao', 'A formula indica excluir IPTU e condominio da base, mas o exemplo usa aluguel integral.', 'pending', 'Afeta a base bruta e o imposto estimado de locacao.', 'PESQUISAS_CTE_2026-05-28 / leitura_tabela_denis_reforma_imobiliaria_2026-05-28.md', 2, 1, 3, '2026-05-28 18:39:17.948384', '2026-05-28 18:39:17.948384') RETURNING "id" /*application='TributaLab'*/[0m
+  [1m[36mTRANSACTION (12.8ms)[0m  [1m[35mCOMMIT /*application='TributaLab'*/[0m
+  [1m[36mAssumption Load (0.8ms)[0m  [1m[34mSELECT "assumptions".* FROM "assumptions" WHERE "assumptions"."tax_module_id" = 1 AND "assumptions"."code" = 'rights_assignment_rate' LIMIT 1 /*application='TributaLab'*/[0m
+  [1m[36mTRANSACTION (1.0ms)[0m  [1m[35mBEGIN /*application='TributaLab'*/[0m
+  [1m[36mAssumption Exists? (4.1ms)[0m  [1m[34mSELECT 1 AS one FROM "assumptions" WHERE "assumptions"."code" = 'rights_assignment_rate' AND "assumptions"."tax_module_id" = 1 LIMIT 1 /*application='TributaLab'*/[0m
+  [1m[36mAssumption Create (1.4ms)[0m  [1m[32mINSERT INTO "assumptions" ("code", "title", "description", "status", "impact", "source_reference", "position", "tax_module_id", "operation_id", "created_at", "updated_at") VALUES ('rights_assignment_rate', 'Confirmar aliquota de cessao de direitos', 'A aba de reducoes menciona 70%, mas a aba de calculo usa aliquota cheia.', 'pending', 'Afeta debito IBS/CBS e comparativos de cessao.', 'PESQUISAS_CTE_2026-05-28 / leitura_tabela_denis_reforma_imobiliaria_2026-05-28.md', 3, 1, 6, '2026-05-28 18:39:17.983646', '2026-05-28 18:39:17.983646') RETURNING "id" /*application='TributaLab'*/[0m
+  [1m[36mTRANSACTION (10.9ms)[0m  [1m[35mCOMMIT /*application='TributaLab'*/[0m
+  [1m[36mAssumption Load (1.2ms)[0m  [1m[34mSELECT "assumptions".* FROM "assumptions" WHERE "assumptions"."tax_module_id" = 1 AND "assumptions"."code" = 'civil_construction_full_rate' LIMIT 1 /*application='TributaLab'*/[0m
+  [1m[36mTRANSACTION (0.6ms)[0m  [1m[35mBEGIN /*application='TributaLab'*/[0m
+  [1m[36mAssumption Exists? (5.1ms)[0m  [1m[34mSELECT 1 AS one FROM "assumptions" WHERE "assumptions"."code" = 'civil_construction_full_rate' AND "assumptions"."tax_module_id" = 1 LIMIT 1 /*application='TributaLab'*/[0m
+  [1m[36mAssumption Create (1.8ms)[0m  [1m[32mINSERT INTO "assumptions" ("code", "title", "description", "status", "impact", "source_reference", "position", "tax_module_id", "operation_id", "created_at", "updated_at") VALUES ('civil_construction_full_rate', 'Confirmar construcao civil com aliquota cheia', 'Modelo inicial usa aliquota cheia com creditos, sem reducao especifica.', 'pending', 'Afeta simulacao de contratos de construcao civil.', 'PESQUISAS_CTE_2026-05-28 / leitura_tabela_denis_reforma_imobiliaria_2026-05-28.md', 4, 1, 4, '2026-05-28 18:39:18.012469', '2026-05-28 18:39:18.012469') RETURNING "id" /*application='TributaLab'*/[0m
+  [1m[36mTRANSACTION (11.6ms)[0m  [1m[35mCOMMIT /*application='TributaLab'*/[0m
+  [1m[36mAssumption Load (0.8ms)[0m  [1m[34mSELECT "assumptions".* FROM "assumptions" WHERE "assumptions"."tax_module_id" = 1 AND "assumptions"."code" = 'management_brokerage_full_rate' LIMIT 1 /*application='TributaLab'*/[0m
+  [1m[36mTRANSACTION (0.8ms)[0m  [1m[35mBEGIN /*application='TributaLab'*/[0m
+  [1m[36mAssumption Exists? (3.9ms)[0m  [1m[34mSELECT 1 AS one FROM "assumptions" WHERE "assumptions"."code" = 'management_brokerage_full_rate' AND "assumptions"."tax_module_id" = 1 LIMIT 1 /*application='TributaLab'*/[0m
+  [1m[36mAssumption Create (1.1ms)[0m  [1m[32mINSERT INTO "assumptions" ("code", "title", "description", "status", "impact", "source_reference", "position", "tax_module_id", "operation_id", "created_at", "updated_at") VALUES ('management_brokerage_full_rate', 'Confirmar administracao/corretagem sem redutor', 'Modelo inicial usa aliquota cheia e creditos vinculados, sem redutor ou reducao.', 'pending', 'Afeta servicos imobiliarios recorrentes.', 'PESQUISAS_CTE_2026-05-28 / leitura_tabela_denis_reforma_imobiliaria_2026-05-28.md', 5, 1, 5, '2026-05-28 18:39:18.041967', '2026-05-28 18:39:18.041967') RETURNING "id" /*application='TributaLab'*/[0m
+  [1m[36mTRANSACTION (12.6ms)[0m  [1m[35mCOMMIT /*application='TributaLab'*/[0m
+  [1m[36mAssumption Load (1.1ms)[0m  [1m[34mSELECT "assumptions".* FROM "assumptions" WHERE "assumptions"."tax_module_id" = 1 AND "assumptions"."code" = 'credit_documentation_conditions' LIMIT 1 /*application='TributaLab'*/[0m
+  [1m[36mTRANSACTION (0.6ms)[0m  [1m[35mBEGIN /*application='TributaLab'*/[0m
+  [1m[36mAssumption Exists? (2.5ms)[0m  [1m[34mSELECT 1 AS one FROM "assumptions" WHERE "assumptions"."code" = 'credit_documentation_conditions' AND "assumptions"."tax_module_id" = 1 LIMIT 1 /*application='TributaLab'*/[0m
+  [1m[36mAssumption Create (1.1ms)[0m  [1m[32mINSERT INTO "assumptions" ("code", "title", "description", "status", "impact", "source_reference", "position", "tax_module_id", "operation_id", "created_at", "updated_at") VALUES ('credit_documentation_conditions', 'Confirmar condicoes documentais para creditos', 'Aproveitamento pode depender de documento, vinculacao direta e destaque do imposto.', 'pending', 'Afeta elegibilidade e risco de creditos informados.', 'PESQUISAS_CTE_2026-05-28 / leitura_tabela_denis_reforma_imobiliaria_2026-05-28.md', 6, 1, NULL, '2026-05-28 18:39:18.066487', '2026-05-28 18:39:18.066487') RETURNING "id" /*application='TributaLab'*/[0m
+  [1m[36mTRANSACTION (10.9ms)[0m  [1m[35mCOMMIT /*application='TributaLab'*/[0m
+  [1m[36mAssumption Load (0.6ms)[0m  [1m[34mSELECT "assumptions".* FROM "assumptions" WHERE "assumptions"."tax_module_id" = 1 AND "assumptions"."code" = 'non_negative_tax_base' LIMIT 1 /*application='TributaLab'*/[0m
+  [1m[36mTRANSACTION (1.4ms)[0m  [1m[35mBEGIN /*application='TributaLab'*/[0m
+  [1m[36mAssumption Exists? (3.8ms)[0m  [1m[34mSELECT 1 AS one FROM "assumptions" WHERE "assumptions"."code" = 'non_negative_tax_base' AND "assumptions"."tax_module_id" = 1 LIMIT 1 /*application='TributaLab'*/[0m
+  [1m[36mAssumption Create (1.0ms)[0m  [1m[32mINSERT INTO "assumptions" ("code", "title", "description", "status", "impact", "source_reference", "position", "tax_module_id", "operation_id", "created_at", "updated_at") VALUES ('non_negative_tax_base', 'Confirmar base negativa apos redutor', 'O sistema deve validar se base apos redutor vira zero por max(0, base - redutor).', 'pending', 'Evita imposto negativo ou base inconsistente.', 'PESQUISAS_CTE_2026-05-28 / leitura_tabela_denis_reforma_imobiliaria_2026-05-28.md', 7, 1, NULL, '2026-05-28 18:39:18.091201', '2026-05-28 18:39:18.091201') RETURNING "id" /*application='TributaLab'*/[0m
+  [1m[36mTRANSACTION (9.0ms)[0m  [1m[35mCOMMIT /*application='TributaLab'*/[0m
+  [1m[36mAssumption Load (0.7ms)[0m  [1m[34mSELECT "assumptions".* FROM "assumptions" WHERE "assumptions"."tax_module_id" = 1 AND "assumptions"."code" = 'credit_exceeds_debit' LIMIT 1 /*application='TributaLab'*/[0m
+  [1m[36mTRANSACTION (0.3ms)[0m  [1m[35mBEGIN /*application='TributaLab'*/[0m
+  [1m[36mAssumption Exists? (3.3ms)[0m  [1m[34mSELECT 1 AS one FROM "assumptions" WHERE "assumptions"."code" = 'credit_exceeds_debit' AND "assumptions"."tax_module_id" = 1 LIMIT 1 /*application='TributaLab'*/[0m
+  [1m[36mAssumption Create (0.8ms)[0m  [1m[32mINSERT INTO "assumptions" ("code", "title", "description", "status", "impact", "source_reference", "position", "tax_module_id", "operation_id", "created_at", "updated_at") VALUES ('credit_exceeds_debit', 'Confirmar tratamento de credito maior que debito', 'Pendente definir se credito excedente carrega saldo, zera imposto do periodo ou aparece apenas como excedente.', 'pending', 'Afeta imposto liquido e memoria de calculo.', 'PESQUISAS_CTE_2026-05-28 / leitura_tabela_denis_reforma_imobiliaria_2026-05-28.md', 8, 1, NULL, '2026-05-28 18:39:18.113059', '2026-05-28 18:39:18.113059') RETURNING "id" /*application='TributaLab'*/[0m
+  [1m[36mTRANSACTION (10.8ms)[0m  [1m[35mCOMMIT /*application='TributaLab'*/[0m
+  [1m[36mAssumption Load (0.9ms)[0m  [1m[34mSELECT "assumptions".* FROM "assumptions" WHERE "assumptions"."tax_module_id" = 1 AND "assumptions"."code" = 'exchange_without_boot_screen' LIMIT 1 /*application='TributaLab'*/[0m
+  [1m[36mTRANSACTION (0.5ms)[0m  [1m[35mBEGIN /*application='TributaLab'*/[0m
+  [1m[36mAssumption Exists? (2.7ms)[0m  [1m[34mSELECT 1 AS one FROM "assumptions" WHERE "assumptions"."code" = 'exchange_without_boot_screen' AND "assumptions"."tax_module_id" = 1 LIMIT 1 /*application='TributaLab'*/[0m
+  [1m[36mAssumption Create (1.0ms)[0m  [1m[32mINSERT INTO "assumptions" ("code", "title", "description", "status", "impact", "source_reference", "position", "tax_module_id", "operation_id", "created_at", "updated_at") VALUES ('exchange_without_boot_screen', 'Confirmar tela de permuta sem torna', 'Permuta sem torna aparece como sem incidencia no modelo inicial.', 'pending', 'Define se sera apenas informativa ou simulador proprio.', 'PESQUISAS_CTE_2026-05-28 / leitura_tabela_denis_reforma_imobiliaria_2026-05-28.md', 9, 1, 7, '2026-05-28 18:39:18.137842', '2026-05-28 18:39:18.137842') RETURNING "id" /*application='TributaLab'*/[0m
+  [1m[36mTRANSACTION (8.4ms)[0m  [1m[35mCOMMIT /*application='TributaLab'*/[0m
+  [1m[36mCreditCategory Load (1.8ms)[0m  [1m[34mSELECT "credit_categories".* FROM "credit_categories" WHERE "credit_categories"."tax_module_id" = 1 AND "credit_categories"."code" = 'materials_construction' LIMIT 1 /*application='TributaLab'*/[0m
+  [1m[36mTRANSACTION (1.1ms)[0m  [1m[35mBEGIN /*application='TributaLab'*/[0m
+  [1m[36mCreditCategory Exists? (3.4ms)[0m  [1m[34mSELECT 1 AS one FROM "credit_categories" WHERE "credit_categories"."code" = 'materials_construction' AND "credit_categories"."tax_module_id" = 1 LIMIT 1 /*application='TributaLab'*/[0m
+  [1m[36mCreditCategory Create (0.8ms)[0m  [1m[32mINSERT INTO "credit_categories" ("code", "name", "description", "validation_status", "source_reference", "tax_module_id", "created_at", "updated_at") VALUES ('materials_construction', 'Materiais de construcao', 'Materiais como cimento, vergalhao, tubos, cabos, tintas, revestimentos, portas e vidros.', 'pending', 'Planilha Denis - abas de creditos permitidos', 1, '2026-05-28 18:39:18.173156', '2026-05-28 18:39:18.173156') RETURNING "id" /*application='TributaLab'*/[0m
+  [1m[36mTRANSACTION (6.5ms)[0m  [1m[35mCOMMIT /*application='TributaLab'*/[0m
+  [1m[36mCreditCategory Load (2.0ms)[0m  [1m[34mSELECT "credit_categories".* FROM "credit_categories" WHERE "credit_categories"."tax_module_id" = 1 AND "credit_categories"."code" = 'engineering_services' LIMIT 1 /*application='TributaLab'*/[0m
+  [1m[36mTRANSACTION (0.6ms)[0m  [1m[35mBEGIN /*application='TributaLab'*/[0m
+  [1m[36mCreditCategory Exists? (2.5ms)[0m  [1m[34mSELECT 1 AS one FROM "credit_categories" WHERE "credit_categories"."code" = 'engineering_services' AND "credit_categories"."tax_module_id" = 1 LIMIT 1 /*application='TributaLab'*/[0m
+  [1m[36mCreditCategory Create (2.7ms)[0m  [1m[32mINSERT INTO "credit_categories" ("code", "name", "description", "validation_status", "source_reference", "tax_module_id", "created_at", "updated_at") VALUES ('engineering_services', 'Servicos de engenharia', 'Servicos vinculados a construcao civil.', 'pending', 'Planilha Denis - abas de creditos permitidos', 1, '2026-05-28 18:39:18.194127', '2026-05-28 18:39:18.194127') RETURNING "id" /*application='TributaLab'*/[0m
+  [1m[36mTRANSACTION (6.8ms)[0m  [1m[35mCOMMIT /*application='TributaLab'*/[0m
+  [1m[36mCreditCategory Load (0.9ms)[0m  [1m[34mSELECT "credit_categories".* FROM "credit_categories" WHERE "credit_categories"."tax_module_id" = 1 AND "credit_categories"."code" = 'electricity' LIMIT 1 /*application='TributaLab'*/[0m
+  [1m[36mTRANSACTION (0.8ms)[0m  [1m[35mBEGIN /*application='TributaLab'*/[0m
+  [1m[36mCreditCategory Exists? (2.8ms)[0m  [1m[34mSELECT 1 AS one FROM "credit_categories" WHERE "credit_categories"."code" = 'electricity' AND "credit_categories"."tax_module_id" = 1 LIMIT 1 /*application='TributaLab'*/[0m
+  [1m[36mCreditCategory Create (1.7ms)[0m  [1m[32mINSERT INTO "credit_categories" ("code", "name", "description", "validation_status", "source_reference", "tax_module_id", "created_at", "updated_at") VALUES ('electricity', 'Energia eletrica', 'Energia vinculada a operacao ou atividade analisada.', 'pending', 'Planilha Denis - abas de creditos permitidos', 1, '2026-05-28 18:39:18.217675', '2026-05-28 18:39:18.217675') RETURNING "id" /*application='TributaLab'*/[0m
+  [1m[36mTRANSACTION (7.9ms)[0m  [1m[35mCOMMIT /*application='TributaLab'*/[0m
+  [1m[36mCreditCategory Load (0.6ms)[0m  [1m[34mSELECT "credit_categories".* FROM "credit_categories" WHERE "credit_categories"."tax_module_id" = 1 AND "credit_categories"."code" = 'management_software' LIMIT 1 /*application='TributaLab'*/[0m
+  [1m[36mTRANSACTION (0.5ms)[0m  [1m[35mBEGIN /*application='TributaLab'*/[0m
+  [1m[36mCreditCategory Exists? (4.0ms)[0m  [1m[34mSELECT 1 AS one FROM "credit_categories" WHERE "credit_categories"."code" = 'management_software' AND "credit_categories"."tax_module_id" = 1 LIMIT 1 /*application='TributaLab'*/[0m
+  [1m[36mCreditCategory Create (0.7ms)[0m  [1m[32mINSERT INTO "credit_categories" ("code", "name", "description", "validation_status", "source_reference", "tax_module_id", "created_at", "updated_at") VALUES ('management_software', 'Software de gestao', 'Softwares de gestao imobiliaria e ferramentas vinculadas.', 'pending', 'Planilha Denis - abas de creditos permitidos', 1, '2026-05-28 18:39:18.238537', '2026-05-28 18:39:18.238537') RETURNING "id" /*application='TributaLab'*/[0m
+  [1m[36mTRANSACTION (12.8ms)[0m  [1m[35mCOMMIT /*application='TributaLab'*/[0m
+  [1m[36mCreditCategory Load (0.6ms)[0m  [1m[34mSELECT "credit_categories".* FROM "credit_categories" WHERE "credit_categories"."tax_module_id" = 1 AND "credit_categories"."code" = 'legal_services' LIMIT 1 /*application='TributaLab'*/[0m
+  [1m[36mTRANSACTION (0.4ms)[0m  [1m[35mBEGIN /*application='TributaLab'*/[0m
+  [1m[36mCreditCategory Exists? (3.5ms)[0m  [1m[34mSELECT 1 AS one FROM "credit_categories" WHERE "credit_categories"."code" = 'legal_services' AND "credit_categories"."tax_module_id" = 1 LIMIT 1 /*application='TributaLab'*/[0m
+  [1m[36mCreditCategory Create (0.9ms)[0m  [1m[32mINSERT INTO "credit_categories" ("code", "name", "description", "validation_status", "source_reference", "tax_module_id", "created_at", "updated_at") VALUES ('legal_services', 'Servicos juridicos', 'Servicos juridicos vinculados a operacao.', 'pending', 'Planilha Denis - abas de creditos permitidos', 1, '2026-05-28 18:39:18.262979', '2026-05-28 18:39:18.262979') RETURNING "id" /*application='TributaLab'*/[0m
+  [1m[36mTRANSACTION (10.6ms)[0m  [1m[35mCOMMIT /*application='TributaLab'*/[0m
+  [1m[36mCreditCategory Load (1.7ms)[0m  [1m[34mSELECT "credit_categories".* FROM "credit_categories" WHERE "credit_categories"."tax_module_id" = 1 AND "credit_categories"."code" = 'linked_brokerage' LIMIT 1 /*application='TributaLab'*/[0m
+  [1m[36mTRANSACTION (0.5ms)[0m  [1m[35mBEGIN /*application='TributaLab'*/[0m
+  [1m[36mCreditCategory Exists? (3.8ms)[0m  [1m[34mSELECT 1 AS one FROM "credit_categories" WHERE "credit_categories"."code" = 'linked_brokerage' AND "credit_categories"."tax_module_id" = 1 LIMIT 1 /*application='TributaLab'*/[0m
+  [1m[36mCreditCategory Create (0.8ms)[0m  [1m[32mINSERT INTO "credit_categories" ("code", "name", "description", "validation_status", "source_reference", "tax_module_id", "created_at", "updated_at") VALUES ('linked_brokerage', 'Corretagem vinculada', 'Corretagem diretamente vinculada a cessao, permuta ou atividade imobiliaria.', 'pending', 'Planilha Denis - abas de creditos permitidos', 1, '2026-05-28 18:39:18.289177', '2026-05-28 18:39:18.289177') RETURNING "id" /*application='TributaLab'*/[0m
+  [1m[36mTRANSACTION (4.0ms)[0m  [1m[35mCOMMIT /*application='TributaLab'*/[0m
+  [1m[36mCreditCategory Load (0.9ms)[0m  [1m[34mSELECT "credit_categories".* FROM "credit_categories" WHERE "credit_categories"."tax_module_id" = 1 AND "credit_categories"."code" = 'financial_costs_boot' LIMIT 1 /*application='TributaLab'*/[0m
+  [1m[36mTRANSACTION (1.5ms)[0m  [1m[35mBEGIN /*application='TributaLab'*/[0m
+  [1m[36mCreditCategory Exists? (5.2ms)[0m  [1m[34mSELECT 1 AS one FROM "credit_categories" WHERE "credit_categories"."code" = 'financial_costs_boot' AND "credit_categories"."tax_module_id" = 1 LIMIT 1 /*application='TributaLab'*/[0m
+  [1m[36mCreditCategory Create (0.8ms)[0m  [1m[32mINSERT INTO "credit_categories" ("code", "name", "description", "validation_status", "source_reference", "tax_module_id", "created_at", "updated_at") VALUES ('financial_costs_boot', 'Custos financeiros vinculados a torna', 'Custos financeiros associados a permuta com torna.', 'pending', 'Planilha Denis - abas de creditos permitidos', 1, '2026-05-28 18:39:18.307382', '2026-05-28 18:39:18.307382') RETURNING "id" /*application='TributaLab'*/[0m
+  [1m[36mTRANSACTION (2.2ms)[0m  [1m[35mCOMMIT /*application='TributaLab'*/[0m
+  [1m[36mLegalBasis Load (1.1ms)[0m  [1m[34mSELECT "legal_bases".* FROM "legal_bases" WHERE "legal_bases"."code" = 'art_252' LIMIT 1 /*application='TributaLab'*/[0m
+  [1m[36mTRANSACTION (1.0ms)[0m  [1m[35mBEGIN /*application='TributaLab'*/[0m
+  [1m[36mLegalBasis Exists? (3.6ms)[0m  [1m[34mSELECT 1 AS one FROM "legal_bases" WHERE "legal_bases"."code" = 'art_252' LIMIT 1 /*application='TributaLab'*/[0m
+  [1m[36mLegalBasis Create (0.9ms)[0m  [1m[32mINSERT INTO "legal_bases" ("code", "law", "article", "description", "source_reference", "status", "notes", "created_at", "updated_at") VALUES ('art_252', 'LC 227/2026 ou LC 214/2025', 'Art. 252', 'Incidencia e base de calculo para operacoes imobiliarias conforme planilha.', 'Planilha Denis / leitura da tabela 2026-05-28', 'pending', 'Pendente validar divergencia entre LC 227/2026 e LC 214/2025.', '2026-05-28 18:39:18.331828', '2026-05-28 18:39:18.331828') RETURNING "id" /*application='TributaLab'*/[0m
+  [1m[36mTRANSACTION (2.3ms)[0m  [1m[35mCOMMIT /*application='TributaLab'*/[0m
+  [1m[36mLegalBasis Load (0.8ms)[0m  [1m[34mSELECT "legal_bases".* FROM "legal_bases" WHERE "legal_bases"."code" = 'art_254_255' LIMIT 1 /*application='TributaLab'*/[0m
+  [1m[36mTRANSACTION (0.5ms)[0m  [1m[35mBEGIN /*application='TributaLab'*/[0m
+  [1m[36mLegalBasis Exists? (3.3ms)[0m  [1m[34mSELECT 1 AS one FROM "legal_bases" WHERE "legal_bases"."code" = 'art_254_255' LIMIT 1 /*application='TributaLab'*/[0m
+  [1m[36mLegalBasis Create (0.8ms)[0m  [1m[32mINSERT INTO "legal_bases" ("code", "law", "article", "description", "source_reference", "status", "notes", "created_at", "updated_at") VALUES ('art_254_255', 'LC 227/2026 ou LC 214/2025', 'Art. 254-255', 'Base de locacao indicada como aluguel sem IPTU/condominio.', 'Planilha Denis / leitura da tabela 2026-05-28', 'pending', 'Pendente validar divergencia entre LC 227/2026 e LC 214/2025.', '2026-05-28 18:39:18.345321', '2026-05-28 18:39:18.345321') RETURNING "id" /*application='TributaLab'*/[0m
+  [1m[36mTRANSACTION (1.3ms)[0m  [1m[35mCOMMIT /*application='TributaLab'*/[0m
+  [1m[36mLegalBasis Load (1.1ms)[0m  [1m[34mSELECT "legal_bases".* FROM "legal_bases" WHERE "legal_bases"."code" = 'art_259' LIMIT 1 /*application='TributaLab'*/[0m
+  [1m[36mTRANSACTION (0.6ms)[0m  [1m[35mBEGIN /*application='TributaLab'*/[0m
+  [1m[36mLegalBasis Exists? (2.5ms)[0m  [1m[34mSELECT 1 AS one FROM "legal_bases" WHERE "legal_bases"."code" = 'art_259' LIMIT 1 /*application='TributaLab'*/[0m
+  [1m[36mLegalBasis Create (0.5ms)[0m  [1m[32mINSERT INTO "legal_bases" ("code", "law", "article", "description", "source_reference", "status", "notes", "created_at", "updated_at") VALUES ('art_259', 'LC 227/2026 ou LC 214/2025', 'Art. 259', 'Redutores para imovel residencial e lote residencial.', 'Planilha Denis / leitura da tabela 2026-05-28', 'pending', 'Pendente validar divergencia entre LC 227/2026 e LC 214/2025.', '2026-05-28 18:39:18.357487', '2026-05-28 18:39:18.357487') RETURNING "id" /*application='TributaLab'*/[0m
+  [1m[36mTRANSACTION (2.7ms)[0m  [1m[35mCOMMIT /*application='TributaLab'*/[0m
+  [1m[36mLegalBasis Load (0.7ms)[0m  [1m[34mSELECT "legal_bases".* FROM "legal_bases" WHERE "legal_bases"."code" = 'art_260' LIMIT 1 /*application='TributaLab'*/[0m
+  [1m[36mTRANSACTION (0.4ms)[0m  [1m[35mBEGIN /*application='TributaLab'*/[0m
+  [1m[36mLegalBasis Exists? (3.5ms)[0m  [1m[34mSELECT 1 AS one FROM "legal_bases" WHERE "legal_bases"."code" = 'art_260' LIMIT 1 /*application='TributaLab'*/[0m
+  [1m[36mLegalBasis Create (0.7ms)[0m  [1m[32mINSERT INTO "legal_bases" ("code", "law", "article", "description", "source_reference", "status", "notes", "created_at", "updated_at") VALUES ('art_260', 'LC 227/2026 ou LC 214/2025', 'Art. 260', 'Redutor de locacao residencial.', 'Planilha Denis / leitura da tabela 2026-05-28', 'pending', 'Pendente validar divergencia entre LC 227/2026 e LC 214/2025.', '2026-05-28 18:39:18.371158', '2026-05-28 18:39:18.371158') RETURNING "id" /*application='TributaLab'*/[0m
+  [1m[36mTRANSACTION (1.3ms)[0m  [1m[35mCOMMIT /*application='TributaLab'*/[0m
+  [1m[36mLegalBasis Load (1.1ms)[0m  [1m[34mSELECT "legal_bases".* FROM "legal_bases" WHERE "legal_bases"."code" = 'art_261' LIMIT 1 /*application='TributaLab'*/[0m
+  [1m[36mTRANSACTION (0.6ms)[0m  [1m[35mBEGIN /*application='TributaLab'*/[0m
+  [1m[36mLegalBasis Exists? (2.5ms)[0m  [1m[34mSELECT 1 AS one FROM "legal_bases" WHERE "legal_bases"."code" = 'art_261' LIMIT 1 /*application='TributaLab'*/[0m
+  [1m[36mLegalBasis Create (1.1ms)[0m  [1m[32mINSERT INTO "legal_bases" ("code", "law", "article", "description", "source_reference", "status", "notes", "created_at", "updated_at") VALUES ('art_261', 'LC 227/2026 ou LC 214/2025', 'Art. 261', 'Reducoes de aliquota para venda/incorporacao e locacao/cessao/arrendamento.', 'Planilha Denis / leitura da tabela 2026-05-28', 'pending', 'Pendente validar divergencia entre LC 227/2026 e LC 214/2025.', '2026-05-28 18:39:18.384371', '2026-05-28 18:39:18.384371') RETURNING "id" /*application='TributaLab'*/[0m
+  [1m[36mTRANSACTION (1.2ms)[0m  [1m[35mCOMMIT /*application='TributaLab'*/[0m
+  [1m[36mProductArea Count (107.5ms)[0m  [1m[34mSELECT COUNT(*) FROM "product_areas" /*application='TributaLab'*/[0m
+  [1m[36mSector Count (2.0ms)[0m  [1m[34mSELECT COUNT(*) FROM "sectors" /*application='TributaLab'*/[0m
+  [1m[36mTaxModule Count (1.5ms)[0m  [1m[34mSELECT COUNT(*) FROM "tax_modules" /*application='TributaLab'*/[0m
+  [1m[36mOperation Count (1.3ms)[0m  [1m[34mSELECT COUNT(*) FROM "operations" /*application='TributaLab'*/[0m
+  [1m[36mTaxParameter Count (1.3ms)[0m  [1m[34mSELECT COUNT(*) FROM "tax_parameters" /*application='TributaLab'*/[0m
+  [1m[36mAssumption Count (1.7ms)[0m  [1m[34mSELECT COUNT(*) FROM "assumptions" /*application='TributaLab'*/[0m
+  [1m[36mCreditCategory Count (1.4ms)[0m  [1m[34mSELECT COUNT(*) FROM "credit_categories" /*application='TributaLab'*/[0m
+  [1m[36mLegalBasis Count (1.3ms)[0m  [1m[34mSELECT COUNT(*) FROM "legal_bases" /*application='TributaLab'*/[0m
+  [1m[36mActiveRecord::SchemaMigration Load (2.4ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC /*application='TributaLab'*/[0m
+  [1m[36mActiveRecord::InternalMetadata Load (2.0ms)[0m  [1m[34mSELECT * FROM "ar_internal_metadata" WHERE "ar_internal_metadata"."key" = 'environment' ORDER BY "ar_internal_metadata"."key" ASC LIMIT 1 /*application='TributaLab'*/[0m
+  [1m[36mActiveRecord::SchemaMigration Load (0.6ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC /*application='TributaLab'*/[0m
+  [1m[36mActiveRecord::InternalMetadata Load (0.5ms)[0m  [1m[34mSELECT * FROM "ar_internal_metadata" WHERE "ar_internal_metadata"."key" = 'environment' ORDER BY "ar_internal_metadata"."key" ASC LIMIT 1 /*application='TributaLab'*/[0m
+  [1m[36mActiveRecord::SchemaMigration Load (2.2ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC /*application='TributaLab'*/[0m
+  [1m[36mActiveRecord::InternalMetadata Load (0.8ms)[0m  [1m[34mSELECT * FROM "ar_internal_metadata" WHERE "ar_internal_metadata"."key" = 'environment' ORDER BY "ar_internal_metadata"."key" ASC LIMIT 1 /*application='TributaLab'*/[0m
+  [1m[35mSQL (0.6ms)[0m  [1m[35mSET search_path TO public /*application='TributaLab'*/[0m
+  [1m[35m (270.7ms)[0m  [1m[35mDROP DATABASE IF EXISTS "tributa_lab_test" /*application='TributaLab'*/[0m
+  [1m[35m (34.4ms)[0m  [1m[35mCREATE DATABASE "tributa_lab_test" ENCODING = 'unicode' /*application='TributaLab'*/[0m
+  [1m[35mSQL (98.9ms)[0m  [1m[35mCREATE EXTENSION IF NOT EXISTS "plpgsql" SCHEMA pg_catalog /*application='TributaLab'*/[0m
+  [1m[35m (1.3ms)[0m  [1m[35mDROP TABLE IF EXISTS "assumptions" CASCADE /*application='TributaLab'*/[0m
+  [1m[35m (13.6ms)[0m  [1m[35mCREATE TABLE "assumptions" ("id" bigserial primary key, "code" character varying NOT NULL, "created_at" timestamp(6) NOT NULL, "description" text, "impact" text, "operation_id" bigint, "position" integer DEFAULT 0 NOT NULL, "source_reference" character varying, "status" character varying DEFAULT 'pending' NOT NULL, "tax_module_id" bigint NOT NULL, "title" character varying NOT NULL, "updated_at" timestamp(6) NOT NULL) /*application='TributaLab'*/[0m
+  [1m[35m (5.2ms)[0m  [1m[35mCREATE INDEX "index_assumptions_on_operation_id" ON "assumptions" ("operation_id") /*application='TributaLab'*/[0m
+  [1m[35m (4.1ms)[0m  [1m[35mCREATE INDEX "index_assumptions_on_status" ON "assumptions" ("status") /*application='TributaLab'*/[0m
+  [1m[35m (3.9ms)[0m  [1m[35mCREATE UNIQUE INDEX "index_assumptions_on_tax_module_id_and_code" ON "assumptions" ("tax_module_id", "code") /*application='TributaLab'*/[0m
+  [1m[35m (5.7ms)[0m  [1m[35mCREATE INDEX "index_assumptions_on_tax_module_id" ON "assumptions" ("tax_module_id") /*application='TributaLab'*/[0m
+  [1m[35m (0.6ms)[0m  [1m[35mDROP TABLE IF EXISTS "credit_categories" CASCADE /*application='TributaLab'*/[0m
+  [1m[35m (7.6ms)[0m  [1m[35mCREATE TABLE "credit_categories" ("id" bigserial primary key, "code" character varying NOT NULL, "created_at" timestamp(6) NOT NULL, "description" text, "name" character varying NOT NULL, "source_reference" character varying, "tax_module_id" bigint NOT NULL, "updated_at" timestamp(6) NOT NULL, "validation_status" character varying DEFAULT 'pending' NOT NULL) /*application='TributaLab'*/[0m
+  [1m[35m (4.7ms)[0m  [1m[35mCREATE UNIQUE INDEX "index_credit_categories_on_tax_module_id_and_code" ON "credit_categories" ("tax_module_id", "code") /*application='TributaLab'*/[0m
+  [1m[35m (5.4ms)[0m  [1m[35mCREATE INDEX "index_credit_categories_on_tax_module_id" ON "credit_categories" ("tax_module_id") /*application='TributaLab'*/[0m
+  [1m[35m (4.8ms)[0m  [1m[35mCREATE INDEX "index_credit_categories_on_validation_status" ON "credit_categories" ("validation_status") /*application='TributaLab'*/[0m
+  [1m[35m (0.4ms)[0m  [1m[35mDROP TABLE IF EXISTS "legal_bases" CASCADE /*application='TributaLab'*/[0m
+  [1m[35m (9.5ms)[0m  [1m[35mCREATE TABLE "legal_bases" ("id" bigserial primary key, "article" character varying, "code" character varying NOT NULL, "created_at" timestamp(6) NOT NULL, "description" text NOT NULL, "law" character varying NOT NULL, "notes" text, "source_reference" character varying, "status" character varying DEFAULT 'pending' NOT NULL, "updated_at" timestamp(6) NOT NULL) /*application='TributaLab'*/[0m
+  [1m[35m (3.8ms)[0m  [1m[35mCREATE UNIQUE INDEX "index_legal_bases_on_code" ON "legal_bases" ("code") /*application='TributaLab'*/[0m
+  [1m[35m (5.3ms)[0m  [1m[35mCREATE INDEX "index_legal_bases_on_status" ON "legal_bases" ("status") /*application='TributaLab'*/[0m
+  [1m[35m (1.2ms)[0m  [1m[35mDROP TABLE IF EXISTS "operations" CASCADE /*application='TributaLab'*/[0m
+  [1m[35m (9.6ms)[0m  [1m[35mCREATE TABLE "operations" ("id" bigserial primary key, "code" character varying NOT NULL, "created_at" timestamp(6) NOT NULL, "description" text, "name" character varying NOT NULL, "position" integer DEFAULT 0 NOT NULL, "status" character varying DEFAULT 'active' NOT NULL, "tax_module_id" bigint NOT NULL, "updated_at" timestamp(6) NOT NULL) /*application='TributaLab'*/[0m
+  [1m[35m (5.8ms)[0m  [1m[35mCREATE UNIQUE INDEX "index_operations_on_tax_module_id_and_code" ON "operations" ("tax_module_id", "code") /*application='TributaLab'*/[0m
+  [1m[35m (5.8ms)[0m  [1m[35mCREATE INDEX "index_operations_on_tax_module_id" ON "operations" ("tax_module_id") /*application='TributaLab'*/[0m
+  [1m[35m (0.6ms)[0m  [1m[35mDROP TABLE IF EXISTS "product_areas" CASCADE /*application='TributaLab'*/[0m
+  [1m[35m (10.5ms)[0m  [1m[35mCREATE TABLE "product_areas" ("id" bigserial primary key, "code" character varying NOT NULL, "created_at" timestamp(6) NOT NULL, "description" text, "name" character varying NOT NULL, "position" integer DEFAULT 0 NOT NULL, "updated_at" timestamp(6) NOT NULL) /*application='TributaLab'*/[0m
+  [1m[35m (5.5ms)[0m  [1m[35mCREATE UNIQUE INDEX "index_product_areas_on_code" ON "product_areas" ("code") /*application='TributaLab'*/[0m
+  [1m[35m (0.6ms)[0m  [1m[35mDROP TABLE IF EXISTS "sectors" CASCADE /*application='TributaLab'*/[0m
+  [1m[35m (7.3ms)[0m  [1m[35mCREATE TABLE "sectors" ("id" bigserial primary key, "code" character varying NOT NULL, "created_at" timestamp(6) NOT NULL, "description" text, "name" character varying NOT NULL, "position" integer DEFAULT 0 NOT NULL, "updated_at" timestamp(6) NOT NULL) /*application='TributaLab'*/[0m
+  [1m[35m (4.8ms)[0m  [1m[35mCREATE UNIQUE INDEX "index_sectors_on_code" ON "sectors" ("code") /*application='TributaLab'*/[0m
+  [1m[35m (1.0ms)[0m  [1m[35mDROP TABLE IF EXISTS "simulation_results" CASCADE /*application='TributaLab'*/[0m
+  [1m[35m (8.0ms)[0m  [1m[35mCREATE TABLE "simulation_results" ("id" bigserial primary key, "applied_deduction" decimal(18,2) DEFAULT 0.0 NOT NULL, "applied_reduction" decimal(10,6) DEFAULT 0.0 NOT NULL, "base_gross" decimal(18,2) DEFAULT 0.0 NOT NULL, "base_net" decimal(18,2) DEFAULT 0.0 NOT NULL, "created_at" timestamp(6) NOT NULL, "credits" decimal(18,2) DEFAULT 0.0 NOT NULL, "effective_rate" decimal(10,6) DEFAULT 0.0 NOT NULL, "full_rate" decimal(10,6) DEFAULT 0.0 NOT NULL, "simulation_id" bigint NOT NULL, "tax_debit" decimal(18,2) DEFAULT 0.0 NOT NULL, "tax_due" decimal(18,2) DEFAULT 0.0 NOT NULL, "updated_at" timestamp(6) NOT NULL, "validation_alerts" jsonb DEFAULT '[]' NOT NULL) /*application='TributaLab'*/[0m
+  [1m[35m (5.1ms)[0m  [1m[35mCREATE INDEX "index_simulation_results_on_simulation_id" ON "simulation_results" ("simulation_id") /*application='TributaLab'*/[0m
+  [1m[35m (0.8ms)[0m  [1m[35mDROP TABLE IF EXISTS "simulations" CASCADE /*application='TributaLab'*/[0m
+  [1m[35m (7.9ms)[0m  [1m[35mCREATE TABLE "simulations" ("id" bigserial primary key, "created_at" timestamp(6) NOT NULL, "input_data" jsonb DEFAULT '{}' NOT NULL, "name" character varying NOT NULL, "notes" text, "operation_id" bigint NOT NULL, "output_data" jsonb DEFAULT '{}' NOT NULL, "parameters_snapshot" jsonb DEFAULT '{}' NOT NULL, "rule_version" character varying DEFAULT 'mvp-001' NOT NULL, "tax_module_id" bigint NOT NULL, "updated_at" timestamp(6) NOT NULL) /*application='TributaLab'*/[0m
+  [1m[35m (5.9ms)[0m  [1m[35mCREATE INDEX "index_simulations_on_operation_id" ON "simulations" ("operation_id") /*application='TributaLab'*/[0m
+  [1m[35m (3.9ms)[0m  [1m[35mCREATE INDEX "index_simulations_on_rule_version" ON "simulations" ("rule_version") /*application='TributaLab'*/[0m
+  [1m[35m (4.5ms)[0m  [1m[35mCREATE INDEX "index_simulations_on_tax_module_id" ON "simulations" ("tax_module_id") /*application='TributaLab'*/[0m
+  [1m[35m (0.7ms)[0m  [1m[35mDROP TABLE IF EXISTS "tax_modules" CASCADE /*application='TributaLab'*/[0m
+  [1m[35m (9.5ms)[0m  [1m[35mCREATE TABLE "tax_modules" ("id" bigserial primary key, "code" character varying NOT NULL, "created_at" timestamp(6) NOT NULL, "description" text, "name" character varying NOT NULL, "position" integer DEFAULT 0 NOT NULL, "product_area_id" bigint NOT NULL, "sector_id" bigint NOT NULL, "status" character varying DEFAULT 'active' NOT NULL, "updated_at" timestamp(6) NOT NULL) /*application='TributaLab'*/[0m
+  [1m[35m (6.2ms)[0m  [1m[35mCREATE UNIQUE INDEX "index_tax_modules_on_code" ON "tax_modules" ("code") /*application='TributaLab'*/[0m
+  [1m[35m (5.3ms)[0m  [1m[35mCREATE INDEX "index_tax_modules_on_product_area_id" ON "tax_modules" ("product_area_id") /*application='TributaLab'*/[0m
+  [1m[35m (4.6ms)[0m  [1m[35mCREATE INDEX "index_tax_modules_on_sector_id" ON "tax_modules" ("sector_id") /*application='TributaLab'*/[0m
+  [1m[35m (0.7ms)[0m  [1m[35mDROP TABLE IF EXISTS "tax_parameters" CASCADE /*application='TributaLab'*/[0m
+  [1m[35m (8.4ms)[0m  [1m[35mCREATE TABLE "tax_parameters" ("id" bigserial primary key, "code" character varying NOT NULL, "created_at" timestamp(6) NOT NULL, "effective_from" date, "effective_until" date, "legal_reference" character varying, "name" character varying NOT NULL, "notes" text, "operation_id" bigint, "parameter_type" character varying NOT NULL, "tax_module_id" bigint NOT NULL, "unit" character varying NOT NULL, "updated_at" timestamp(6) NOT NULL, "validation_status" character varying DEFAULT 'pending' NOT NULL, "value_decimal" decimal(18,6) DEFAULT 0.0 NOT NULL) /*application='TributaLab'*/[0m
+  [1m[35m (4.8ms)[0m  [1m[35mCREATE INDEX "index_tax_parameters_on_operation_id" ON "tax_parameters" ("operation_id") /*application='TributaLab'*/[0m
+  [1m[35m (5.4ms)[0m  [1m[35mCREATE UNIQUE INDEX "index_tax_parameters_on_module_code_operation" ON "tax_parameters" ("tax_module_id", "code", "operation_id") /*application='TributaLab'*/[0m
+  [1m[35m (8.2ms)[0m  [1m[35mCREATE INDEX "index_tax_parameters_on_tax_module_id" ON "tax_parameters" ("tax_module_id") /*application='TributaLab'*/[0m
+  [1m[35m (7.9ms)[0m  [1m[35mCREATE INDEX "index_tax_parameters_on_validation_status" ON "tax_parameters" ("validation_status") /*application='TributaLab'*/[0m
+  [1m[35m (3.8ms)[0m  [1m[35mALTER TABLE "assumptions" ADD CONSTRAINT "fk_rails_8dc648eeb6"
+FOREIGN KEY ("operation_id")
+  REFERENCES "operations" ("id")
+ /*application='TributaLab'*/[0m
+  [1m[35m (2.3ms)[0m  [1m[35mALTER TABLE "assumptions" ADD CONSTRAINT "fk_rails_0e3d8a8e15"
+FOREIGN KEY ("tax_module_id")
+  REFERENCES "tax_modules" ("id")
+ /*application='TributaLab'*/[0m
+  [1m[35m (3.1ms)[0m  [1m[35mALTER TABLE "credit_categories" ADD CONSTRAINT "fk_rails_6648be8729"
+FOREIGN KEY ("tax_module_id")
+  REFERENCES "tax_modules" ("id")
+ /*application='TributaLab'*/[0m
+  [1m[35m (2.4ms)[0m  [1m[35mALTER TABLE "operations" ADD CONSTRAINT "fk_rails_95efa556d6"
+FOREIGN KEY ("tax_module_id")
+  REFERENCES "tax_modules" ("id")
+ /*application='TributaLab'*/[0m
+  [1m[35m (3.5ms)[0m  [1m[35mALTER TABLE "simulation_results" ADD CONSTRAINT "fk_rails_553e104d4e"
+FOREIGN KEY ("simulation_id")
+  REFERENCES "simulations" ("id")
+ /*application='TributaLab'*/[0m
+  [1m[35m (2.4ms)[0m  [1m[35mALTER TABLE "simulations" ADD CONSTRAINT "fk_rails_07b2ec05ff"
+FOREIGN KEY ("operation_id")
+  REFERENCES "operations" ("id")
+ /*application='TributaLab'*/[0m
+  [1m[35m (4.8ms)[0m  [1m[35mALTER TABLE "simulations" ADD CONSTRAINT "fk_rails_edfbd81627"
+FOREIGN KEY ("tax_module_id")
+  REFERENCES "tax_modules" ("id")
+ /*application='TributaLab'*/[0m
+  [1m[35m (2.1ms)[0m  [1m[35mALTER TABLE "tax_modules" ADD CONSTRAINT "fk_rails_bcde50eafd"
+FOREIGN KEY ("product_area_id")
+  REFERENCES "product_areas" ("id")
+ /*application='TributaLab'*/[0m
+  [1m[35m (3.9ms)[0m  [1m[35mALTER TABLE "tax_modules" ADD CONSTRAINT "fk_rails_9ece815deb"
+FOREIGN KEY ("sector_id")
+  REFERENCES "sectors" ("id")
+ /*application='TributaLab'*/[0m
+  [1m[35m (2.4ms)[0m  [1m[35mALTER TABLE "tax_parameters" ADD CONSTRAINT "fk_rails_99415bb948"
+FOREIGN KEY ("operation_id")
+  REFERENCES "operations" ("id")
+ /*application='TributaLab'*/[0m
+  [1m[35m (2.6ms)[0m  [1m[35mALTER TABLE "tax_parameters" ADD CONSTRAINT "fk_rails_1dc32a2e91"
+FOREIGN KEY ("tax_module_id")
+  REFERENCES "tax_modules" ("id")
+ /*application='TributaLab'*/[0m
+  [1m[35m (8.1ms)[0m  [1m[35mCREATE TABLE "schema_migrations" ("version" character varying NOT NULL PRIMARY KEY) /*application='TributaLab'*/[0m
+  [1m[36mActiveRecord::SchemaMigration Load (0.9ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC /*application='TributaLab'*/[0m
+  [1m[35m (2.1ms)[0m  [1m[32mINSERT INTO "schema_migrations" (version) VALUES (20260528182929) /*application='TributaLab'*/[0m
+  [1m[35m (2.1ms)[0m  [1m[32mINSERT INTO "schema_migrations" (version) VALUES
+(20260528182926),
+(20260528182923),
+(20260528182919),
+(20260528182916),
+(20260528182912),
+(20260528182909),
+(20260528182906),
+(20260528182902),
+(20260528182859); /*application='TributaLab'*/[0m
+  [1m[35m (7.6ms)[0m  [1m[35mCREATE TABLE "ar_internal_metadata" ("key" character varying NOT NULL PRIMARY KEY, "value" character varying, "created_at" timestamp(6) NOT NULL, "updated_at" timestamp(6) NOT NULL) /*application='TributaLab'*/[0m
+  [1m[36mActiveRecord::InternalMetadata Load (0.9ms)[0m  [1m[34mSELECT * FROM "ar_internal_metadata" WHERE "ar_internal_metadata"."key" = 'environment' ORDER BY "ar_internal_metadata"."key" ASC LIMIT 1 /*application='TributaLab'*/[0m
+  [1m[36mActiveRecord::InternalMetadata Create (2.7ms)[0m  [1m[32mINSERT INTO "ar_internal_metadata" ("key", "value", "created_at", "updated_at") VALUES ('environment', 'development', '2026-05-28 18:40:31.791955', '2026-05-28 18:40:31.791957') RETURNING "key" /*application='TributaLab'*/[0m
+  [1m[36mActiveRecord::InternalMetadata Load (0.4ms)[0m  [1m[34mSELECT * FROM "ar_internal_metadata" WHERE "ar_internal_metadata"."key" = 'environment' ORDER BY "ar_internal_metadata"."key" ASC LIMIT 1 /*application='TributaLab'*/[0m
+  [1m[36mActiveRecord::InternalMetadata Update (2.5ms)[0m  [1m[33mUPDATE "ar_internal_metadata" SET "value" = 'test', "updated_at" = '2026-05-28 18:40:31.801672' WHERE "ar_internal_metadata"."key" = 'environment' /*application='TributaLab'*/[0m
+  [1m[36mActiveRecord::InternalMetadata Load (0.7ms)[0m  [1m[34mSELECT * FROM "ar_internal_metadata" WHERE "ar_internal_metadata"."key" = 'schema_sha1' ORDER BY "ar_internal_metadata"."key" ASC LIMIT 1 /*application='TributaLab'*/[0m
+  [1m[36mActiveRecord::InternalMetadata Create (2.7ms)[0m  [1m[32mINSERT INTO "ar_internal_metadata" ("key", "value", "created_at", "updated_at") VALUES ('schema_sha1', '0e0310c1678473a0556cc7ff1c3d73eec3eaee5e', '2026-05-28 18:40:31.807023', '2026-05-28 18:40:31.807025') RETURNING "key" /*application='TributaLab'*/[0m
+Started GET "/" for 127.0.0.1 at 2026-05-28 15:41:23 -0300
+  [1m[36mActiveRecord::SchemaMigration Load (2.1ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC /*application='TributaLab'*/[0m
+Processing by DashboardController#index as HTML
+  [1m[36mTaxModule Load (1.3ms)[0m  [1m[34mSELECT "tax_modules".* FROM "tax_modules" WHERE "tax_modules"."code" = 'real_estate_tax_reform' LIMIT 1 /*action='index',application='TributaLab',controller='dashboard'*/[0m
+  ↳ app/controllers/dashboard_controller.rb:4:in `index'
+  [1m[36mProductArea Load (0.9ms)[0m  [1m[34mSELECT "product_areas".* FROM "product_areas" WHERE "product_areas"."id" = 1 /*action='index',application='TributaLab',controller='dashboard'*/[0m
+  ↳ app/controllers/dashboard_controller.rb:4:in `index'
+  [1m[36mSector Load (1.2ms)[0m  [1m[34mSELECT "sectors".* FROM "sectors" WHERE "sectors"."id" = 1 /*action='index',application='TributaLab',controller='dashboard'*/[0m
+  ↳ app/controllers/dashboard_controller.rb:4:in `index'
+  [1m[36mOperation Load (1.2ms)[0m  [1m[34mSELECT "operations".* FROM "operations" WHERE "operations"."tax_module_id" = 1 /*action='index',application='TributaLab',controller='dashboard'*/[0m
+  ↳ app/controllers/dashboard_controller.rb:4:in `index'
+  [1m[36mTaxParameter Load (1.4ms)[0m  [1m[34mSELECT "tax_parameters".* FROM "tax_parameters" WHERE "tax_parameters"."tax_module_id" = 1 /*action='index',application='TributaLab',controller='dashboard'*/[0m
+  ↳ app/controllers/dashboard_controller.rb:4:in `index'
+  [1m[36mAssumption Load (1.1ms)[0m  [1m[34mSELECT "assumptions".* FROM "assumptions" WHERE "assumptions"."tax_module_id" = 1 /*action='index',application='TributaLab',controller='dashboard'*/[0m
+  ↳ app/controllers/dashboard_controller.rb:4:in `index'
+  [1m[36mCreditCategory Load (1.2ms)[0m  [1m[34mSELECT "credit_categories".* FROM "credit_categories" WHERE "credit_categories"."tax_module_id" = 1 /*action='index',application='TributaLab',controller='dashboard'*/[0m
+  ↳ app/controllers/dashboard_controller.rb:4:in `index'
+  [1m[36mTaxParameter Load (1.2ms)[0m  [1m[34mSELECT "tax_parameters".* FROM "tax_parameters" WHERE "tax_parameters"."tax_module_id" = 1 AND "tax_parameters"."validation_status" IN ('pending', 'divergent') ORDER BY "tax_parameters"."code" ASC /*action='index',application='TributaLab',controller='dashboard'*/[0m
+  ↳ app/services/tax_rules/validation_alerts.rb:19:in `map'
+  [1m[36mOperation Load (1.3ms)[0m  [1m[34mSELECT "operations".* FROM "operations" WHERE "operations"."id" IN (3, 2, 6, 1) /*action='index',application='TributaLab',controller='dashboard'*/[0m
+  ↳ app/services/tax_rules/validation_alerts.rb:19:in `map'
+  [1m[36mAssumption Load (1.8ms)[0m  [1m[34mSELECT "assumptions".* FROM "assumptions" WHERE "assumptions"."tax_module_id" = 1 AND "assumptions"."status" IN ('pending', 'divergent') ORDER BY "assumptions"."position" ASC, "assumptions"."title" ASC /*action='index',application='TributaLab',controller='dashboard'*/[0m
+  ↳ app/services/tax_rules/validation_alerts.rb:32:in `map'
+  [1m[36mOperation Load (0.9ms)[0m  [1m[34mSELECT "operations".* FROM "operations" WHERE "operations"."id" IN (3, 6, 4, 5, 7) /*action='index',application='TributaLab',controller='dashboard'*/[0m
+  ↳ app/services/tax_rules/validation_alerts.rb:32:in `map'
+  Rendering layout layouts/application.html.erb
+  Rendering dashboard/index.html.erb within layouts/application
+  [1m[36mOperation Count (1.6ms)[0m  [1m[34mSELECT COUNT(*) FROM "operations" WHERE "operations"."tax_module_id" = 1 /*action='index',application='TributaLab',controller='dashboard'*/[0m
+  ↳ app/views/dashboard/index.html.erb:42
+  [1m[36mOperation Load (1.1ms)[0m  [1m[34mSELECT "operations".* FROM "operations" WHERE "operations"."tax_module_id" = 1 ORDER BY "operations"."position" ASC, "operations"."name" ASC /*action='index',application='TributaLab',controller='dashboard'*/[0m
+  ↳ app/views/dashboard/index.html.erb:56
+  [1m[36mTaxParameter Load (0.9ms)[0m  [1m[34mSELECT "tax_parameters".* FROM "tax_parameters" WHERE "tax_parameters"."tax_module_id" = 1 ORDER BY "tax_parameters"."code" ASC /*action='index',application='TributaLab',controller='dashboard'*/[0m
+  ↳ app/views/dashboard/index.html.erb:106
+  [1m[36mCACHE Operation Load (0.0ms)[0m  [1m[34mSELECT "operations".* FROM "operations" WHERE "operations"."id" IN (3, 2, 6, 1)[0m
+  ↳ app/views/dashboard/index.html.erb:106
+  [1m[36mCreditCategory Load (1.1ms)[0m  [1m[34mSELECT "credit_categories".* FROM "credit_categories" WHERE "credit_categories"."tax_module_id" = 1 ORDER BY "credit_categories"."name" ASC /*action='index',application='TributaLab',controller='dashboard'*/[0m
+  ↳ app/views/dashboard/index.html.erb:130
+  Rendered dashboard/index.html.erb within layouts/application (Duration: 28.5ms | GC: 0.0ms)
+  Rendered layout layouts/application.html.erb (Duration: 55.8ms | GC: 0.0ms)
+Completed 200 OK in 569ms (Views: 83.7ms | ActiveRecord: 54.5ms (16 queries, 1 cached) | GC: 0.3ms)
+
+
+  [1m[36mActiveRecord::SchemaMigration Load (2.0ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC /*application='TributaLab'*/[0m
+  [1m[36mProductArea Load (2.3ms)[0m  [1m[34mSELECT "product_areas".* FROM "product_areas" WHERE "product_areas"."code" = 'tax_reform' LIMIT 1 /*application='TributaLab'*/[0m
+  [1m[36mTRANSACTION (1.8ms)[0m  [1m[35mBEGIN /*application='TributaLab'*/[0m
+  [1m[36mTRANSACTION (0.7ms)[0m  [1m[35mCOMMIT /*application='TributaLab'*/[0m
+  [1m[36mProductArea Load (1.6ms)[0m  [1m[34mSELECT "product_areas".* FROM "product_areas" WHERE "product_areas"."code" = 'credit_recovery' LIMIT 1 /*application='TributaLab'*/[0m
+  [1m[36mSector Load (1.1ms)[0m  [1m[34mSELECT "sectors".* FROM "sectors" WHERE "sectors"."code" = 'real_estate_construction' LIMIT 1 /*application='TributaLab'*/[0m
+  [1m[36mTRANSACTION (1.9ms)[0m  [1m[35mBEGIN /*application='TributaLab'*/[0m
+  [1m[36mTRANSACTION (0.6ms)[0m  [1m[35mCOMMIT /*application='TributaLab'*/[0m
+  [1m[36mTaxModule Load (1.1ms)[0m  [1m[34mSELECT "tax_modules".* FROM "tax_modules" WHERE "tax_modules"."code" = 'real_estate_tax_reform' LIMIT 1 /*application='TributaLab'*/[0m
+  [1m[36mTRANSACTION (0.9ms)[0m  [1m[35mBEGIN /*application='TributaLab'*/[0m
+  [1m[36mTRANSACTION (0.8ms)[0m  [1m[35mCOMMIT /*application='TributaLab'*/[0m
+  [1m[36mOperation Load (1.0ms)[0m  [1m[34mSELECT "operations".* FROM "operations" WHERE "operations"."tax_module_id" = 1 AND "operations"."code" = 'sale_property' LIMIT 1 /*application='TributaLab'*/[0m
+  [1m[36mTRANSACTION (0.6ms)[0m  [1m[35mBEGIN /*application='TributaLab'*/[0m
+  [1m[36mTRANSACTION (1.0ms)[0m  [1m[35mCOMMIT /*application='TributaLab'*/[0m
+  [1m[36mOperation Load (1.2ms)[0m  [1m[34mSELECT "operations".* FROM "operations" WHERE "operations"."tax_module_id" = 1 AND "operations"."code" = 'sale_residential_lot' LIMIT 1 /*application='TributaLab'*/[0m
+  [1m[36mOperation Load (1.0ms)[0m  [1m[34mSELECT "operations".* FROM "operations" WHERE "operations"."tax_module_id" = 1 AND "operations"."code" = 'lease_property' LIMIT 1 /*application='TributaLab'*/[0m
+  [1m[36mOperation Load (1.1ms)[0m  [1m[34mSELECT "operations".* FROM "operations" WHERE "operations"."tax_module_id" = 1 AND "operations"."code" = 'civil_construction' LIMIT 1 /*application='TributaLab'*/[0m
+  [1m[36mOperation Load (1.0ms)[0m  [1m[34mSELECT "operations".* FROM "operations" WHERE "operations"."tax_module_id" = 1 AND "operations"."code" = 'management_brokerage' LIMIT 1 /*application='TributaLab'*/[0m
+  [1m[36mOperation Load (1.1ms)[0m  [1m[34mSELECT "operations".* FROM "operations" WHERE "operations"."tax_module_id" = 1 AND "operations"."code" = 'rights_assignment' LIMIT 1 /*application='TributaLab'*/[0m
+  [1m[36mOperation Load (1.0ms)[0m  [1m[34mSELECT "operations".* FROM "operations" WHERE "operations"."tax_module_id" = 1 AND "operations"."code" = 'exchange_without_boot' LIMIT 1 /*application='TributaLab'*/[0m
+  [1m[36mOperation Load (1.0ms)[0m  [1m[34mSELECT "operations".* FROM "operations" WHERE "operations"."tax_module_id" = 1 AND "operations"."code" = 'exchange_with_boot' LIMIT 1 /*application='TributaLab'*/[0m
+  [1m[36mTaxParameter Load (1.3ms)[0m  [1m[34mSELECT "tax_parameters".* FROM "tax_parameters" WHERE "tax_parameters"."tax_module_id" = 1 AND "tax_parameters"."operation_id" IS NULL AND "tax_parameters"."code" = 'full_ibs_cbs_rate' LIMIT 1 /*application='TributaLab'*/[0m
+  [1m[36mTRANSACTION (1.7ms)[0m  [1m[35mBEGIN /*application='TributaLab'*/[0m
+  [1m[36mTaxParameter Exists? (4.9ms)[0m  [1m[34mSELECT 1 AS one FROM "tax_parameters" WHERE "tax_parameters"."code" = 'full_ibs_cbs_rate' AND "tax_parameters"."id" != 1 AND "tax_parameters"."tax_module_id" = 1 AND "tax_parameters"."operation_id" IS NULL LIMIT 1 /*application='TributaLab'*/[0m
+  [1m[36mTRANSACTION (0.8ms)[0m  [1m[35mCOMMIT /*application='TributaLab'*/[0m
+  [1m[36mTaxParameter Load (1.3ms)[0m  [1m[34mSELECT "tax_parameters".* FROM "tax_parameters" WHERE "tax_parameters"."tax_module_id" = 1 AND "tax_parameters"."operation_id" = 1 AND "tax_parameters"."code" = 'sale_property_social_deduction' LIMIT 1 /*application='TributaLab'*/[0m
+  [1m[36mTRANSACTION (0.8ms)[0m  [1m[35mBEGIN /*application='TributaLab'*/[0m
+  [1m[36mTRANSACTION (0.7ms)[0m  [1m[35mCOMMIT /*application='TributaLab'*/[0m
+  [1m[36mTaxParameter Load (0.9ms)[0m  [1m[34mSELECT "tax_parameters".* FROM "tax_parameters" WHERE "tax_parameters"."tax_module_id" = 1 AND "tax_parameters"."operation_id" = 2 AND "tax_parameters"."code" = 'sale_lot_social_deduction' LIMIT 1 /*application='TributaLab'*/[0m
+  [1m[36mTaxParameter Load (1.0ms)[0m  [1m[34mSELECT "tax_parameters".* FROM "tax_parameters" WHERE "tax_parameters"."tax_module_id" = 1 AND "tax_parameters"."operation_id" = 3 AND "tax_parameters"."code" = 'lease_social_deduction' LIMIT 1 /*application='TributaLab'*/[0m
+  [1m[36mTaxParameter Load (0.8ms)[0m  [1m[34mSELECT "tax_parameters".* FROM "tax_parameters" WHERE "tax_parameters"."tax_module_id" = 1 AND "tax_parameters"."operation_id" = 1 AND "tax_parameters"."code" = 'sale_incorporation_reduction' LIMIT 1 /*application='TributaLab'*/[0m
+  [1m[36mTaxParameter Load (1.2ms)[0m  [1m[34mSELECT "tax_parameters".* FROM "tax_parameters" WHERE "tax_parameters"."tax_module_id" = 1 AND "tax_parameters"."operation_id" = 2 AND "tax_parameters"."code" = 'lot_sale_reduction' LIMIT 1 /*application='TributaLab'*/[0m
+  [1m[36mTaxParameter Load (0.8ms)[0m  [1m[34mSELECT "tax_parameters".* FROM "tax_parameters" WHERE "tax_parameters"."tax_module_id" = 1 AND "tax_parameters"."operation_id" = 3 AND "tax_parameters"."code" = 'lease_reduction' LIMIT 1 /*application='TributaLab'*/[0m
+  [1m[36mTaxParameter Load (1.0ms)[0m  [1m[34mSELECT "tax_parameters".* FROM "tax_parameters" WHERE "tax_parameters"."tax_module_id" = 1 AND "tax_parameters"."operation_id" = 6 AND "tax_parameters"."code" = 'rights_assignment_reduction' LIMIT 1 /*application='TributaLab'*/[0m
+  [1m[36mAssumption Load (1.7ms)[0m  [1m[34mSELECT "assumptions".* FROM "assumptions" WHERE "assumptions"."tax_module_id" = 1 AND "assumptions"."code" = 'legal_basis_lc_version' LIMIT 1 /*application='TributaLab'*/[0m
+  [1m[36mTRANSACTION (1.0ms)[0m  [1m[35mBEGIN /*application='TributaLab'*/[0m
+  [1m[36mTRANSACTION (0.8ms)[0m  [1m[35mCOMMIT /*application='TributaLab'*/[0m
+  [1m[36mAssumption Load (0.9ms)[0m  [1m[34mSELECT "assumptions".* FROM "assumptions" WHERE "assumptions"."tax_module_id" = 1 AND "assumptions"."code" = 'lease_deduct_iptu_condo' LIMIT 1 /*application='TributaLab'*/[0m
+  [1m[36mAssumption Load (1.0ms)[0m  [1m[34mSELECT "assumptions".* FROM "assumptions" WHERE "assumptions"."tax_module_id" = 1 AND "assumptions"."code" = 'rights_assignment_rate' LIMIT 1 /*application='TributaLab'*/[0m
+  [1m[36mAssumption Load (0.8ms)[0m  [1m[34mSELECT "assumptions".* FROM "assumptions" WHERE "assumptions"."tax_module_id" = 1 AND "assumptions"."code" = 'civil_construction_full_rate' LIMIT 1 /*application='TributaLab'*/[0m
+  [1m[36mAssumption Load (1.2ms)[0m  [1m[34mSELECT "assumptions".* FROM "assumptions" WHERE "assumptions"."tax_module_id" = 1 AND "assumptions"."code" = 'management_brokerage_full_rate' LIMIT 1 /*application='TributaLab'*/[0m
+  [1m[36mAssumption Load (0.7ms)[0m  [1m[34mSELECT "assumptions".* FROM "assumptions" WHERE "assumptions"."tax_module_id" = 1 AND "assumptions"."code" = 'credit_documentation_conditions' LIMIT 1 /*application='TributaLab'*/[0m
+  [1m[36mAssumption Load (1.7ms)[0m  [1m[34mSELECT "assumptions".* FROM "assumptions" WHERE "assumptions"."tax_module_id" = 1 AND "assumptions"."code" = 'non_negative_tax_base' LIMIT 1 /*application='TributaLab'*/[0m
+  [1m[36mAssumption Load (1.6ms)[0m  [1m[34mSELECT "assumptions".* FROM "assumptions" WHERE "assumptions"."tax_module_id" = 1 AND "assumptions"."code" = 'credit_exceeds_debit' LIMIT 1 /*application='TributaLab'*/[0m
+  [1m[36mAssumption Load (0.9ms)[0m  [1m[34mSELECT "assumptions".* FROM "assumptions" WHERE "assumptions"."tax_module_id" = 1 AND "assumptions"."code" = 'exchange_without_boot_screen' LIMIT 1 /*application='TributaLab'*/[0m
+  [1m[36mCreditCategory Load (1.0ms)[0m  [1m[34mSELECT "credit_categories".* FROM "credit_categories" WHERE "credit_categories"."tax_module_id" = 1 AND "credit_categories"."code" = 'materials_construction' LIMIT 1 /*application='TributaLab'*/[0m
+  [1m[36mTRANSACTION (0.7ms)[0m  [1m[35mBEGIN /*application='TributaLab'*/[0m
+  [1m[36mTRANSACTION (1.2ms)[0m  [1m[35mCOMMIT /*application='TributaLab'*/[0m
+  [1m[36mCreditCategory Load (0.9ms)[0m  [1m[34mSELECT "credit_categories".* FROM "credit_categories" WHERE "credit_categories"."tax_module_id" = 1 AND "credit_categories"."code" = 'engineering_services' LIMIT 1 /*application='TributaLab'*/[0m
+  [1m[36mCreditCategory Load (1.7ms)[0m  [1m[34mSELECT "credit_categories".* FROM "credit_categories" WHERE "credit_categories"."tax_module_id" = 1 AND "credit_categories"."code" = 'electricity' LIMIT 1 /*application='TributaLab'*/[0m
+  [1m[36mCreditCategory Load (1.4ms)[0m  [1m[34mSELECT "credit_categories".* FROM "credit_categories" WHERE "credit_categories"."tax_module_id" = 1 AND "credit_categories"."code" = 'management_software' LIMIT 1 /*application='TributaLab'*/[0m
+  [1m[36mCreditCategory Load (1.0ms)[0m  [1m[34mSELECT "credit_categories".* FROM "credit_categories" WHERE "credit_categories"."tax_module_id" = 1 AND "credit_categories"."code" = 'legal_services' LIMIT 1 /*application='TributaLab'*/[0m
+  [1m[36mCreditCategory Load (0.8ms)[0m  [1m[34mSELECT "credit_categories".* FROM "credit_categories" WHERE "credit_categories"."tax_module_id" = 1 AND "credit_categories"."code" = 'linked_brokerage' LIMIT 1 /*application='TributaLab'*/[0m
+  [1m[36mCreditCategory Load (1.7ms)[0m  [1m[34mSELECT "credit_categories".* FROM "credit_categories" WHERE "credit_categories"."tax_module_id" = 1 AND "credit_categories"."code" = 'financial_costs_boot' LIMIT 1 /*application='TributaLab'*/[0m
+  [1m[36mLegalBasis Load (1.2ms)[0m  [1m[34mSELECT "legal_bases".* FROM "legal_bases" WHERE "legal_bases"."code" = 'art_252' LIMIT 1 /*application='TributaLab'*/[0m
+  [1m[36mTRANSACTION (1.1ms)[0m  [1m[35mBEGIN /*application='TributaLab'*/[0m
+  [1m[36mTRANSACTION (0.8ms)[0m  [1m[35mCOMMIT /*application='TributaLab'*/[0m
+  [1m[36mLegalBasis Load (1.2ms)[0m  [1m[34mSELECT "legal_bases".* FROM "legal_bases" WHERE "legal_bases"."code" = 'art_254_255' LIMIT 1 /*application='TributaLab'*/[0m
+  [1m[36mLegalBasis Load (1.2ms)[0m  [1m[34mSELECT "legal_bases".* FROM "legal_bases" WHERE "legal_bases"."code" = 'art_259' LIMIT 1 /*application='TributaLab'*/[0m
+  [1m[36mLegalBasis Load (1.0ms)[0m  [1m[34mSELECT "legal_bases".* FROM "legal_bases" WHERE "legal_bases"."code" = 'art_260' LIMIT 1 /*application='TributaLab'*/[0m
+  [1m[36mLegalBasis Load (0.8ms)[0m  [1m[34mSELECT "legal_bases".* FROM "legal_bases" WHERE "legal_bases"."code" = 'art_261' LIMIT 1 /*application='TributaLab'*/[0m
+  [1m[36mOperation Count (123.9ms)[0m  [1m[34mSELECT COUNT(*) FROM "operations" /*application='TributaLab'*/[0m
+  [1m[36mTaxParameter Count (1.1ms)[0m  [1m[34mSELECT COUNT(*) FROM "tax_parameters" /*application='TributaLab'*/[0m
+  [1m[36mAssumption Count (1.3ms)[0m  [1m[34mSELECT COUNT(*) FROM "assumptions" /*application='TributaLab'*/[0m
+  [1m[35m (0.9ms)[0m  [1m[34mSELECT pg_try_advisory_lock(1322158557162245565) /*application='TributaLab'*/[0m
+  [1m[36mActiveRecord::SchemaMigration Load (2.8ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC /*application='TributaLab'*/[0m
+  [1m[36mActiveRecord::InternalMetadata Load (2.5ms)[0m  [1m[34mSELECT * FROM "ar_internal_metadata" WHERE "ar_internal_metadata"."key" = 'environment' ORDER BY "ar_internal_metadata"."key" ASC LIMIT 1 /*application='TributaLab'*/[0m
+Migrating to CreateTaxRuleVersions (20260528190000)
+  [1m[36mTRANSACTION (0.7ms)[0m  [1m[35mBEGIN /*application='TributaLab'*/[0m
+  [1m[35m (41.3ms)[0m  [1m[35mCREATE TABLE "tax_rule_versions" ("id" bigserial primary key, "tax_module_id" bigint NOT NULL, "code" character varying NOT NULL, "name" character varying NOT NULL, "status" character varying DEFAULT 'pending_validation' NOT NULL, "effective_from" date, "effective_until" date, "source_summary" text, "notes" text, "created_at" timestamp(6) NOT NULL, "updated_at" timestamp(6) NOT NULL, CONSTRAINT "fk_rails_1d10bd25bb"
+FOREIGN KEY ("tax_module_id")
+  REFERENCES "tax_modules" ("id")
+) /*application='TributaLab'*/[0m
+  [1m[35m (4.7ms)[0m  [1m[35mCREATE INDEX "index_tax_rule_versions_on_tax_module_id" ON "tax_rule_versions" ("tax_module_id") /*application='TributaLab'*/[0m
+  [1m[35m (3.3ms)[0m  [1m[35mCREATE UNIQUE INDEX "index_tax_rule_versions_on_tax_module_id_and_code" ON "tax_rule_versions" ("tax_module_id", "code") /*application='TributaLab'*/[0m
+  [1m[35m (4.3ms)[0m  [1m[35mCREATE INDEX "index_tax_rule_versions_on_status" ON "tax_rule_versions" ("status") /*application='TributaLab'*/[0m
+  [1m[36mActiveRecord::SchemaMigration Create (1.4ms)[0m  [1m[32mINSERT INTO "schema_migrations" ("version") VALUES ('20260528190000') RETURNING "version" /*application='TributaLab'*/[0m
+  [1m[36mTRANSACTION (3.0ms)[0m  [1m[35mCOMMIT /*application='TributaLab'*/[0m
+Migrating to AddTaxRuleVersionAndSnapshotsToSimulations (20260528190010)
+  [1m[36mTRANSACTION (0.9ms)[0m  [1m[35mBEGIN /*application='TributaLab'*/[0m
+  [1m[35m (3.5ms)[0m  [1m[35mALTER TABLE "simulations" ADD "tax_rule_version_id" bigint /*application='TributaLab'*/[0m
+  [1m[35m (5.1ms)[0m  [1m[35mCREATE INDEX "index_simulations_on_tax_rule_version_id" ON "simulations" ("tax_rule_version_id") /*application='TributaLab'*/[0m
+  [1m[35m (5.7ms)[0m  [1m[35mALTER TABLE "simulations" ADD CONSTRAINT "fk_rails_e8258f44f8"
+FOREIGN KEY ("tax_rule_version_id")
+  REFERENCES "tax_rule_versions" ("id")
+ /*application='TributaLab'*/[0m
+  [1m[35m (4.7ms)[0m  [1m[35mALTER TABLE "simulations" ADD "assumptions_snapshot" jsonb DEFAULT '[]' NOT NULL /*application='TributaLab'*/[0m
+  [1m[35m (0.9ms)[0m  [1m[35mALTER TABLE "simulations" ADD "alerts_snapshot" jsonb DEFAULT '[]' NOT NULL /*application='TributaLab'*/[0m
+  [1m[35m (0.9ms)[0m  [1m[35mALTER TABLE "simulations" ADD "legal_bases_snapshot" jsonb DEFAULT '[]' NOT NULL /*application='TributaLab'*/[0m
+  [1m[35m (1.0ms)[0m  [1m[35mALTER TABLE "simulations" ADD "rule_version_snapshot" jsonb DEFAULT '{}' NOT NULL /*application='TributaLab'*/[0m
+  [1m[36mActiveRecord::SchemaMigration Create (0.8ms)[0m  [1m[32mINSERT INTO "schema_migrations" ("version") VALUES ('20260528190010') RETURNING "version" /*application='TributaLab'*/[0m
+  [1m[36mTRANSACTION (1.8ms)[0m  [1m[35mCOMMIT /*application='TributaLab'*/[0m
+Migrating to AddCalculationDetailsToSimulationResults (20260528190020)
+  [1m[36mTRANSACTION (0.7ms)[0m  [1m[35mBEGIN /*application='TributaLab'*/[0m
+  [1m[35m (1.5ms)[0m  [1m[35mALTER TABLE "simulation_results" ADD "calculation_details" jsonb DEFAULT '{}' NOT NULL /*application='TributaLab'*/[0m
+  [1m[36mActiveRecord::SchemaMigration Create (0.8ms)[0m  [1m[32mINSERT INTO "schema_migrations" ("version") VALUES ('20260528190020') RETURNING "version" /*application='TributaLab'*/[0m
+  [1m[36mTRANSACTION (1.9ms)[0m  [1m[35mCOMMIT /*application='TributaLab'*/[0m
+  [1m[35m (0.6ms)[0m  [1m[34mSELECT pg_advisory_unlock(1322158557162245565) /*application='TributaLab'*/[0m
+  [1m[36mActiveRecord::SchemaMigration Load (0.8ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC /*application='TributaLab'*/[0m
+  [1m[35mSQL (0.4ms)[0m  [1m[35mSET search_path TO public /*application='TributaLab'*/[0m
+  [1m[35mSQL (0.8ms)[0m  [1m[35mSET search_path TO "$user", public /*application='TributaLab'*/[0m
+  [1m[35mSQL (0.9ms)[0m  [1m[35mSET search_path TO public /*application='TributaLab'*/[0m
+  [1m[35mSQL (0.5ms)[0m  [1m[35mSET search_path TO "$user", public /*application='TributaLab'*/[0m
+  [1m[36mActiveRecord::SchemaMigration Load (0.3ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC /*application='TributaLab'*/[0m
+  [1m[36mProductArea Load (1.3ms)[0m  [1m[34mSELECT "product_areas".* FROM "product_areas" WHERE "product_areas"."code" = 'tax_reform' LIMIT 1 /*application='TributaLab'*/[0m
+  [1m[36mTRANSACTION (0.8ms)[0m  [1m[35mBEGIN /*application='TributaLab'*/[0m
+  [1m[36mTRANSACTION (0.4ms)[0m  [1m[35mCOMMIT /*application='TributaLab'*/[0m
+  [1m[36mProductArea Load (1.0ms)[0m  [1m[34mSELECT "product_areas".* FROM "product_areas" WHERE "product_areas"."code" = 'credit_recovery' LIMIT 1 /*application='TributaLab'*/[0m
+  [1m[36mSector Load (1.2ms)[0m  [1m[34mSELECT "sectors".* FROM "sectors" WHERE "sectors"."code" = 'real_estate_construction' LIMIT 1 /*application='TributaLab'*/[0m
+  [1m[36mTRANSACTION (0.6ms)[0m  [1m[35mBEGIN /*application='TributaLab'*/[0m
+  [1m[36mTRANSACTION (0.5ms)[0m  [1m[35mCOMMIT /*application='TributaLab'*/[0m
+  [1m[36mTaxModule Load (1.3ms)[0m  [1m[34mSELECT "tax_modules".* FROM "tax_modules" WHERE "tax_modules"."code" = 'real_estate_tax_reform' LIMIT 1 /*application='TributaLab'*/[0m
+  [1m[36mTRANSACTION (0.8ms)[0m  [1m[35mBEGIN /*application='TributaLab'*/[0m
+  [1m[36mTRANSACTION (0.9ms)[0m  [1m[35mCOMMIT /*application='TributaLab'*/[0m
+  [1m[36mTaxRuleVersion Load (1.1ms)[0m  [1m[34mSELECT "tax_rule_versions".* FROM "tax_rule_versions" WHERE "tax_rule_versions"."tax_module_id" = 1 AND "tax_rule_versions"."code" = 'real_estate_tax_reform_v1' LIMIT 1 /*application='TributaLab'*/[0m
+  [1m[36mTRANSACTION (0.9ms)[0m  [1m[35mBEGIN /*application='TributaLab'*/[0m
+  [1m[36mTaxRuleVersion Exists? (3.1ms)[0m  [1m[34mSELECT 1 AS one FROM "tax_rule_versions" WHERE "tax_rule_versions"."code" = 'real_estate_tax_reform_v1' AND "tax_rule_versions"."tax_module_id" = 1 LIMIT 1 /*application='TributaLab'*/[0m
+  [1m[36mTaxRuleVersion Create (3.7ms)[0m  [1m[32mINSERT INTO "tax_rule_versions" ("tax_module_id", "code", "name", "status", "effective_from", "effective_until", "source_summary", "notes", "created_at", "updated_at") VALUES (1, 'real_estate_tax_reform_v1', 'Reforma Tributaria Imobiliaria v1', 'pending_validation', '2026-05-28', NULL, 'Versao inicial derivada da call com Denis e da planilha-base copiada em 2026-05-28.', 'Regra pendente de validacao juridica; usada para simulacoes internas da Etapa 002.', '2026-05-28 19:10:33.747445', '2026-05-28 19:10:33.747445') RETURNING "id" /*application='TributaLab'*/[0m
+  [1m[36mTRANSACTION (2.7ms)[0m  [1m[35mCOMMIT /*application='TributaLab'*/[0m
+  [1m[36mOperation Load (1.5ms)[0m  [1m[34mSELECT "operations".* FROM "operations" WHERE "operations"."tax_module_id" = 1 AND "operations"."code" = 'sale_property' LIMIT 1 /*application='TributaLab'*/[0m
+  [1m[36mTRANSACTION (0.9ms)[0m  [1m[35mBEGIN /*application='TributaLab'*/[0m
+  [1m[36mTRANSACTION (0.8ms)[0m  [1m[35mCOMMIT /*application='TributaLab'*/[0m
+  [1m[36mOperation Load (3.6ms)[0m  [1m[34mSELECT "operations".* FROM "operations" WHERE "operations"."tax_module_id" = 1 AND "operations"."code" = 'sale_residential_lot' LIMIT 1 /*application='TributaLab'*/[0m
+  [1m[36mOperation Load (0.8ms)[0m  [1m[34mSELECT "operations".* FROM "operations" WHERE "operations"."tax_module_id" = 1 AND "operations"."code" = 'lease_property' LIMIT 1 /*application='TributaLab'*/[0m
+  [1m[36mOperation Load (1.0ms)[0m  [1m[34mSELECT "operations".* FROM "operations" WHERE "operations"."tax_module_id" = 1 AND "operations"."code" = 'civil_construction' LIMIT 1 /*application='TributaLab'*/[0m
+  [1m[36mOperation Load (0.8ms)[0m  [1m[34mSELECT "operations".* FROM "operations" WHERE "operations"."tax_module_id" = 1 AND "operations"."code" = 'management_brokerage' LIMIT 1 /*application='TributaLab'*/[0m
+  [1m[36mOperation Load (0.9ms)[0m  [1m[34mSELECT "operations".* FROM "operations" WHERE "operations"."tax_module_id" = 1 AND "operations"."code" = 'rights_assignment' LIMIT 1 /*application='TributaLab'*/[0m
+  [1m[36mOperation Load (1.2ms)[0m  [1m[34mSELECT "operations".* FROM "operations" WHERE "operations"."tax_module_id" = 1 AND "operations"."code" = 'exchange_without_boot' LIMIT 1 /*application='TributaLab'*/[0m
+  [1m[36mOperation Load (1.2ms)[0m  [1m[34mSELECT "operations".* FROM "operations" WHERE "operations"."tax_module_id" = 1 AND "operations"."code" = 'exchange_with_boot' LIMIT 1 /*application='TributaLab'*/[0m
+  [1m[36mTaxParameter Load (1.6ms)[0m  [1m[34mSELECT "tax_parameters".* FROM "tax_parameters" WHERE "tax_parameters"."tax_module_id" = 1 AND "tax_parameters"."operation_id" IS NULL AND "tax_parameters"."code" = 'full_ibs_cbs_rate' LIMIT 1 /*application='TributaLab'*/[0m
+  [1m[36mTRANSACTION (0.7ms)[0m  [1m[35mBEGIN /*application='TributaLab'*/[0m
+  [1m[36mTaxParameter Exists? (2.9ms)[0m  [1m[34mSELECT 1 AS one FROM "tax_parameters" WHERE "tax_parameters"."code" = 'full_ibs_cbs_rate' AND "tax_parameters"."id" != 1 AND "tax_parameters"."tax_module_id" = 1 AND "tax_parameters"."operation_id" IS NULL LIMIT 1 /*application='TributaLab'*/[0m
+  [1m[36mTRANSACTION (0.6ms)[0m  [1m[35mCOMMIT /*application='TributaLab'*/[0m
+  [1m[36mTaxParameter Load (1.2ms)[0m  [1m[34mSELECT "tax_parameters".* FROM "tax_parameters" WHERE "tax_parameters"."tax_module_id" = 1 AND "tax_parameters"."operation_id" = 1 AND "tax_parameters"."code" = 'sale_property_social_deduction' LIMIT 1 /*application='TributaLab'*/[0m
+  [1m[36mTRANSACTION (0.6ms)[0m  [1m[35mBEGIN /*application='TributaLab'*/[0m
+  [1m[36mTRANSACTION (0.6ms)[0m  [1m[35mCOMMIT /*application='TributaLab'*/[0m
+  [1m[36mTaxParameter Load (1.3ms)[0m  [1m[34mSELECT "tax_parameters".* FROM "tax_parameters" WHERE "tax_parameters"."tax_module_id" = 1 AND "tax_parameters"."operation_id" = 2 AND "tax_parameters"."code" = 'sale_lot_social_deduction' LIMIT 1 /*application='TributaLab'*/[0m
+  [1m[36mTaxParameter Load (1.1ms)[0m  [1m[34mSELECT "tax_parameters".* FROM "tax_parameters" WHERE "tax_parameters"."tax_module_id" = 1 AND "tax_parameters"."operation_id" = 3 AND "tax_parameters"."code" = 'lease_social_deduction' LIMIT 1 /*application='TributaLab'*/[0m
+  [1m[36mTaxParameter Load (1.1ms)[0m  [1m[34mSELECT "tax_parameters".* FROM "tax_parameters" WHERE "tax_parameters"."tax_module_id" = 1 AND "tax_parameters"."operation_id" = 1 AND "tax_parameters"."code" = 'sale_incorporation_reduction' LIMIT 1 /*application='TributaLab'*/[0m
+  [1m[36mTaxParameter Load (1.1ms)[0m  [1m[34mSELECT "tax_parameters".* FROM "tax_parameters" WHERE "tax_parameters"."tax_module_id" = 1 AND "tax_parameters"."operation_id" = 2 AND "tax_parameters"."code" = 'lot_sale_reduction' LIMIT 1 /*application='TributaLab'*/[0m
+  [1m[36mTaxParameter Load (1.2ms)[0m  [1m[34mSELECT "tax_parameters".* FROM "tax_parameters" WHERE "tax_parameters"."tax_module_id" = 1 AND "tax_parameters"."operation_id" = 3 AND "tax_parameters"."code" = 'lease_reduction' LIMIT 1 /*application='TributaLab'*/[0m
+  [1m[36mTaxParameter Load (1.0ms)[0m  [1m[34mSELECT "tax_parameters".* FROM "tax_parameters" WHERE "tax_parameters"."tax_module_id" = 1 AND "tax_parameters"."operation_id" = 6 AND "tax_parameters"."code" = 'rights_assignment_reduction' LIMIT 1 /*application='TributaLab'*/[0m
+  [1m[36mAssumption Load (2.3ms)[0m  [1m[34mSELECT "assumptions".* FROM "assumptions" WHERE "assumptions"."tax_module_id" = 1 AND "assumptions"."code" = 'legal_basis_lc_version' LIMIT 1 /*application='TributaLab'*/[0m
+  [1m[36mTRANSACTION (1.0ms)[0m  [1m[35mBEGIN /*application='TributaLab'*/[0m
+  [1m[36mTRANSACTION (0.6ms)[0m  [1m[35mCOMMIT /*application='TributaLab'*/[0m
+  [1m[36mAssumption Load (1.2ms)[0m  [1m[34mSELECT "assumptions".* FROM "assumptions" WHERE "assumptions"."tax_module_id" = 1 AND "assumptions"."code" = 'lease_deduct_iptu_condo' LIMIT 1 /*application='TributaLab'*/[0m
+  [1m[36mAssumption Load (1.2ms)[0m  [1m[34mSELECT "assumptions".* FROM "assumptions" WHERE "assumptions"."tax_module_id" = 1 AND "assumptions"."code" = 'rights_assignment_rate' LIMIT 1 /*application='TributaLab'*/[0m
+  [1m[36mAssumption Load (0.8ms)[0m  [1m[34mSELECT "assumptions".* FROM "assumptions" WHERE "assumptions"."tax_module_id" = 1 AND "assumptions"."code" = 'civil_construction_full_rate' LIMIT 1 /*application='TributaLab'*/[0m
+  [1m[36mAssumption Load (1.0ms)[0m  [1m[34mSELECT "assumptions".* FROM "assumptions" WHERE "assumptions"."tax_module_id" = 1 AND "assumptions"."code" = 'management_brokerage_full_rate' LIMIT 1 /*application='TributaLab'*/[0m
+  [1m[36mAssumption Load (1.0ms)[0m  [1m[34mSELECT "assumptions".* FROM "assumptions" WHERE "assumptions"."tax_module_id" = 1 AND "assumptions"."code" = 'credit_documentation_conditions' LIMIT 1 /*application='TributaLab'*/[0m
+  [1m[36mAssumption Load (0.9ms)[0m  [1m[34mSELECT "assumptions".* FROM "assumptions" WHERE "assumptions"."tax_module_id" = 1 AND "assumptions"."code" = 'non_negative_tax_base' LIMIT 1 /*application='TributaLab'*/[0m
+  [1m[36mAssumption Load (1.2ms)[0m  [1m[34mSELECT "assumptions".* FROM "assumptions" WHERE "assumptions"."tax_module_id" = 1 AND "assumptions"."code" = 'credit_exceeds_debit' LIMIT 1 /*application='TributaLab'*/[0m
+  [1m[36mAssumption Load (1.1ms)[0m  [1m[34mSELECT "assumptions".* FROM "assumptions" WHERE "assumptions"."tax_module_id" = 1 AND "assumptions"."code" = 'exchange_without_boot_screen' LIMIT 1 /*application='TributaLab'*/[0m
+  [1m[36mCreditCategory Load (1.5ms)[0m  [1m[34mSELECT "credit_categories".* FROM "credit_categories" WHERE "credit_categories"."tax_module_id" = 1 AND "credit_categories"."code" = 'materials_construction' LIMIT 1 /*application='TributaLab'*/[0m
+  [1m[36mTRANSACTION (1.0ms)[0m  [1m[35mBEGIN /*application='TributaLab'*/[0m
+  [1m[36mTRANSACTION (0.7ms)[0m  [1m[35mCOMMIT /*application='TributaLab'*/[0m
+  [1m[36mCreditCategory Load (1.1ms)[0m  [1m[34mSELECT "credit_categories".* FROM "credit_categories" WHERE "credit_categories"."tax_module_id" = 1 AND "credit_categories"."code" = 'engineering_services' LIMIT 1 /*application='TributaLab'*/[0m
+  [1m[36mCreditCategory Load (1.4ms)[0m  [1m[34mSELECT "credit_categories".* FROM "credit_categories" WHERE "credit_categories"."tax_module_id" = 1 AND "credit_categories"."code" = 'electricity' LIMIT 1 /*application='TributaLab'*/[0m
+  [1m[36mCreditCategory Load (1.0ms)[0m  [1m[34mSELECT "credit_categories".* FROM "credit_categories" WHERE "credit_categories"."tax_module_id" = 1 AND "credit_categories"."code" = 'management_software' LIMIT 1 /*application='TributaLab'*/[0m
+  [1m[36mCreditCategory Load (1.0ms)[0m  [1m[34mSELECT "credit_categories".* FROM "credit_categories" WHERE "credit_categories"."tax_module_id" = 1 AND "credit_categories"."code" = 'legal_services' LIMIT 1 /*application='TributaLab'*/[0m
+  [1m[36mCreditCategory Load (0.9ms)[0m  [1m[34mSELECT "credit_categories".* FROM "credit_categories" WHERE "credit_categories"."tax_module_id" = 1 AND "credit_categories"."code" = 'linked_brokerage' LIMIT 1 /*application='TributaLab'*/[0m
+  [1m[36mCreditCategory Load (1.1ms)[0m  [1m[34mSELECT "credit_categories".* FROM "credit_categories" WHERE "credit_categories"."tax_module_id" = 1 AND "credit_categories"."code" = 'financial_costs_boot' LIMIT 1 /*application='TributaLab'*/[0m
+  [1m[36mLegalBasis Load (1.3ms)[0m  [1m[34mSELECT "legal_bases".* FROM "legal_bases" WHERE "legal_bases"."code" = 'art_252' LIMIT 1 /*application='TributaLab'*/[0m
+  [1m[36mTRANSACTION (0.8ms)[0m  [1m[35mBEGIN /*application='TributaLab'*/[0m
+  [1m[36mTRANSACTION (0.7ms)[0m  [1m[35mCOMMIT /*application='TributaLab'*/[0m
+  [1m[36mLegalBasis Load (0.8ms)[0m  [1m[34mSELECT "legal_bases".* FROM "legal_bases" WHERE "legal_bases"."code" = 'art_254_255' LIMIT 1 /*application='TributaLab'*/[0m
+  [1m[36mLegalBasis Load (1.0ms)[0m  [1m[34mSELECT "legal_bases".* FROM "legal_bases" WHERE "legal_bases"."code" = 'art_259' LIMIT 1 /*application='TributaLab'*/[0m
+  [1m[36mLegalBasis Load (1.0ms)[0m  [1m[34mSELECT "legal_bases".* FROM "legal_bases" WHERE "legal_bases"."code" = 'art_260' LIMIT 1 /*application='TributaLab'*/[0m
+  [1m[36mLegalBasis Load (1.5ms)[0m  [1m[34mSELECT "legal_bases".* FROM "legal_bases" WHERE "legal_bases"."code" = 'art_261' LIMIT 1 /*application='TributaLab'*/[0m
+  [1m[36mTaxRuleVersion Count (121.5ms)[0m  [1m[34mSELECT COUNT(*) FROM "tax_rule_versions" /*application='TributaLab'*/[0m
+  [1m[36mSimulation Count (2.1ms)[0m  [1m[34mSELECT COUNT(*) FROM "simulations" /*application='TributaLab'*/[0m
+  [1m[36mOperation Count (2.3ms)[0m  [1m[34mSELECT COUNT(*) FROM "operations" /*application='TributaLab'*/[0m
+  [1m[36mTaxParameter Count (1.3ms)[0m  [1m[34mSELECT COUNT(*) FROM "tax_parameters" /*application='TributaLab'*/[0m
+  [1m[36mAssumption Count (3.2ms)[0m  [1m[34mSELECT COUNT(*) FROM "assumptions" /*application='TributaLab'*/[0m
+  [1m[36mActiveRecord::SchemaMigration Load (1.2ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC /*application='TributaLab'*/[0m
+  [1m[36mActiveRecord::InternalMetadata Load (1.9ms)[0m  [1m[34mSELECT * FROM "ar_internal_metadata" WHERE "ar_internal_metadata"."key" = 'environment' ORDER BY "ar_internal_metadata"."key" ASC LIMIT 1 /*application='TributaLab'*/[0m
+  [1m[36mActiveRecord::SchemaMigration Load (0.5ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC /*application='TributaLab'*/[0m
+  [1m[36mActiveRecord::InternalMetadata Load (0.6ms)[0m  [1m[34mSELECT * FROM "ar_internal_metadata" WHERE "ar_internal_metadata"."key" = 'environment' ORDER BY "ar_internal_metadata"."key" ASC LIMIT 1 /*application='TributaLab'*/[0m
+  [1m[36mActiveRecord::SchemaMigration Load (1.3ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC /*application='TributaLab'*/[0m
+  [1m[36mActiveRecord::InternalMetadata Load (0.8ms)[0m  [1m[34mSELECT * FROM "ar_internal_metadata" WHERE "ar_internal_metadata"."key" = 'environment' ORDER BY "ar_internal_metadata"."key" ASC LIMIT 1 /*application='TributaLab'*/[0m
+  [1m[35mSQL (0.4ms)[0m  [1m[35mSET search_path TO public /*application='TributaLab'*/[0m
+  [1m[35m (175.3ms)[0m  [1m[35mDROP DATABASE IF EXISTS "tributa_lab_test" /*application='TributaLab'*/[0m
+  [1m[35m (158.8ms)[0m  [1m[35mCREATE DATABASE "tributa_lab_test" ENCODING = 'unicode' /*application='TributaLab'*/[0m
+  [1m[35mSQL (95.5ms)[0m  [1m[35mCREATE EXTENSION IF NOT EXISTS "plpgsql" SCHEMA pg_catalog /*application='TributaLab'*/[0m
+  [1m[35m (0.8ms)[0m  [1m[35mDROP TABLE IF EXISTS "assumptions" CASCADE /*application='TributaLab'*/[0m
+  [1m[35m (21.0ms)[0m  [1m[35mCREATE TABLE "assumptions" ("id" bigserial primary key, "code" character varying NOT NULL, "created_at" timestamp(6) NOT NULL, "description" text, "impact" text, "operation_id" bigint, "position" integer DEFAULT 0 NOT NULL, "source_reference" character varying, "status" character varying DEFAULT 'pending' NOT NULL, "tax_module_id" bigint NOT NULL, "title" character varying NOT NULL, "updated_at" timestamp(6) NOT NULL) /*application='TributaLab'*/[0m
+  [1m[35m (7.7ms)[0m  [1m[35mCREATE INDEX "index_assumptions_on_operation_id" ON "assumptions" ("operation_id") /*application='TributaLab'*/[0m
+  [1m[35m (8.4ms)[0m  [1m[35mCREATE INDEX "index_assumptions_on_status" ON "assumptions" ("status") /*application='TributaLab'*/[0m
+  [1m[35m (9.3ms)[0m  [1m[35mCREATE UNIQUE INDEX "index_assumptions_on_tax_module_id_and_code" ON "assumptions" ("tax_module_id", "code") /*application='TributaLab'*/[0m
+  [1m[35m (7.4ms)[0m  [1m[35mCREATE INDEX "index_assumptions_on_tax_module_id" ON "assumptions" ("tax_module_id") /*application='TributaLab'*/[0m
+  [1m[35m (1.0ms)[0m  [1m[35mDROP TABLE IF EXISTS "credit_categories" CASCADE /*application='TributaLab'*/[0m
+  [1m[35m (14.5ms)[0m  [1m[35mCREATE TABLE "credit_categories" ("id" bigserial primary key, "code" character varying NOT NULL, "created_at" timestamp(6) NOT NULL, "description" text, "name" character varying NOT NULL, "source_reference" character varying, "tax_module_id" bigint NOT NULL, "updated_at" timestamp(6) NOT NULL, "validation_status" character varying DEFAULT 'pending' NOT NULL) /*application='TributaLab'*/[0m
+  [1m[35m (7.9ms)[0m  [1m[35mCREATE UNIQUE INDEX "index_credit_categories_on_tax_module_id_and_code" ON "credit_categories" ("tax_module_id", "code") /*application='TributaLab'*/[0m
+  [1m[35m (6.7ms)[0m  [1m[35mCREATE INDEX "index_credit_categories_on_tax_module_id" ON "credit_categories" ("tax_module_id") /*application='TributaLab'*/[0m
+  [1m[35m (4.2ms)[0m  [1m[35mCREATE INDEX "index_credit_categories_on_validation_status" ON "credit_categories" ("validation_status") /*application='TributaLab'*/[0m
+  [1m[35m (0.9ms)[0m  [1m[35mDROP TABLE IF EXISTS "legal_bases" CASCADE /*application='TributaLab'*/[0m
+  [1m[35m (9.5ms)[0m  [1m[35mCREATE TABLE "legal_bases" ("id" bigserial primary key, "article" character varying, "code" character varying NOT NULL, "created_at" timestamp(6) NOT NULL, "description" text NOT NULL, "law" character varying NOT NULL, "notes" text, "source_reference" character varying, "status" character varying DEFAULT 'pending' NOT NULL, "updated_at" timestamp(6) NOT NULL) /*application='TributaLab'*/[0m
+  [1m[35m (3.6ms)[0m  [1m[35mCREATE UNIQUE INDEX "index_legal_bases_on_code" ON "legal_bases" ("code") /*application='TributaLab'*/[0m
+  [1m[35m (3.9ms)[0m  [1m[35mCREATE INDEX "index_legal_bases_on_status" ON "legal_bases" ("status") /*application='TributaLab'*/[0m
+  [1m[35m (1.1ms)[0m  [1m[35mDROP TABLE IF EXISTS "operations" CASCADE /*application='TributaLab'*/[0m
+  [1m[35m (7.4ms)[0m  [1m[35mCREATE TABLE "operations" ("id" bigserial primary key, "code" character varying NOT NULL, "created_at" timestamp(6) NOT NULL, "description" text, "name" character varying NOT NULL, "position" integer DEFAULT 0 NOT NULL, "status" character varying DEFAULT 'active' NOT NULL, "tax_module_id" bigint NOT NULL, "updated_at" timestamp(6) NOT NULL) /*application='TributaLab'*/[0m
+  [1m[35m (4.2ms)[0m  [1m[35mCREATE UNIQUE INDEX "index_operations_on_tax_module_id_and_code" ON "operations" ("tax_module_id", "code") /*application='TributaLab'*/[0m
+  [1m[35m (4.7ms)[0m  [1m[35mCREATE INDEX "index_operations_on_tax_module_id" ON "operations" ("tax_module_id") /*application='TributaLab'*/[0m
+  [1m[35m (0.7ms)[0m  [1m[35mDROP TABLE IF EXISTS "product_areas" CASCADE /*application='TributaLab'*/[0m
+  [1m[35m (7.8ms)[0m  [1m[35mCREATE TABLE "product_areas" ("id" bigserial primary key, "code" character varying NOT NULL, "created_at" timestamp(6) NOT NULL, "description" text, "name" character varying NOT NULL, "position" integer DEFAULT 0 NOT NULL, "updated_at" timestamp(6) NOT NULL) /*application='TributaLab'*/[0m
+  [1m[35m (4.9ms)[0m  [1m[35mCREATE UNIQUE INDEX "index_product_areas_on_code" ON "product_areas" ("code") /*application='TributaLab'*/[0m
+  [1m[35m (1.1ms)[0m  [1m[35mDROP TABLE IF EXISTS "sectors" CASCADE /*application='TributaLab'*/[0m
+  [1m[35m (6.6ms)[0m  [1m[35mCREATE TABLE "sectors" ("id" bigserial primary key, "code" character varying NOT NULL, "created_at" timestamp(6) NOT NULL, "description" text, "name" character varying NOT NULL, "position" integer DEFAULT 0 NOT NULL, "updated_at" timestamp(6) NOT NULL) /*application='TributaLab'*/[0m
+  [1m[35m (4.0ms)[0m  [1m[35mCREATE UNIQUE INDEX "index_sectors_on_code" ON "sectors" ("code") /*application='TributaLab'*/[0m
+  [1m[35m (0.6ms)[0m  [1m[35mDROP TABLE IF EXISTS "simulation_results" CASCADE /*application='TributaLab'*/[0m
+  [1m[35m (9.1ms)[0m  [1m[35mCREATE TABLE "simulation_results" ("id" bigserial primary key, "applied_deduction" decimal(18,2) DEFAULT 0.0 NOT NULL, "applied_reduction" decimal(10,6) DEFAULT 0.0 NOT NULL, "base_gross" decimal(18,2) DEFAULT 0.0 NOT NULL, "base_net" decimal(18,2) DEFAULT 0.0 NOT NULL, "calculation_details" jsonb DEFAULT '{}' NOT NULL, "created_at" timestamp(6) NOT NULL, "credits" decimal(18,2) DEFAULT 0.0 NOT NULL, "effective_rate" decimal(10,6) DEFAULT 0.0 NOT NULL, "full_rate" decimal(10,6) DEFAULT 0.0 NOT NULL, "simulation_id" bigint NOT NULL, "tax_debit" decimal(18,2) DEFAULT 0.0 NOT NULL, "tax_due" decimal(18,2) DEFAULT 0.0 NOT NULL, "updated_at" timestamp(6) NOT NULL, "validation_alerts" jsonb DEFAULT '[]' NOT NULL) /*application='TributaLab'*/[0m
+  [1m[35m (4.9ms)[0m  [1m[35mCREATE INDEX "index_simulation_results_on_simulation_id" ON "simulation_results" ("simulation_id") /*application='TributaLab'*/[0m
+  [1m[35m (1.0ms)[0m  [1m[35mDROP TABLE IF EXISTS "simulations" CASCADE /*application='TributaLab'*/[0m
+  [1m[35m (11.3ms)[0m  [1m[35mCREATE TABLE "simulations" ("id" bigserial primary key, "alerts_snapshot" jsonb DEFAULT '[]' NOT NULL, "assumptions_snapshot" jsonb DEFAULT '[]' NOT NULL, "created_at" timestamp(6) NOT NULL, "input_data" jsonb DEFAULT '{}' NOT NULL, "legal_bases_snapshot" jsonb DEFAULT '[]' NOT NULL, "name" character varying NOT NULL, "notes" text, "operation_id" bigint NOT NULL, "output_data" jsonb DEFAULT '{}' NOT NULL, "parameters_snapshot" jsonb DEFAULT '{}' NOT NULL, "rule_version" character varying DEFAULT 'mvp-001' NOT NULL, "rule_version_snapshot" jsonb DEFAULT '{}' NOT NULL, "tax_module_id" bigint NOT NULL, "tax_rule_version_id" bigint, "updated_at" timestamp(6) NOT NULL) /*application='TributaLab'*/[0m
+  [1m[35m (4.8ms)[0m  [1m[35mCREATE INDEX "index_simulations_on_operation_id" ON "simulations" ("operation_id") /*application='TributaLab'*/[0m
+  [1m[35m (3.8ms)[0m  [1m[35mCREATE INDEX "index_simulations_on_rule_version" ON "simulations" ("rule_version") /*application='TributaLab'*/[0m
+  [1m[35m (4.5ms)[0m  [1m[35mCREATE INDEX "index_simulations_on_tax_module_id" ON "simulations" ("tax_module_id") /*application='TributaLab'*/[0m
+  [1m[35m (4.6ms)[0m  [1m[35mCREATE INDEX "index_simulations_on_tax_rule_version_id" ON "simulations" ("tax_rule_version_id") /*application='TributaLab'*/[0m
+  [1m[35m (0.8ms)[0m  [1m[35mDROP TABLE IF EXISTS "tax_modules" CASCADE /*application='TributaLab'*/[0m
+  [1m[35m (7.4ms)[0m  [1m[35mCREATE TABLE "tax_modules" ("id" bigserial primary key, "code" character varying NOT NULL, "created_at" timestamp(6) NOT NULL, "description" text, "name" character varying NOT NULL, "position" integer DEFAULT 0 NOT NULL, "product_area_id" bigint NOT NULL, "sector_id" bigint NOT NULL, "status" character varying DEFAULT 'active' NOT NULL, "updated_at" timestamp(6) NOT NULL) /*application='TributaLab'*/[0m
+  [1m[35m (4.1ms)[0m  [1m[35mCREATE UNIQUE INDEX "index_tax_modules_on_code" ON "tax_modules" ("code") /*application='TributaLab'*/[0m
+  [1m[35m (3.7ms)[0m  [1m[35mCREATE INDEX "index_tax_modules_on_product_area_id" ON "tax_modules" ("product_area_id") /*application='TributaLab'*/[0m
+  [1m[35m (3.8ms)[0m  [1m[35mCREATE INDEX "index_tax_modules_on_sector_id" ON "tax_modules" ("sector_id") /*application='TributaLab'*/[0m
+  [1m[35m (0.9ms)[0m  [1m[35mDROP TABLE IF EXISTS "tax_parameters" CASCADE /*application='TributaLab'*/[0m
+  [1m[35m (7.9ms)[0m  [1m[35mCREATE TABLE "tax_parameters" ("id" bigserial primary key, "code" character varying NOT NULL, "created_at" timestamp(6) NOT NULL, "effective_from" date, "effective_until" date, "legal_reference" character varying, "name" character varying NOT NULL, "notes" text, "operation_id" bigint, "parameter_type" character varying NOT NULL, "tax_module_id" bigint NOT NULL, "unit" character varying NOT NULL, "updated_at" timestamp(6) NOT NULL, "validation_status" character varying DEFAULT 'pending' NOT NULL, "value_decimal" decimal(18,6) DEFAULT 0.0 NOT NULL) /*application='TributaLab'*/[0m
+  [1m[35m (4.8ms)[0m  [1m[35mCREATE INDEX "index_tax_parameters_on_operation_id" ON "tax_parameters" ("operation_id") /*application='TributaLab'*/[0m
+  [1m[35m (4.5ms)[0m  [1m[35mCREATE UNIQUE INDEX "index_tax_parameters_on_module_code_operation" ON "tax_parameters" ("tax_module_id", "code", "operation_id") /*application='TributaLab'*/[0m
+  [1m[35m (5.3ms)[0m  [1m[35mCREATE INDEX "index_tax_parameters_on_tax_module_id" ON "tax_parameters" ("tax_module_id") /*application='TributaLab'*/[0m
+  [1m[35m (5.3ms)[0m  [1m[35mCREATE INDEX "index_tax_parameters_on_validation_status" ON "tax_parameters" ("validation_status") /*application='TributaLab'*/[0m
+  [1m[35m (1.0ms)[0m  [1m[35mDROP TABLE IF EXISTS "tax_rule_versions" CASCADE /*application='TributaLab'*/[0m
+  [1m[35m (9.0ms)[0m  [1m[35mCREATE TABLE "tax_rule_versions" ("id" bigserial primary key, "code" character varying NOT NULL, "created_at" timestamp(6) NOT NULL, "effective_from" date, "effective_until" date, "name" character varying NOT NULL, "notes" text, "source_summary" text, "status" character varying DEFAULT 'pending_validation' NOT NULL, "tax_module_id" bigint NOT NULL, "updated_at" timestamp(6) NOT NULL) /*application='TributaLab'*/[0m
+  [1m[35m (5.5ms)[0m  [1m[35mCREATE INDEX "index_tax_rule_versions_on_status" ON "tax_rule_versions" ("status") /*application='TributaLab'*/[0m
+  [1m[35m (4.3ms)[0m  [1m[35mCREATE UNIQUE INDEX "index_tax_rule_versions_on_tax_module_id_and_code" ON "tax_rule_versions" ("tax_module_id", "code") /*application='TributaLab'*/[0m
+  [1m[35m (4.5ms)[0m  [1m[35mCREATE INDEX "index_tax_rule_versions_on_tax_module_id" ON "tax_rule_versions" ("tax_module_id") /*application='TributaLab'*/[0m
+  [1m[35m (4.4ms)[0m  [1m[35mALTER TABLE "assumptions" ADD CONSTRAINT "fk_rails_8dc648eeb6"
+FOREIGN KEY ("operation_id")
+  REFERENCES "operations" ("id")
+ /*application='TributaLab'*/[0m
+  [1m[35m (3.3ms)[0m  [1m[35mALTER TABLE "assumptions" ADD CONSTRAINT "fk_rails_0e3d8a8e15"
+FOREIGN KEY ("tax_module_id")
+  REFERENCES "tax_modules" ("id")
+ /*application='TributaLab'*/[0m
+  [1m[35m (2.6ms)[0m  [1m[35mALTER TABLE "credit_categories" ADD CONSTRAINT "fk_rails_6648be8729"
+FOREIGN KEY ("tax_module_id")
+  REFERENCES "tax_modules" ("id")
+ /*application='TributaLab'*/[0m
+  [1m[35m (3.1ms)[0m  [1m[35mALTER TABLE "operations" ADD CONSTRAINT "fk_rails_95efa556d6"
+FOREIGN KEY ("tax_module_id")
+  REFERENCES "tax_modules" ("id")
+ /*application='TributaLab'*/[0m
+  [1m[35m (3.1ms)[0m  [1m[35mALTER TABLE "simulation_results" ADD CONSTRAINT "fk_rails_553e104d4e"
+FOREIGN KEY ("simulation_id")
+  REFERENCES "simulations" ("id")
+ /*application='TributaLab'*/[0m
+  [1m[35m (2.4ms)[0m  [1m[35mALTER TABLE "simulations" ADD CONSTRAINT "fk_rails_07b2ec05ff"
+FOREIGN KEY ("operation_id")
+  REFERENCES "operations" ("id")
+ /*application='TributaLab'*/[0m
+  [1m[35m (3.2ms)[0m  [1m[35mALTER TABLE "simulations" ADD CONSTRAINT "fk_rails_edfbd81627"
+FOREIGN KEY ("tax_module_id")
+  REFERENCES "tax_modules" ("id")
+ /*application='TributaLab'*/[0m
+  [1m[35m (2.6ms)[0m  [1m[35mALTER TABLE "simulations" ADD CONSTRAINT "fk_rails_e8258f44f8"
+FOREIGN KEY ("tax_rule_version_id")
+  REFERENCES "tax_rule_versions" ("id")
+ /*application='TributaLab'*/[0m
+  [1m[35m (2.6ms)[0m  [1m[35mALTER TABLE "tax_modules" ADD CONSTRAINT "fk_rails_bcde50eafd"
+FOREIGN KEY ("product_area_id")
+  REFERENCES "product_areas" ("id")
+ /*application='TributaLab'*/[0m
+  [1m[35m (3.3ms)[0m  [1m[35mALTER TABLE "tax_modules" ADD CONSTRAINT "fk_rails_9ece815deb"
+FOREIGN KEY ("sector_id")
+  REFERENCES "sectors" ("id")
+ /*application='TributaLab'*/[0m
+  [1m[35m (3.4ms)[0m  [1m[35mALTER TABLE "tax_parameters" ADD CONSTRAINT "fk_rails_99415bb948"
+FOREIGN KEY ("operation_id")
+  REFERENCES "operations" ("id")
+ /*application='TributaLab'*/[0m
+  [1m[35m (2.0ms)[0m  [1m[35mALTER TABLE "tax_parameters" ADD CONSTRAINT "fk_rails_1dc32a2e91"
+FOREIGN KEY ("tax_module_id")
+  REFERENCES "tax_modules" ("id")
+ /*application='TributaLab'*/[0m
+  [1m[35m (3.1ms)[0m  [1m[35mALTER TABLE "tax_rule_versions" ADD CONSTRAINT "fk_rails_1d10bd25bb"
+FOREIGN KEY ("tax_module_id")
+  REFERENCES "tax_modules" ("id")
+ /*application='TributaLab'*/[0m
+  [1m[35m (8.1ms)[0m  [1m[35mCREATE TABLE "schema_migrations" ("version" character varying NOT NULL PRIMARY KEY) /*application='TributaLab'*/[0m
+  [1m[36mActiveRecord::SchemaMigration Load (1.7ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC /*application='TributaLab'*/[0m
+  [1m[35m (2.0ms)[0m  [1m[32mINSERT INTO "schema_migrations" (version) VALUES (20260528190020) /*application='TributaLab'*/[0m
+  [1m[35m (2.3ms)[0m  [1m[32mINSERT INTO "schema_migrations" (version) VALUES
+(20260528190010),
+(20260528190000),
+(20260528182929),
+(20260528182926),
+(20260528182923),
+(20260528182919),
+(20260528182916),
+(20260528182912),
+(20260528182909),
+(20260528182906),
+(20260528182902),
+(20260528182859); /*application='TributaLab'*/[0m
+  [1m[35m (8.9ms)[0m  [1m[35mCREATE TABLE "ar_internal_metadata" ("key" character varying NOT NULL PRIMARY KEY, "value" character varying, "created_at" timestamp(6) NOT NULL, "updated_at" timestamp(6) NOT NULL) /*application='TributaLab'*/[0m
+  [1m[36mActiveRecord::InternalMetadata Load (1.3ms)[0m  [1m[34mSELECT * FROM "ar_internal_metadata" WHERE "ar_internal_metadata"."key" = 'environment' ORDER BY "ar_internal_metadata"."key" ASC LIMIT 1 /*application='TributaLab'*/[0m
+  [1m[36mActiveRecord::InternalMetadata Create (2.7ms)[0m  [1m[32mINSERT INTO "ar_internal_metadata" ("key", "value", "created_at", "updated_at") VALUES ('environment', 'development', '2026-05-28 19:10:57.223983', '2026-05-28 19:10:57.223987') RETURNING "key" /*application='TributaLab'*/[0m
+  [1m[36mActiveRecord::InternalMetadata Load (0.7ms)[0m  [1m[34mSELECT * FROM "ar_internal_metadata" WHERE "ar_internal_metadata"."key" = 'environment' ORDER BY "ar_internal_metadata"."key" ASC LIMIT 1 /*application='TributaLab'*/[0m
+  [1m[36mActiveRecord::InternalMetadata Update (3.4ms)[0m  [1m[33mUPDATE "ar_internal_metadata" SET "value" = 'test', "updated_at" = '2026-05-28 19:10:57.232698' WHERE "ar_internal_metadata"."key" = 'environment' /*application='TributaLab'*/[0m
+  [1m[36mActiveRecord::InternalMetadata Load (1.1ms)[0m  [1m[34mSELECT * FROM "ar_internal_metadata" WHERE "ar_internal_metadata"."key" = 'schema_sha1' ORDER BY "ar_internal_metadata"."key" ASC LIMIT 1 /*application='TributaLab'*/[0m
+  [1m[36mActiveRecord::InternalMetadata Create (2.5ms)[0m  [1m[32mINSERT INTO "ar_internal_metadata" ("key", "value", "created_at", "updated_at") VALUES ('schema_sha1', '63bd22b94da3bf94afbbfb708768fdfb263e51bc', '2026-05-28 19:10:57.240393', '2026-05-28 19:10:57.240397') RETURNING "key" /*application='TributaLab'*/[0m
+Started GET "/" for 127.0.0.1 at 2026-05-28 16:11:12 -0300
+  [1m[36mActiveRecord::SchemaMigration Load (0.9ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC /*application='TributaLab'*/[0m
+Processing by DashboardController#index as HTML
+  [1m[36mTaxModule Load (1.1ms)[0m  [1m[34mSELECT "tax_modules".* FROM "tax_modules" WHERE "tax_modules"."code" = 'real_estate_tax_reform' LIMIT 1 /*action='index',application='TributaLab',controller='dashboard'*/[0m
+  ↳ app/controllers/dashboard_controller.rb:4:in `index'
+  [1m[36mProductArea Load (2.5ms)[0m  [1m[34mSELECT "product_areas".* FROM "product_areas" WHERE "product_areas"."id" = 1 /*action='index',application='TributaLab',controller='dashboard'*/[0m
+  ↳ app/controllers/dashboard_controller.rb:4:in `index'
+  [1m[36mSector Load (1.2ms)[0m  [1m[34mSELECT "sectors".* FROM "sectors" WHERE "sectors"."id" = 1 /*action='index',application='TributaLab',controller='dashboard'*/[0m
+  ↳ app/controllers/dashboard_controller.rb:4:in `index'
+  [1m[36mOperation Load (1.3ms)[0m  [1m[34mSELECT "operations".* FROM "operations" WHERE "operations"."tax_module_id" = 1 /*action='index',application='TributaLab',controller='dashboard'*/[0m
+  ↳ app/controllers/dashboard_controller.rb:4:in `index'
+  [1m[36mTaxParameter Load (1.2ms)[0m  [1m[34mSELECT "tax_parameters".* FROM "tax_parameters" WHERE "tax_parameters"."tax_module_id" = 1 /*action='index',application='TributaLab',controller='dashboard'*/[0m
+  ↳ app/controllers/dashboard_controller.rb:4:in `index'
+  [1m[36mAssumption Load (1.3ms)[0m  [1m[34mSELECT "assumptions".* FROM "assumptions" WHERE "assumptions"."tax_module_id" = 1 /*action='index',application='TributaLab',controller='dashboard'*/[0m
+  ↳ app/controllers/dashboard_controller.rb:4:in `index'
+  [1m[36mCreditCategory Load (2.9ms)[0m  [1m[34mSELECT "credit_categories".* FROM "credit_categories" WHERE "credit_categories"."tax_module_id" = 1 /*action='index',application='TributaLab',controller='dashboard'*/[0m
+  ↳ app/controllers/dashboard_controller.rb:4:in `index'
+  [1m[36mTaxRuleVersion Load (1.1ms)[0m  [1m[34mSELECT "tax_rule_versions".* FROM "tax_rule_versions" WHERE "tax_rule_versions"."tax_module_id" = 1 /*action='index',application='TributaLab',controller='dashboard'*/[0m
+  ↳ app/controllers/dashboard_controller.rb:4:in `index'
+  [1m[36mTaxRuleVersion Load (2.6ms)[0m  [1m[34mSELECT "tax_rule_versions".* FROM "tax_rule_versions" WHERE "tax_rule_versions"."tax_module_id" = 1 ORDER BY "tax_rule_versions"."effective_from" DESC, "tax_rule_versions"."created_at" DESC LIMIT 1 /*action='index',application='TributaLab',controller='dashboard'*/[0m
+  ↳ app/controllers/dashboard_controller.rb:9:in `index'
+  [1m[36mTaxParameter Load (2.6ms)[0m  [1m[34mSELECT "tax_parameters".* FROM "tax_parameters" WHERE "tax_parameters"."tax_module_id" = 1 AND "tax_parameters"."validation_status" IN ('pending', 'divergent') ORDER BY "tax_parameters"."code" ASC /*action='index',application='TributaLab',controller='dashboard'*/[0m
+  ↳ app/services/tax_rules/validation_alerts.rb:19:in `map'
+  [1m[36mOperation Load (1.1ms)[0m  [1m[34mSELECT "operations".* FROM "operations" WHERE "operations"."id" IN (3, 2, 6, 1) /*action='index',application='TributaLab',controller='dashboard'*/[0m
+  ↳ app/services/tax_rules/validation_alerts.rb:19:in `map'
+  [1m[36mAssumption Load (1.7ms)[0m  [1m[34mSELECT "assumptions".* FROM "assumptions" WHERE "assumptions"."tax_module_id" = 1 AND "assumptions"."status" IN ('pending', 'divergent') ORDER BY "assumptions"."position" ASC, "assumptions"."title" ASC /*action='index',application='TributaLab',controller='dashboard'*/[0m
+  ↳ app/services/tax_rules/validation_alerts.rb:32:in `map'
+  [1m[36mOperation Load (2.2ms)[0m  [1m[34mSELECT "operations".* FROM "operations" WHERE "operations"."id" IN (3, 6, 4, 5, 7) /*action='index',application='TributaLab',controller='dashboard'*/[0m
+  ↳ app/services/tax_rules/validation_alerts.rb:32:in `map'
+  Rendering layout layouts/application.html.erb
+  Rendering dashboard/index.html.erb within layouts/application
+  [1m[36mOperation Count (2.5ms)[0m  [1m[34mSELECT COUNT(*) FROM "operations" WHERE "operations"."tax_module_id" = 1 /*action='index',application='TributaLab',controller='dashboard'*/[0m
+  ↳ app/views/dashboard/index.html.erb:40
+  [1m[36mOperation Load (1.1ms)[0m  [1m[34mSELECT "operations".* FROM "operations" WHERE "operations"."tax_module_id" = 1 ORDER BY "operations"."position" ASC, "operations"."name" ASC /*action='index',application='TributaLab',controller='dashboard'*/[0m
+  ↳ app/views/dashboard/index.html.erb:54
+  [1m[36mTaxParameter Load (1.5ms)[0m  [1m[34mSELECT "tax_parameters".* FROM "tax_parameters" WHERE "tax_parameters"."tax_module_id" = 1 ORDER BY "tax_parameters"."code" ASC /*action='index',application='TributaLab',controller='dashboard'*/[0m
+  ↳ app/views/dashboard/index.html.erb:104
+  [1m[36mCACHE Operation Load (0.0ms)[0m  [1m[34mSELECT "operations".* FROM "operations" WHERE "operations"."id" IN (3, 2, 6, 1)[0m
+  ↳ app/views/dashboard/index.html.erb:104
+  [1m[36mCreditCategory Load (1.2ms)[0m  [1m[34mSELECT "credit_categories".* FROM "credit_categories" WHERE "credit_categories"."tax_module_id" = 1 ORDER BY "credit_categories"."name" ASC /*action='index',application='TributaLab',controller='dashboard'*/[0m
+  ↳ app/views/dashboard/index.html.erb:128
+  Rendered dashboard/index.html.erb within layouts/application (Duration: 22.6ms | GC: 0.0ms)
+  Rendered layout layouts/application.html.erb (Duration: 34.1ms | GC: 0.0ms)
+Completed 200 OK in 341ms (Views: 39.6ms | ActiveRecord: 50.8ms (18 queries, 1 cached) | GC: 0.6ms)
+
+
+Started GET "/simulations/new" for 127.0.0.1 at 2026-05-28 16:11:13 -0300
+Processing by SimulationsController#new as HTML
+  [1m[36mTaxModule Load (0.9ms)[0m  [1m[34mSELECT "tax_modules".* FROM "tax_modules" WHERE "tax_modules"."code" = 'real_estate_tax_reform' LIMIT 1 /*action='new',application='TributaLab',controller='simulations'*/[0m
+  ↳ app/controllers/simulations_controller.rb:40:in `load_form_context'
+  [1m[36mOperation Load (0.9ms)[0m  [1m[34mSELECT "operations".* FROM "operations" WHERE "operations"."tax_module_id" = 1 /*action='new',application='TributaLab',controller='simulations'*/[0m
+  ↳ app/controllers/simulations_controller.rb:40:in `load_form_context'
+  [1m[36mTaxRuleVersion Load (0.9ms)[0m  [1m[34mSELECT "tax_rule_versions".* FROM "tax_rule_versions" WHERE "tax_rule_versions"."tax_module_id" = 1 /*action='new',application='TributaLab',controller='simulations'*/[0m
+  ↳ app/controllers/simulations_controller.rb:40:in `load_form_context'
+  [1m[36mTaxRuleVersion Load (1.0ms)[0m  [1m[34mSELECT "tax_rule_versions".* FROM "tax_rule_versions" WHERE "tax_rule_versions"."tax_module_id" = 1 ORDER BY "tax_rule_versions"."effective_from" DESC, "tax_rule_versions"."created_at" DESC LIMIT 1 /*action='new',application='TributaLab',controller='simulations'*/[0m
+  ↳ app/controllers/simulations_controller.rb:42:in `load_form_context'
+  Rendering layout layouts/application.html.erb
+  Rendering simulations/new.html.erb within layouts/application
+  [1m[36mOperation Load (1.4ms)[0m  [1m[34mSELECT "operations".* FROM "operations" WHERE "operations"."tax_module_id" = 1 AND "operations"."code" IN ('sale_property', 'sale_residential_lot', 'lease_property', 'exchange_with_boot') ORDER BY "operations"."position" ASC, "operations"."name" ASC /*action='new',application='TributaLab',controller='simulations'*/[0m
+  ↳ app/views/simulations/new.html.erb:32
+  Rendered simulations/new.html.erb within layouts/application (Duration: 5.8ms | GC: 0.0ms)
+  Rendered layout layouts/application.html.erb (Duration: 7.1ms | GC: 0.0ms)
+Completed 200 OK in 33ms (Views: 9.9ms | ActiveRecord: 5.1ms (5 queries, 0 cached) | GC: 0.0ms)
+
+
+Started GET "/" for 127.0.0.1 at 2026-05-28 16:11:20 -0300
+Processing by DashboardController#index as HTML
+  [1m[36mTaxModule Load (1.3ms)[0m  [1m[34mSELECT "tax_modules".* FROM "tax_modules" WHERE "tax_modules"."code" = 'real_estate_tax_reform' LIMIT 1 /*action='index',application='TributaLab',controller='dashboard'*/[0m
+  ↳ app/controllers/dashboard_controller.rb:4:in `index'
+  [1m[36mProductArea Load (0.8ms)[0m  [1m[34mSELECT "product_areas".* FROM "product_areas" WHERE "product_areas"."id" = 1 /*action='index',application='TributaLab',controller='dashboard'*/[0m
+  ↳ app/controllers/dashboard_controller.rb:4:in `index'
+  [1m[36mSector Load (1.5ms)[0m  [1m[34mSELECT "sectors".* FROM "sectors" WHERE "sectors"."id" = 1 /*action='index',application='TributaLab',controller='dashboard'*/[0m
+  ↳ app/controllers/dashboard_controller.rb:4:in `index'
+  [1m[36mOperation Load (0.9ms)[0m  [1m[34mSELECT "operations".* FROM "operations" WHERE "operations"."tax_module_id" = 1 /*action='index',application='TributaLab',controller='dashboard'*/[0m
+  ↳ app/controllers/dashboard_controller.rb:4:in `index'
+  [1m[36mTaxParameter Load (0.9ms)[0m  [1m[34mSELECT "tax_parameters".* FROM "tax_parameters" WHERE "tax_parameters"."tax_module_id" = 1 /*action='index',application='TributaLab',controller='dashboard'*/[0m
+  ↳ app/controllers/dashboard_controller.rb:4:in `index'
+  [1m[36mAssumption Load (1.1ms)[0m  [1m[34mSELECT "assumptions".* FROM "assumptions" WHERE "assumptions"."tax_module_id" = 1 /*action='index',application='TributaLab',controller='dashboard'*/[0m
+  ↳ app/controllers/dashboard_controller.rb:4:in `index'
+  [1m[36mCreditCategory Load (0.9ms)[0m  [1m[34mSELECT "credit_categories".* FROM "credit_categories" WHERE "credit_categories"."tax_module_id" = 1 /*action='index',application='TributaLab',controller='dashboard'*/[0m
+  ↳ app/controllers/dashboard_controller.rb:4:in `index'
+  [1m[36mTaxRuleVersion Load (1.2ms)[0m  [1m[34mSELECT "tax_rule_versions".* FROM "tax_rule_versions" WHERE "tax_rule_versions"."tax_module_id" = 1 /*action='index',application='TributaLab',controller='dashboard'*/[0m
+  ↳ app/controllers/dashboard_controller.rb:4:in `index'
+  [1m[36mTaxRuleVersion Load (1.0ms)[0m  [1m[34mSELECT "tax_rule_versions".* FROM "tax_rule_versions" WHERE "tax_rule_versions"."tax_module_id" = 1 ORDER BY "tax_rule_versions"."effective_from" DESC, "tax_rule_versions"."created_at" DESC LIMIT 1 /*action='index',application='TributaLab',controller='dashboard'*/[0m
+  ↳ app/controllers/dashboard_controller.rb:9:in `index'
+  [1m[36mTaxParameter Load (1.0ms)[0m  [1m[34mSELECT "tax_parameters".* FROM "tax_parameters" WHERE "tax_parameters"."tax_module_id" = 1 AND "tax_parameters"."validation_status" IN ('pending', 'divergent') ORDER BY "tax_parameters"."code" ASC /*action='index',application='TributaLab',controller='dashboard'*/[0m
+  ↳ app/services/tax_rules/validation_alerts.rb:19:in `map'
+  [1m[36mOperation Load (1.1ms)[0m  [1m[34mSELECT "operations".* FROM "operations" WHERE "operations"."id" IN (3, 2, 6, 1) /*action='index',application='TributaLab',controller='dashboard'*/[0m
+  ↳ app/services/tax_rules/validation_alerts.rb:19:in `map'
+  [1m[36mAssumption Load (1.2ms)[0m  [1m[34mSELECT "assumptions".* FROM "assumptions" WHERE "assumptions"."tax_module_id" = 1 AND "assumptions"."status" IN ('pending', 'divergent') ORDER BY "assumptions"."position" ASC, "assumptions"."title" ASC /*action='index',application='TributaLab',controller='dashboard'*/[0m
+  ↳ app/services/tax_rules/validation_alerts.rb:32:in `map'
+  [1m[36mOperation Load (1.8ms)[0m  [1m[34mSELECT "operations".* FROM "operations" WHERE "operations"."id" IN (3, 6, 4, 5, 7) /*action='index',application='TributaLab',controller='dashboard'*/[0m
+  ↳ app/services/tax_rules/validation_alerts.rb:32:in `map'
+  Rendering layout layouts/application.html.erb
+  Rendering dashboard/index.html.erb within layouts/application
+  [1m[36mOperation Count (1.0ms)[0m  [1m[34mSELECT COUNT(*) FROM "operations" WHERE "operations"."tax_module_id" = 1 /*action='index',application='TributaLab',controller='dashboard'*/[0m
+  ↳ app/views/dashboard/index.html.erb:40
+  [1m[36mOperation Load (1.1ms)[0m  [1m[34mSELECT "operations".* FROM "operations" WHERE "operations"."tax_module_id" = 1 ORDER BY "operations"."position" ASC, "operations"."name" ASC /*action='index',application='TributaLab',controller='dashboard'*/[0m
+  ↳ app/views/dashboard/index.html.erb:54
+  [1m[36mTaxParameter Load (1.2ms)[0m  [1m[34mSELECT "tax_parameters".* FROM "tax_parameters" WHERE "tax_parameters"."tax_module_id" = 1 ORDER BY "tax_parameters"."code" ASC /*action='index',application='TributaLab',controller='dashboard'*/[0m
+  ↳ app/views/dashboard/index.html.erb:104
+  [1m[36mCACHE Operation Load (0.0ms)[0m  [1m[34mSELECT "operations".* FROM "operations" WHERE "operations"."id" IN (3, 2, 6, 1)[0m
+  ↳ app/views/dashboard/index.html.erb:104
+  [1m[36mCreditCategory Load (1.7ms)[0m  [1m[34mSELECT "credit_categories".* FROM "credit_categories" WHERE "credit_categories"."tax_module_id" = 1 ORDER BY "credit_categories"."name" ASC /*action='index',application='TributaLab',controller='dashboard'*/[0m
+  ↳ app/views/dashboard/index.html.erb:128
+  Rendered dashboard/index.html.erb within layouts/application (Duration: 15.6ms | GC: 0.0ms)
+  Rendered layout layouts/application.html.erb (Duration: 16.7ms | GC: 0.0ms)
+Completed 200 OK in 68ms (Views: 12.5ms | ActiveRecord: 19.2ms (18 queries, 1 cached) | GC: 0.0ms)
+
+
+Started GET "/simulations/new" for 127.0.0.1 at 2026-05-28 16:11:20 -0300
+Processing by SimulationsController#new as HTML
+  [1m[36mTaxModule Load (1.0ms)[0m  [1m[34mSELECT "tax_modules".* FROM "tax_modules" WHERE "tax_modules"."code" = 'real_estate_tax_reform' LIMIT 1 /*action='new',application='TributaLab',controller='simulations'*/[0m
+  ↳ app/controllers/simulations_controller.rb:40:in `load_form_context'
+  [1m[36mOperation Load (0.6ms)[0m  [1m[34mSELECT "operations".* FROM "operations" WHERE "operations"."tax_module_id" = 1 /*action='new',application='TributaLab',controller='simulations'*/[0m
+  ↳ app/controllers/simulations_controller.rb:40:in `load_form_context'
+  [1m[36mTaxRuleVersion Load (0.9ms)[0m  [1m[34mSELECT "tax_rule_versions".* FROM "tax_rule_versions" WHERE "tax_rule_versions"."tax_module_id" = 1 /*action='new',application='TributaLab',controller='simulations'*/[0m
+  ↳ app/controllers/simulations_controller.rb:40:in `load_form_context'
+  [1m[36mTaxRuleVersion Load (0.9ms)[0m  [1m[34mSELECT "tax_rule_versions".* FROM "tax_rule_versions" WHERE "tax_rule_versions"."tax_module_id" = 1 ORDER BY "tax_rule_versions"."effective_from" DESC, "tax_rule_versions"."created_at" DESC LIMIT 1 /*action='new',application='TributaLab',controller='simulations'*/[0m
+  ↳ app/controllers/simulations_controller.rb:42:in `load_form_context'
+  Rendering layout layouts/application.html.erb
+  Rendering simulations/new.html.erb within layouts/application
+  [1m[36mOperation Load (1.7ms)[0m  [1m[34mSELECT "operations".* FROM "operations" WHERE "operations"."tax_module_id" = 1 AND "operations"."code" IN ('sale_property', 'sale_residential_lot', 'lease_property', 'exchange_with_boot') ORDER BY "operations"."position" ASC, "operations"."name" ASC /*action='new',application='TributaLab',controller='simulations'*/[0m
+  ↳ app/views/simulations/new.html.erb:32
+  Rendered simulations/new.html.erb within layouts/application (Duration: 4.7ms | GC: 0.0ms)
+  Rendered layout layouts/application.html.erb (Duration: 5.6ms | GC: 0.0ms)
+Completed 200 OK in 24ms (Views: 4.6ms | ActiveRecord: 5.1ms (5 queries, 0 cached) | GC: 0.0ms)
+
+

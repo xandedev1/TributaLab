@@ -1,0 +1,82 @@
+full_ibs_cbs_rate:
+  code: full_ibs_cbs_rate
+  name: Aliquota cheia IBS/CBS
+  parameter_type: rate
+  value_decimal: 0.265
+  unit: decimal
+  validation_status: pending
+  legal_reference: Planilha Denis
+  notes: Parametro global citado como 26,5%.
+  tax_module: real_estate_tax_reform
+
+sale_property_social_deduction:
+  code: sale_property_social_deduction
+  name: Redutor venda imovel residencial
+  parameter_type: deduction
+  value_decimal: 100000
+  unit: BRL
+  validation_status: pending
+  legal_reference: Art. 259 pendente
+  notes: Redutor de R$ 100.000.
+  tax_module: real_estate_tax_reform
+  operation: sale_property
+
+sale_incorporation_reduction:
+  code: sale_incorporation_reduction
+  name: Reducao venda/incorporacao
+  parameter_type: reduction
+  value_decimal: 0.5
+  unit: decimal
+  validation_status: pending
+  legal_reference: Art. 261 pendente
+  notes: Reducao de 50%.
+  tax_module: real_estate_tax_reform
+  operation: sale_property
+
+sale_lot_social_deduction:
+  code: sale_lot_social_deduction
+  name: Redutor venda lote residencial
+  parameter_type: deduction
+  value_decimal: 30000
+  unit: BRL
+  validation_status: pending
+  legal_reference: Art. 259 pendente
+  notes: Redutor de R$ 30.000.
+  tax_module: real_estate_tax_reform
+  operation: sale_residential_lot
+
+lot_sale_reduction:
+  code: lot_sale_reduction
+  name: Reducao venda de lote residencial
+  parameter_type: reduction
+  value_decimal: 0.5
+  unit: decimal
+  validation_status: pending
+  legal_reference: Art. 261 pendente
+  notes: Reducao de 50%.
+  tax_module: real_estate_tax_reform
+  operation: sale_residential_lot
+
+lease_social_deduction:
+  code: lease_social_deduction
+  name: Redutor locacao residencial
+  parameter_type: deduction
+  value_decimal: 600
+  unit: BRL
+  validation_status: pending
+  legal_reference: Art. 260 pendente
+  notes: Redutor de R$ 600.
+  tax_module: real_estate_tax_reform
+  operation: lease_property
+
+lease_reduction:
+  code: lease_reduction
+  name: Reducao locacao
+  parameter_type: reduction
+  value_decimal: 0.7
+  unit: decimal
+  validation_status: pending
+  legal_reference: Art. 261 pendente
+  notes: Reducao de 70% pendente de validacao.
+  tax_module: real_estate_tax_reform
+  operation: lease_property

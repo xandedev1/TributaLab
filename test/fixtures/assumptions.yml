@@ -1,0 +1,40 @@
+lease_deduct_iptu_condo:
+  code: lease_deduct_iptu_condo
+  title: Confirmar deducao de IPTU e condominio
+  description: Formula e exemplo da planilha divergem.
+  status: pending
+  impact: Afeta base da locacao.
+  source_reference: leitura_tabela_denis_reforma_imobiliaria_2026-05-28.md
+  position: 1
+  tax_module: real_estate_tax_reform
+  operation: lease_property
+
+legal_basis_lc_version:
+  code: legal_basis_lc_version
+  title: Confirmar LC 227/2026 vs LC 214/2025
+  description: Planilha mistura referencias legais.
+  status: pending
+  impact: Afeta base legal exibida.
+  source_reference: leitura_tabela_denis_reforma_imobiliaria_2026-05-28.md
+  position: 2
+  tax_module: real_estate_tax_reform
+
+non_negative_tax_base:
+  code: non_negative_tax_base
+  title: Confirmar base negativa apos redutor
+  description: Sistema usa max(0, base - redutor) ate validacao.
+  status: pending
+  impact: Evita imposto negativo.
+  source_reference: leitura_tabela_denis_reforma_imobiliaria_2026-05-28.md
+  position: 3
+  tax_module: real_estate_tax_reform
+
+credit_exceeds_debit:
+  code: credit_exceeds_debit
+  title: Confirmar tratamento de credito maior que debito
+  description: Simulacao zera imposto liquido quando credito excede debito.
+  status: pending
+  impact: Afeta memoria de creditos.
+  source_reference: leitura_tabela_denis_reforma_imobiliaria_2026-05-28.md
+  position: 4
+  tax_module: real_estate_tax_reform

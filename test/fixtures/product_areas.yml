@@ -1,0 +1,11 @@
+tax_reform:
+  code: tax_reform
+  name: Reforma Tributaria
+  description: Simulacoes futuras de IBS/CBS.
+  position: 1
+
+credit_recovery:
+  code: credit_recovery
+  name: Recuperacao de Credito
+  description: Analise de recuperacao de creditos pagos a maior.
+  position: 2

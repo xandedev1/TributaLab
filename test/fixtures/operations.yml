@@ -1,0 +1,31 @@
+sale_property:
+  code: sale_property
+  name: Venda de imovel / incorporacao
+  description: Venda com redutor e reducao de aliquota.
+  tax_module: real_estate_tax_reform
+  status: active
+  position: 1
+
+sale_residential_lot:
+  code: sale_residential_lot
+  name: Venda de lote residencial
+  description: Venda de lote com redutor e reducao de aliquota.
+  tax_module: real_estate_tax_reform
+  status: active
+  position: 2
+
+lease_property:
+  code: lease_property
+  name: Locacao de imoveis
+  description: Locacao com redutor e pendencia de base.
+  tax_module: real_estate_tax_reform
+  status: active
+  position: 3
+
+exchange_with_boot:
+  code: exchange_with_boot
+  name: Permuta com torna
+  description: Permuta com incidencia parcial sobre a torna.
+  tax_module: real_estate_tax_reform
+  status: active
+  position: 4

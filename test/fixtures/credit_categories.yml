@@ -1,0 +1,7 @@
+materials_construction:
+  code: materials_construction
+  name: Materiais de construcao
+  description: Materiais vinculados a construcao civil.
+  validation_status: pending
+  source_reference: Planilha Denis
+  tax_module: real_estate_tax_reform

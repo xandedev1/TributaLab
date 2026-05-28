@@ -1,0 +1,14 @@
+sale_draft:
+  name: Simulacao draft venda
+  tax_module: real_estate_tax_reform
+  operation: sale_property
+  tax_rule_version: real_estate_tax_reform_v1
+  input_data: {}
+  output_data: {}
+  parameters_snapshot: {}
+  assumptions_snapshot: []
+  alerts_snapshot: []
+  legal_bases_snapshot: []
+  rule_version: mvp-001
+  rule_version_snapshot: {}
+  notes: Fixture inicial.

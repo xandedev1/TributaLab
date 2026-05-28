@@ -1,0 +1,11 @@
+real_estate_construction:
+  code: real_estate_construction
+  name: Imobiliario / Construcao Civil
+  description: Primeiro recorte operacional.
+  position: 1
+
+future_sector:
+  code: future_sector
+  name: Setor Futuro
+  description: Reserva para testes de expansao.
+  position: 2

@@ -1,0 +1,13 @@
+sale_draft_result:
+  simulation: sale_draft
+  base_gross: 500000
+  applied_deduction: 100000
+  base_net: 400000
+  full_rate: 0.265
+  applied_reduction: 0.5
+  effective_rate: 0.1325
+  tax_debit: 53000
+  credits: 0
+  tax_due: 53000
+  validation_alerts: []
+  calculation_details: {}

@@ -1,0 +1,17 @@
+real_estate_tax_reform:
+  code: real_estate_tax_reform
+  name: Reforma Tributaria Imobiliaria
+  description: Modulo inicial do TributaLab.
+  product_area: tax_reform
+  sector: real_estate_construction
+  status: active
+  position: 1
+
+credit_recovery_future:
+  code: credit_recovery_future
+  name: Recuperacao de Credito Futura
+  description: Modulo planejado para testes.
+  product_area: credit_recovery
+  sector: future_sector
+  status: planned
+  position: 2
