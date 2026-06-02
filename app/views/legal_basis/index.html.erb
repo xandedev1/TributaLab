@@ -1,0 +1,97 @@
+<% content_for :title, "Base Legal - Prev Lab" %>
+
+<div class="mx-auto flex w-full max-w-[96rem] flex-col gap-6">
+  <header class="tl-command-bar">
+    <div class="grid gap-5 lg:grid-cols-[1fr_auto] lg:items-end">
+      <div>
+        <p class="tl-kicker">Sustentacao / Recuperacao de credito</p>
+        <h1 class="tl-page-title tl-page-title--compact">Base Legal</h1>
+        <p class="tl-page-subtitle mt-3 max-w-3xl">Visualizacao da planilha de sustentacao enviada por Marcos, preservando cada aba como uma tabela consultavel.</p>
+      </div>
+      <div class="flex flex-wrap gap-2">
+        <span class="tl-chip tl-chip--info"><%= @sheets.size %> abas</span>
+        <span class="tl-chip tl-chip--ghost">Fonte local XLSX</span>
+      </div>
+    </div>
+  </header>
+
+  <nav class="tl-section-tabs" aria-label="Abas da base legal">
+    <% @sheets.each do |sheet| %>
+      <% sheet_params = { sheet: sheet.name } %>
+      <% sheet_params[:fullscreen] = 1 if @fullscreen %>
+      <%= link_to sheet.name, legal_basis_path(sheet_params), class: sheet.name == @sheet.name ? "tl-tab tl-tab--active" : "tl-tab" %>
+    <% end %>
+  </nav>
+
+  <section class="grid gap-4 md:grid-cols-2 xl:grid-cols-5">
+    <% @sheets.each do |sheet| %>
+      <article class="tl-card p-4">
+        <p class="tl-metric-label"><%= sheet.name %></p>
+        <p class="tl-metric-value"><%= sheet.row_count %></p>
+        <p class="tl-copy mt-2 text-xs">linhas de dados</p>
+      </article>
+    <% end %>
+  </section>
+
+  <section class="tl-panel overflow-hidden <%= "tl-legal-panel--fullscreen" if @fullscreen %>">
+    <div class="tl-panel-header flex flex-col gap-3">
+      <div class="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
+        <div>
+          <h2 class="tl-section-title"><%= @sheet.name %></h2>
+          <p class="tl-panel-subtitle"><%= @sheet.row_count %> linhas extraidas diretamente da aba da planilha.</p>
+        </div>
+        <div class="flex flex-wrap gap-2">
+          <% if @fullscreen %>
+            <%= link_to "Sair da tela cheia", legal_basis_path(sheet: @sheet.name), class: "tl-button tl-button--secondary" %>
+          <% else %>
+            <%= link_to "Tela cheia", legal_basis_path(sheet: @sheet.name, fullscreen: 1), class: "tl-button tl-button--info" %>
+          <% end %>
+          <span class="tl-chip tl-chip--ghost"><%= @sheet.headers.size %> colunas</span>
+        </div>
+      </div>
+      <% if @fullscreen %>
+        <nav class="tl-section-tabs tl-legal-fullscreen-tabs" aria-label="Abas da base legal em tela cheia">
+          <% @sheets.each do |sheet| %>
+            <%= link_to sheet.name, legal_basis_path(sheet: sheet.name, fullscreen: 1), class: sheet.name == @sheet.name ? "tl-tab tl-tab--active" : "tl-tab" %>
+          <% end %>
+        </nav>
+      <% end %>
+    </div>
+
+    <div class="tl-table-wrap tl-legal-table-wrap">
+      <table class="tl-table tl-legal-table">
+        <thead>
+          <tr>
+            <th>Linha</th>
+            <% @sheet.headers.each do |header| %>
+              <th><%= header %></th>
+            <% end %>
+          </tr>
+        </thead>
+        <tbody>
+          <% @sheet.rows.each do |row| %>
+            <tr>
+              <td class="tl-mono text-xs text-slate-400"><%= row.source_row %></td>
+              <% row.values.each_with_index do |value, index| %>
+                <% header = @sheet.headers[index].to_s %>
+                <td class="<%= header == "Base Legal" ? "tl-legal-cell" : nil %>">
+                  <% if value.present? %>
+                    <% if value == "VERDADEIRO" %>
+                      <span class="tl-badge tl-badge--success">OK</span>
+                    <% elsif value == "FALSO" %>
+                      <span class="tl-badge tl-badge--danger">FALSO</span>
+                    <% else %>
+                      <%= value %>
+                    <% end %>
+                  <% else %>
+                    <span class="tl-muted">-</span>
+                  <% end %>
+                </td>
+              <% end %>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  </section>
+</div>

@@ -10,7 +10,9 @@ Requisitos iniciais:
 
 - Ruby 3.3+
 - Rails 8.1+
-- PostgreSQL acessivel localmente
+- PostgreSQL local em execucao
+
+Este projeto deve usar PostgreSQL local no desenvolvimento. Configure as credenciais locais por variaveis de ambiente quando o servidor exigir usuario/senha.
 
 Comandos:
 
@@ -21,19 +23,18 @@ ruby bin/rails test
 ruby bin/rails server
 ```
 
-Se o PostgreSQL local usar host, porta, usuario ou senha especificos, configure as variaveis `POSTGRES_HOST`, `POSTGRES_PORT`, `POSTGRES_USER`, `POSTGRES_PASSWORD` ou `DATABASE_URL` conforme o ambiente.
-
-Exemplo com PostgreSQL em Docker para desenvolvimento no PowerShell:
+Exemplo com PostgreSQL local no PowerShell:
 
 ```powershell
-docker run -d --name tributalab-postgres-dev -e POSTGRES_USER=tributalab -e POSTGRES_PASSWORD=tributalab -e POSTGRES_DB=postgres -p 55432:5432 postgres:16
-$env:POSTGRES_HOST="localhost"
-$env:POSTGRES_PORT="55432"
-$env:POSTGRES_USER="tributalab"
-$env:POSTGRES_PASSWORD="tributalab"
+$env:POSTGRES_HOST="127.0.0.1"
+$env:POSTGRES_PORT="5432"
+$env:POSTGRES_USER="seu_usuario_local"
+$env:POSTGRES_PASSWORD="sua_senha_local"
 ruby bin/rails db:create db:migrate db:seed
+ruby bin/rails db:test:prepare
+ruby bin/rails test
 ```
 
 ## Escopo atual
 
-A Etapa 001 cria o esqueleto tecnico, a modelagem inicial, seeds do modulo imobiliario, tela operacional inicial e documentacao de handoff. Calculos completos entram a partir da Etapa 002.
+Ate a Etapa 003, o app possui dashboard operacional, oito simuladores do modulo Reforma Tributaria Imobiliaria, snapshots auditaveis, listagem de simulacoes, casos internos simples e telas de consulta de parametros e assumptions. Ainda nao deve ser usado com empresas reais ou clientes externos.

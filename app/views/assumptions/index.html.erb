@@ -1,0 +1,47 @@
+<% content_for :title, "Premissas - Prev Lab" %>
+
+<div class="mx-auto flex w-full max-w-7xl flex-col gap-6">
+  <header class="tl-header-card p-5 sm:p-6">
+    <div class="grid gap-5 sm:grid-cols-[1fr_auto] sm:items-end">
+      <div>
+        <p class="tl-kicker">Hipoteses de regra</p>
+        <h1 class="tl-page-title tl-page-title--compact">Premissas</h1>
+        <p class="tl-page-subtitle mt-3 max-w-2xl"><%= @tax_module.name %>. Pontos assumidos ou pendentes de confirmacao para manter a simulacao auditavel.</p>
+      </div>
+      <%= link_to "Painel", root_path, class: button_classes %>
+    </div>
+  </header>
+
+  <section class="grid gap-4 md:grid-cols-3">
+    <article class="tl-card tl-card-hover p-5">
+      <p class="tl-metric-label">Total</p>
+      <p class="tl-metric-value"><%= @assumptions.size %></p>
+    </article>
+    <article class="tl-card tl-card-hover p-5">
+      <p class="tl-metric-label">Pendentes</p>
+      <p class="tl-metric-value"><%= @assumptions.count { |assumption| assumption.status != "validated" } %></p>
+    </article>
+    <article class="tl-card tl-card-hover p-5">
+      <p class="tl-metric-label">Operacionais</p>
+      <p class="tl-metric-value"><%= @assumptions.count { |assumption| assumption.operation_id.present? } %></p>
+    </article>
+  </section>
+
+  <section class="grid gap-4 md:grid-cols-2">
+    <% @assumptions.each do |assumption| %>
+      <article class="tl-card tl-card-hover p-5">
+        <div class="flex flex-wrap items-center gap-2">
+          <p class="tl-mono text-xs text-[color:var(--tl-muted)]"><%= assumption.code %></p>
+          <span class="<%= status_badge_classes(assumption.status) %>"><%= status_label(assumption.status) %></span>
+        </div>
+        <h2 class="mt-3 text-base font-semibold text-white"><%= assumption.title %></h2>
+        <p class="tl-copy mt-2 text-sm"><%= assumption.description %></p>
+        <dl class="mt-4 grid gap-3 border-t border-white/10 pt-4 text-sm">
+          <div><dt class="tl-muted">Modulo/operacao</dt><dd class="mt-1 font-semibold text-white"><%= assumption.operation&.name || @tax_module.name %></dd></div>
+          <div><dt class="tl-muted">Impacto</dt><dd class="tl-copy mt-1"><%= assumption.impact %></dd></div>
+          <div><dt class="tl-muted">Fonte</dt><dd class="tl-copy mt-1"><%= assumption.source_reference %></dd></div>
+        </dl>
+      </article>
+    <% end %>
+  </section>
+</div>

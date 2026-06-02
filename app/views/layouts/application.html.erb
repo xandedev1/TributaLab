@@ -1,31 +1,108 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title><%= content_for(:title) || "TributaLab" %></title>
+    <title><%= content_for(:title) || "Prev Lab" %></title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="application-name" content="TributaLab">
+    <meta name="application-name" content="Prev Lab">
     <meta name="mobile-web-app-capable" content="yes">
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
 
     <%= yield :head %>
 
-    <%# Enable PWA manifest for installable apps (make sure to enable in config/routes.rb too!) %>
-    <%#= tag.link rel: "manifest", href: pwa_manifest_path(format: :json) %>
-
     <link rel="icon" href="/icon.png" type="image/png">
-    <link rel="icon" href="/icon.svg" type="image/svg+xml">
     <link rel="apple-touch-icon" href="/icon.png">
 
-    <%# Includes all stylesheet files in app/assets/stylesheets %>
     <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
     <%= javascript_importmap_tags %>
   </head>
 
-  <body class="bg-zinc-50 text-zinc-950 antialiased">
-    <main class="min-h-screen px-4 py-6 sm:px-6 lg:px-8">
-      <%= yield %>
-    </main>
+  <body class="tl-body antialiased">
+    <div class="tl-bg-canvas" aria-hidden="true"></div>
+    <div class="tl-bg-grid" aria-hidden="true"></div>
+    <div class="tl-bg-ribbon" aria-hidden="true"></div>
+
+    <div class="relative z-10 min-h-screen lg:grid lg:grid-cols-[18rem_1fr]">
+      <aside class="tl-sidebar hidden lg:fixed lg:inset-y-0 lg:left-0 lg:flex lg:w-72 lg:flex-col">
+        <div class="flex h-full flex-col px-5 py-6">
+          <%= link_to root_path, class: "tl-brand-card tl-brand-card--logo block p-4 transition", aria: { label: "Prev Lab" } do %>
+            <span class="tl-logo-plate">
+              <%= image_tag "prevlab-logo-dark.png", alt: "Prev Lab", class: "tl-brand-logo" %>
+            </span>
+            <span class="tl-copy mt-4 block text-sm">Tecnologia previdenciaria para revisar rubricas, simulacoes e trilhas auditaveis.</span>
+          <% end %>
+
+          <nav class="mt-6 grid gap-4" aria-label="Navegacao principal">
+            <% shell_nav_sections.each do |section| %>
+              <% if section[:path].present? %>
+                <%= link_to section[:path], class: shell_nav_link_classes(section[:path]) do %>
+                  <span><%= section[:label] %></span>
+                  <% if shell_nav_active?(section[:path]) %>
+                    <span class="tl-live-dot" aria-hidden="true"></span>
+                  <% end %>
+                <% end %>
+              <% else %>
+                <details class="tl-nav-section <%= "tl-nav-section--active" if shell_nav_section_active?(section) %> <%= "tl-nav-section--icon-only" if section[:icon] == "gear" %>" <%= "open" if shell_nav_section_active?(section) %>>
+                  <summary class="tl-nav-section-summary" aria-label="<%= section[:label] %>">
+                    <% if section[:icon] == "gear" %>
+                      <span class="tl-nav-icon" aria-hidden="true">&#9881;</span>
+                      <span class="sr-only"><%= section[:label] %></span>
+                    <% else %>
+                      <span><%= section[:label] %></span>
+                      <span class="tl-nav-caret" aria-hidden="true"></span>
+                    <% end %>
+                  </summary>
+                  <div class="mt-2 grid gap-1.5">
+                    <% section[:items].each do |item| %>
+                      <% if item[:children].present? %>
+                        <div class="tl-nav-subgroup <%= "tl-nav-subgroup--active" if shell_nav_item_active?(item) %>">
+                          <p class="tl-nav-subgroup-label"><%= item[:label] %></p>
+                          <div class="mt-1 grid gap-1">
+                            <% item[:children].each do |child| %>
+                              <%= link_to child[:label], child[:path], class: shell_nav_sublink_classes(child[:path]) %>
+                            <% end %>
+                          </div>
+                        </div>
+                      <% else %>
+                        <%= link_to item[:label], item[:path], class: shell_nav_sublink_classes(item[:path]) %>
+                      <% end %>
+                    <% end %>
+                  </div>
+                </details>
+              <% end %>
+            <% end %>
+          </nav>
+
+          <div class="mt-auto" aria-hidden="true"></div>
+        </div>
+      </aside>
+
+      <div class="lg:col-start-2">
+        <header class="tl-mobile-header sticky top-0 z-30 mx-3 mt-3 px-4 py-3 backdrop-blur lg:hidden">
+          <div class="flex flex-col gap-3">
+            <div class="flex items-center justify-between gap-3">
+              <%= link_to root_path, class: "tl-mobile-brand", aria: { label: "Prev Lab" } do %>
+                <span class="tl-brand-mark" aria-hidden="true">
+                  <%= image_tag "prevlab-mark-dark.png", alt: "", class: "tl-brand-mark-image" %>
+                </span>
+                <span class="tl-mobile-wordmark" aria-hidden="true"><span>Prev</span><span>Lab</span></span>
+              <% end %>
+              <%= link_to "Eventos", rubric_recovery_adequacy_path, class: button_classes(:info) %>
+            </div>
+            <nav class="flex gap-2 overflow-x-auto pb-1" aria-label="Navegacao principal mobile">
+              <%= link_to "Painel", root_path, class: "whitespace-nowrap #{shell_nav_active?(root_path) ? "tl-chip tl-chip--info" : "tl-chip"}" %>
+              <%= link_to "Laboratorio", case_files_path, class: "whitespace-nowrap #{request.path.start_with?(case_files_path, simulations_path, rubric_recovery_radar_path) ? "tl-chip tl-chip--info" : "tl-chip"}" %>
+              <%= link_to "Eventos", rubric_recovery_adequacy_path, class: "whitespace-nowrap #{request.path.start_with?(rubric_recovery_adequacy_path, rubric_recovery_rubrics_natures_path) ? "tl-chip tl-chip--info" : "tl-chip"}" %>
+              <%= link_to "Configuracoes", tax_parameters_path, class: "whitespace-nowrap #{request.path.start_with?(tax_parameters_path, assumptions_path) ? "tl-chip tl-chip--info" : "tl-chip"}" %>
+            </nav>
+          </div>
+        </header>
+
+        <main id="main-content" class="min-h-screen px-4 py-6 sm:px-6 lg:px-8 lg:py-8">
+          <%= yield %>
+        </main>
+      </div>
+    </div>
   </body>
 </html>

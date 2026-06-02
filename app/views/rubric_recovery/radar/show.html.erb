@@ -1,0 +1,216 @@
+<% content_for :title, "Radar de Recuperacao - Rubricas eSocial" %>
+
+<div class="mx-auto flex w-full max-w-[96rem] flex-col gap-6">
+  <header class="tl-command-bar">
+    <div class="grid gap-5 lg:grid-cols-[1fr_auto] lg:items-end">
+      <div>
+        <p class="tl-kicker">Laboratorio / Folha eSocial</p>
+        <h1 class="tl-page-title tl-page-title--compact">Radar de Recuperacao - Rubricas eSocial</h1>
+        <p class="tl-page-subtitle mt-3 max-w-3xl">Diagnostico de divergencias entre rubricas operacionais, enquadramento eSocial e incidencias esperadas. Sem quantificacao financeira nesta etapa.</p>
+      </div>
+      <div class="flex flex-wrap gap-2">
+        <span class="tl-chip tl-chip--info">Laboratorio</span>
+        <span class="tl-chip tl-chip--ghost">Etapa 004B</span>
+        <span class="tl-chip">somente leitura</span>
+      </div>
+    </div>
+  </header>
+
+  <section class="grid gap-4 md:grid-cols-2 xl:grid-cols-7">
+    <% @snapshot.metrics.each do |metric| %>
+      <article class="tl-card tl-card-hover p-4">
+        <p class="tl-metric-label"><%= metric[:label] %></p>
+        <p class="tl-metric-value"><%= metric[:value] %></p>
+        <p class="tl-copy mt-2 text-xs"><%= metric[:detail] %></p>
+      </article>
+    <% end %>
+  </section>
+
+  <section class="tl-panel p-5">
+    <div class="grid gap-5 lg:grid-cols-[1fr_auto] lg:items-end">
+      <div>
+        <h2 class="tl-section-title">Filtros do radar</h2>
+        <p class="tl-panel-subtitle">Os filtros atuam sobre os registros reais importados do arquivo_enquadrado. S-1010, EB, folha e recolhimentos seguem fora desta etapa.</p>
+      </div>
+      <%= link_to "Limpar filtros", rubric_recovery_radar_path, class: button_classes %>
+    </div>
+
+    <%= form_with url: rubric_recovery_radar_path, method: :get, data: { turbo: false }, class: "mt-5 grid gap-4 xl:grid-cols-[1fr_1fr_1fr_1.2fr_auto] xl:items-end" do %>
+      <div>
+        <%= label_tag :tax, "Tributo", class: "tl-label" %>
+        <%= select_tag :tax, options_for_select(@snapshot.tax_options, @snapshot.filters[:tax]), class: "tl-input" %>
+      </div>
+      <div>
+        <%= label_tag :confidence, "Confianca", class: "tl-label" %>
+        <%= select_tag :confidence, options_for_select(@snapshot.confidence_options, @snapshot.filters[:confidence]), class: "tl-input" %>
+      </div>
+      <div>
+        <%= label_tag :group, "Grupo", class: "tl-label" %>
+        <%= select_tag :group, options_for_select(@snapshot.group_options, @snapshot.filters[:group]), class: "tl-input" %>
+      </div>
+      <div>
+        <%= label_tag :conflict_pattern, "Padrao de conflito", class: "tl-label" %>
+        <%= select_tag :conflict_pattern, options_for_select(@snapshot.conflict_pattern_options, @snapshot.filters[:conflict_pattern]), class: "tl-input" %>
+      </div>
+      <div class="flex flex-wrap items-center gap-3">
+        <label class="inline-flex items-center gap-2 text-sm text-[color:var(--tl-text-soft)]">
+          <%= check_box_tag :priority, "high_medium", @snapshot.high_medium_only?, class: "h-4 w-4 rounded border-white/20 bg-transparent" %>
+          Alta/media
+        </label>
+        <%= submit_tag "Filtrar", class: button_classes(:primary) %>
+      </div>
+    <% end %>
+  </section>
+
+  <section class="grid gap-4 xl:grid-cols-3">
+    <article class="tl-panel p-5">
+      <h2 class="tl-section-title">Mapa de divergencias</h2>
+      <p class="tl-panel-subtitle">Contagem de validacoes FALSO no arquivo_enquadrado.</p>
+      <div class="mt-5 grid gap-4">
+        <% @snapshot.divergence_map.each do |item| %>
+          <div>
+            <div class="flex items-center justify-between gap-3">
+              <span class="tl-metric-label"><%= item[:label] %></span>
+              <span class="tl-mono text-sm font-semibold text-white"><%= item[:value] %> / <%= item[:total] %></span>
+            </div>
+            <div class="mt-2 h-2 overflow-hidden rounded bg-white/10">
+              <div class="h-full rounded bg-[color:var(--tl-danger)]" style="width: <%= item[:percentage] %>%"></div>
+            </div>
+          </div>
+        <% end %>
+      </div>
+    </article>
+
+    <article class="tl-panel p-5">
+      <h2 class="tl-section-title">Confianca do enquadramento</h2>
+      <p class="tl-panel-subtitle">Distribuicao real da aba Enquadramento.</p>
+      <div class="mt-5 grid gap-4">
+        <% @snapshot.confidence_distribution.each do |item| %>
+          <div>
+            <div class="flex items-center justify-between gap-3">
+              <span class="tl-metric-label"><%= item[:label] %></span>
+              <span class="tl-mono text-sm font-semibold text-white"><%= item[:value] %></span>
+            </div>
+            <div class="mt-2 h-2 overflow-hidden rounded bg-white/10">
+              <div class="h-full rounded bg-[color:var(--tl-info)]" style="width: <%= item[:percentage] %>%"></div>
+            </div>
+          </div>
+        <% end %>
+      </div>
+    </article>
+
+    <article class="tl-panel p-5">
+      <h2 class="tl-section-title">Padroes de conflito</h2>
+      <p class="tl-panel-subtitle">Leitura de combinacoes CP/IRRF/FGTS.</p>
+      <div class="mt-5 grid gap-3">
+        <% @snapshot.conflict_patterns.each do |pattern| %>
+          <div class="flex items-center justify-between gap-3 border-b border-white/10 pb-3 last:border-b-0 last:pb-0">
+            <span class="tl-copy text-sm"><%= pattern[:label] %></span>
+            <span class="tl-badge <%= pattern[:value].positive? ? "tl-badge--danger" : "tl-badge--muted" %>"><%= pattern[:value] %></span>
+          </div>
+        <% end %>
+      </div>
+    </article>
+  </section>
+
+  <section class="grid gap-4 xl:grid-cols-[1fr_1.15fr]">
+    <article class="tl-panel p-5">
+      <h2 class="tl-section-title">Grupos com maior volume de conflito</h2>
+      <p class="tl-panel-subtitle">Ranking real extraido dos eventos com pelo menos um conflito.</p>
+      <div class="mt-5 grid gap-3 sm:grid-cols-2">
+        <% @snapshot.group_conflicts.each do |group| %>
+          <div class="tl-tile p-4">
+            <p class="tl-metric-label"><%= group[:label] %></p>
+            <p class="tl-metric-value tl-metric-value--small"><%= group[:value] %></p>
+          </div>
+        <% end %>
+      </div>
+    </article>
+
+    <article class="tl-panel p-5">
+      <h2 class="tl-section-title">Trilha de evidencia</h2>
+      <p class="tl-panel-subtitle">Separacao explicita entre indicio, adequacao S-1010, base legal, folha e recolhimento.</p>
+      <div class="mt-5 grid gap-3 sm:grid-cols-2">
+        <% @snapshot.evidence_trail.each do |item| %>
+          <div class="tl-tile p-4">
+            <div class="flex flex-wrap items-center justify-between gap-2">
+              <p class="font-semibold text-white"><%= item[:label] %></p>
+              <span class="tl-badge <%= item[:state] == :present ? "tl-badge--success" : "tl-badge--warning" %>"><%= item[:status] %></span>
+            </div>
+            <p class="tl-copy mt-2 text-xs"><%= item[:detail] %></p>
+          </div>
+        <% end %>
+      </div>
+    </article>
+  </section>
+
+  <section class="tl-panel overflow-hidden">
+    <div class="tl-panel-header flex flex-col gap-2 lg:flex-row lg:items-center lg:justify-between">
+      <div>
+        <h2 class="tl-section-title">Tabela de rubricas divergentes</h2>
+        <p class="tl-panel-subtitle">Registros reais do arquivo_enquadrado com pelo menos uma divergencia CP/IRRF/FGTS. Nao ha quantificacao financeira nesta etapa.</p>
+      </div>
+      <span class="tl-chip tl-chip--ghost"><%= @snapshot.rubrics.size %> registros no filtro</span>
+    </div>
+
+    <div class="tl-table-wrap">
+      <table class="tl-table">
+        <thead>
+          <tr>
+            <th>Codigo</th>
+            <th>Rubrica</th>
+            <th>Grupo</th>
+            <th>Natureza eSocial sugerida</th>
+            <th>Confianca</th>
+            <th>Score</th>
+            <th>CP</th>
+            <th>IRRF</th>
+            <th>FGTS</th>
+            <th>Evidencias pendentes</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% @snapshot.rubrics.each do |rubric| %>
+            <tr>
+              <td class="whitespace-nowrap tl-mono text-xs"><%= rubric[:code] %></td>
+              <td class="min-w-56">
+                <p class="font-semibold text-white"><%= rubric[:description] %></p>
+                <p class="tl-muted mt-1 text-xs">Padrao: <%= rubric[:conflict_pattern] %></p>
+              </td>
+              <td><span class="tl-chip"><%= rubric[:group_label] %></span></td>
+              <td class="min-w-72"><%= rubric[:esocial_nature] %></td>
+              <td><span class="tl-badge <%= rubric[:confidence] == "ALTA" ? "tl-badge--success" : "tl-badge--warning" %>"><%= rubric[:confidence] %></span></td>
+              <td>
+                <div class="tl-score-stack">
+                  <span class="<%= score_badge_classes(rubric[:score]) %>"><%= rubric[:score] %></span>
+                  <div class="<%= score_bar_classes(rubric[:score]) %>" aria-label="Score <%= rubric[:score] %> de 10">
+                    <span style="width: <%= score_percentage(rubric[:score]) %>%"></span>
+                  </div>
+                </div>
+              </td>
+              <% [:cp_status, :irrf_status, :fgts_status].each do |status_key| %>
+                <% status = rubric[status_key] %>
+                <td><span class="tl-badge <%= status == "Divergente" ? "tl-badge--danger" : "tl-badge--success" %>"><%= status %></span></td>
+              <% end %>
+              <td class="min-w-64">
+                <div class="flex flex-wrap gap-2">
+                  <span class="tl-badge tl-badge--success">CTE/enquadramento presente</span>
+                  <% rubric[:evidence_pending].each do |evidence| %>
+                    <span class="tl-badge tl-badge--warning"><%= evidence %> pendente</span>
+                  <% end %>
+                </div>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+
+    <% if @snapshot.rubrics.empty? %>
+      <div class="tl-empty">
+        <h3 class="tl-section-title">Nenhuma rubrica no filtro atual</h3>
+        <p class="tl-copy mx-auto mt-2 max-w-md">Ajuste os filtros para revisar os registros divergentes importados do arquivo_enquadrado.</p>
+      </div>
+    <% end %>
+  </section>
+</div>

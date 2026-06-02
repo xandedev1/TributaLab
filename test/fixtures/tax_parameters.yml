@@ -80,3 +80,15 @@ lease_reduction:
   notes: Reducao de 70% pendente de validacao.
   tax_module: real_estate_tax_reform
   operation: lease_property
+
+rights_assignment_reduction:
+  code: rights_assignment_reduction
+  name: Reducao cessao de direitos
+  parameter_type: reduction
+  value_decimal: 0.7
+  unit: decimal
+  validation_status: divergent
+  legal_reference: Aba Reducoes de Aliquotas vs Calculo Cessao de direitos
+  notes: A aba geral indica reducao de 70%, mas a aba de calculo usa aliquota cheia.
+  tax_module: real_estate_tax_reform
+  operation: rights_assignment

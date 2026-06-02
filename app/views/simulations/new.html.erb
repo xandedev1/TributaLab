@@ -1,82 +1,210 @@
-<% content_for :title, "Nova simulacao - TributaLab" %>
+<% content_for :title, "Nova simulacao - Prev Lab" %>
+<% input_classes = "tl-input" %>
+<% label_classes = "tl-label" %>
 
-<div class="mx-auto flex w-full max-w-5xl flex-col gap-6">
-  <header class="border-b border-zinc-200 pb-5">
-    <div class="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+<div class="mx-auto flex w-full max-w-[92rem] flex-col gap-6">
+  <header class="tl-command-bar">
+    <div class="grid gap-5 lg:grid-cols-[1fr_auto] lg:items-end">
       <div>
-        <p class="text-sm font-medium uppercase tracking-wide text-teal-700">TributaLab</p>
-        <h1 class="mt-1 text-3xl font-semibold tracking-normal text-zinc-950">Nova simulacao</h1>
-        <p class="mt-2 text-sm leading-6 text-zinc-600">Reforma Tributaria Imobiliaria / versao <%= @tax_rule_version&.code || "sem versao" %></p>
+        <p class="tl-kicker">Simulador / Mesa de calculo</p>
+        <h1 class="tl-page-title tl-page-title--compact">Nova simulacao fiscal</h1>
+        <p class="tl-page-subtitle mt-3 max-w-2xl">Entradas ligadas a regra <%= @tax_rule_version&.code || "sem versao" %>, parametros e alertas persistidos.</p>
       </div>
-      <%= link_to "Voltar ao painel", root_path, class: "w-fit rounded border border-zinc-300 bg-white px-4 py-2 text-sm font-semibold text-zinc-700 hover:bg-zinc-100" %>
+      <div class="flex flex-wrap gap-3">
+        <%= link_to "Simulacoes", simulations_path, class: button_classes %>
+        <%= link_to "Painel", root_path, class: button_classes %>
+      </div>
     </div>
   </header>
 
   <% if @error_message.present? %>
-    <section class="border border-red-300 bg-red-50 p-4 text-sm text-red-900">
-      <p class="font-semibold">Nao foi possivel salvar a simulacao.</p>
+    <section class="tl-panel p-4 text-sm text-[color:var(--tl-danger)]">
+      <p class="font-semibold text-white">Nao foi possivel salvar a simulacao.</p>
       <p class="mt-1"><%= @error_message %></p>
     </section>
   <% end %>
 
-  <section class="border border-zinc-200 bg-white p-5">
-    <%= form_with url: simulations_path, method: :post, data: { turbo: false }, class: "grid gap-6" do %>
-      <div class="grid gap-4 lg:grid-cols-2">
-        <div>
-          <%= label_tag :name, "Nome da simulacao", class: "block text-sm font-semibold text-zinc-800" %>
-          <%= text_field_tag :name, params[:name], placeholder: "Opcional", class: "mt-2 w-full rounded border border-zinc-300 px-3 py-2 text-sm" %>
+  <section class="tl-workbench overflow-hidden" data-controller="simulation-form">
+    <div class="grid xl:grid-cols-[minmax(0,1fr)_24rem]">
+    <%= form_with url: simulations_path, method: :post, data: { turbo: false }, class: "grid content-start gap-0 border-b border-white/10 xl:border-b-0 xl:border-r" do %>
+      <section class="border-b border-white/10">
+        <div class="tl-panel-header">
+          <h2 class="tl-section-title">Dossie da simulacao</h2>
+          <p class="tl-panel-subtitle">Identificacao minima para rastrear o calculo depois.</p>
         </div>
-        <div>
-          <%= label_tag :operation_code, "Operacao", class: "block text-sm font-semibold text-zinc-800" %>
-          <%= select_tag :operation_code, options_from_collection_for_select(@operations, :code, :name, @selected_operation_code), class: "mt-2 w-full rounded border border-zinc-300 px-3 py-2 text-sm" %>
+
+        <div class="grid gap-4 p-5 lg:grid-cols-3">
+          <div>
+            <%= label_tag :name, "Nome da simulacao", class: label_classes %>
+            <%= text_field_tag :name, params[:name], placeholder: "Opcional", class: input_classes %>
+          </div>
+          <div>
+            <%= label_tag :case_file_id, "Caso interno", class: label_classes %>
+            <%= select_tag :case_file_id, options_from_collection_for_select(@case_files, :id, :name, params[:case_file_id]), include_blank: "Sem caso", class: input_classes %>
+          </div>
+          <div>
+            <%= label_tag :operation_code, "Operacao", class: label_classes %>
+            <%= select_tag :operation_code, options_from_collection_for_select(@operations, :code, :name, @selected_operation_code), class: input_classes, data: { simulation_form_target: "operationSelect", action: "change->simulation-form#update" } %>
+          </div>
         </div>
-      </div>
+      </section>
 
-      <div class="grid gap-4 lg:grid-cols-2">
-        <fieldset class="border border-zinc-200 p-4">
-          <legend class="px-1 text-sm font-semibold text-zinc-950">Venda de imovel ou lote</legend>
-          <%= label_tag "inputs_sale_amount", "Valor da venda", class: "mt-3 block text-sm font-medium text-zinc-700" %>
-          <%= number_field_tag "inputs[sale_amount]", @inputs[:sale_amount], step: "0.01", min: "0", class: "mt-2 w-full rounded border border-zinc-300 px-3 py-2 text-sm" %>
-        </fieldset>
+      <section>
+        <div class="tl-panel-header">
+          <h2 class="tl-section-title">Entradas e memoria previa</h2>
+          <p class="tl-panel-subtitle">A calculadora muda conforme a operacao selecionada.</p>
+        </div>
 
-        <fieldset class="border border-zinc-200 p-4">
-          <legend class="px-1 text-sm font-semibold text-zinc-950">Locacao de imoveis</legend>
-          <div class="grid gap-3 sm:grid-cols-3">
-            <div>
-              <%= label_tag "inputs_monthly_rent", "Aluguel", class: "block text-sm font-medium text-zinc-700" %>
-              <%= number_field_tag "inputs[monthly_rent]", @inputs[:monthly_rent], step: "0.01", min: "0", class: "mt-2 w-full rounded border border-zinc-300 px-3 py-2 text-sm" %>
-            </div>
-            <div>
-              <%= label_tag "inputs_iptu_amount", "IPTU", class: "block text-sm font-medium text-zinc-700" %>
-              <%= number_field_tag "inputs[iptu_amount]", @inputs[:iptu_amount], step: "0.01", min: "0", class: "mt-2 w-full rounded border border-zinc-300 px-3 py-2 text-sm" %>
-            </div>
-            <div>
-              <%= label_tag "inputs_condominium_amount", "Condominio", class: "block text-sm font-medium text-zinc-700" %>
-              <%= number_field_tag "inputs[condominium_amount]", @inputs[:condominium_amount], step: "0.01", min: "0", class: "mt-2 w-full rounded border border-zinc-300 px-3 py-2 text-sm" %>
-            </div>
-          </div>
-          <p class="mt-3 text-sm leading-6 text-amber-800">A formula usa aluguel menos IPTU e condominio, mas este ponto segue pendente de validacao.</p>
-        </fieldset>
+        <div class="p-5">
+          <% @operations.each do |operation| %>
+            <% operation_panel_classes = ["grid gap-5", (operation.code == @selected_operation_code ? nil : "hidden")].compact.join(" ") %>
+            <div class="<%= operation_panel_classes %>" data-simulation-form-target="operationPanel" data-operation-code="<%= operation.code %>">
+              <div class="tl-rule-step">
+                <p class="tl-label"><%= operation.code %></p>
+                <p class="mt-2 text-lg font-semibold text-white"><%= operation.name %></p>
+                <p class="tl-copy mt-2 text-sm"><%= operation.description %></p>
+              </div>
 
-        <fieldset class="border border-zinc-200 p-4 lg:col-span-2">
-          <legend class="px-1 text-sm font-semibold text-zinc-950">Permuta com torna</legend>
-          <div class="grid gap-3 sm:grid-cols-2">
-            <div>
-              <%= label_tag "inputs_boot_amount", "Valor da torna", class: "block text-sm font-medium text-zinc-700" %>
-              <%= number_field_tag "inputs[boot_amount]", @inputs[:boot_amount], step: "0.01", min: "0", class: "mt-2 w-full rounded border border-zinc-300 px-3 py-2 text-sm" %>
+              <% case operation.code %>
+              <% when "sale_property", "sale_residential_lot" %>
+                <div>
+                  <%= label_tag "inputs_sale_amount_#{operation.code}", "Valor da venda", class: label_classes %>
+                  <%= number_field_tag "inputs[sale_amount]", @inputs[:sale_amount], id: "inputs_sale_amount_#{operation.code}", step: "0.01", min: "0", class: input_classes %>
+                </div>
+              <% when "lease_property" %>
+                <div class="grid gap-4 md:grid-cols-3">
+                  <div>
+                    <%= label_tag "inputs_monthly_rent", "Aluguel mensal", class: label_classes %>
+                    <%= number_field_tag "inputs[monthly_rent]", @inputs[:monthly_rent], step: "0.01", min: "0", class: input_classes %>
+                  </div>
+                  <div>
+                    <%= label_tag "inputs_iptu_amount", "IPTU", class: label_classes %>
+                    <%= number_field_tag "inputs[iptu_amount]", @inputs[:iptu_amount], step: "0.01", min: "0", class: input_classes %>
+                  </div>
+                  <div>
+                    <%= label_tag "inputs_condominium_amount", "Condominio", class: label_classes %>
+                    <%= number_field_tag "inputs[condominium_amount]", @inputs[:condominium_amount], step: "0.01", min: "0", class: input_classes %>
+                  </div>
+                </div>
+              <% when "civil_construction" %>
+                <div class="grid gap-4 md:grid-cols-2">
+                  <div>
+                    <%= label_tag "inputs_contract_amount", "Valor do contrato", class: label_classes %>
+                    <%= number_field_tag "inputs[contract_amount]", @inputs[:contract_amount], step: "0.01", min: "0", class: input_classes %>
+                  </div>
+                  <div>
+                    <%= label_tag "inputs_construction_credits", "Creditos informados", class: label_classes %>
+                    <%= number_field_tag "inputs[credits_amount]", @inputs[:credits_amount], id: "inputs_construction_credits", step: "0.01", min: "0", class: input_classes %>
+                  </div>
+                </div>
+              <% when "management_brokerage" %>
+                <div class="grid gap-4 md:grid-cols-2">
+                  <div>
+                    <%= label_tag "inputs_service_amount", "Valor do servico", class: label_classes %>
+                    <%= number_field_tag "inputs[service_amount]", @inputs[:service_amount], step: "0.01", min: "0", class: input_classes %>
+                  </div>
+                  <div>
+                    <%= label_tag "inputs_management_credits", "Creditos informados", class: label_classes %>
+                    <%= number_field_tag "inputs[credits_amount]", @inputs[:credits_amount], id: "inputs_management_credits", step: "0.01", min: "0", class: input_classes %>
+                  </div>
+                </div>
+              <% when "rights_assignment" %>
+                <div class="grid gap-4 md:grid-cols-2">
+                  <div>
+                    <%= label_tag "inputs_assignment_amount", "Valor da cessao", class: label_classes %>
+                    <%= number_field_tag "inputs[assignment_amount]", @inputs[:assignment_amount], step: "0.01", min: "0", class: input_classes %>
+                  </div>
+                  <div>
+                    <%= label_tag "inputs_assignment_credits", "Creditos informados", class: label_classes %>
+                    <%= number_field_tag "inputs[credits_amount]", @inputs[:credits_amount], id: "inputs_assignment_credits", step: "0.01", min: "0", class: input_classes %>
+                  </div>
+                </div>
+              <% when "exchange_without_boot" %>
+                <div class="tl-panel p-4 text-sm leading-6 text-[color:var(--tl-warning)]">
+                  Operacao informativa no modelo inicial: base de calculo zero e imposto estimado zero.
+                </div>
+              <% when "exchange_with_boot" %>
+                <div class="grid gap-4 md:grid-cols-2">
+                  <div>
+                    <%= label_tag "inputs_boot_amount", "Valor da torna", class: label_classes %>
+                    <%= number_field_tag "inputs[boot_amount]", @inputs[:boot_amount], step: "0.01", min: "0", class: input_classes %>
+                  </div>
+                  <div>
+                    <%= label_tag "inputs_boot_credits", "Creditos informados", class: label_classes %>
+                    <%= number_field_tag "inputs[credits_amount]", @inputs[:credits_amount], id: "inputs_boot_credits", step: "0.01", min: "0", class: input_classes %>
+                  </div>
+                </div>
+              <% end %>
             </div>
-            <div>
-              <%= label_tag "inputs_credits_amount", "Creditos informados", class: "block text-sm font-medium text-zinc-700" %>
-              <%= number_field_tag "inputs[credits_amount]", @inputs[:credits_amount], step: "0.01", min: "0", class: "mt-2 w-full rounded border border-zinc-300 px-3 py-2 text-sm" %>
-            </div>
-          </div>
-        </fieldset>
-      </div>
+          <% end %>
+        </div>
+      </section>
 
-      <div class="flex flex-wrap items-center justify-end gap-3 border-t border-zinc-200 pt-4">
-        <%= link_to "Cancelar", root_path, class: "rounded border border-zinc-300 bg-white px-4 py-2 text-sm font-semibold text-zinc-700 hover:bg-zinc-100" %>
-        <%= submit_tag "Calcular e salvar", class: "rounded bg-zinc-950 px-4 py-2 text-sm font-semibold text-white hover:bg-zinc-800" %>
+      <div class="tl-action-bar rounded-none border-x-0 border-b-0">
+        <%= link_to "Cancelar", simulations_path, class: button_classes %>
+        <%= submit_tag "Calcular e salvar", class: button_classes(:primary) %>
       </div>
     <% end %>
+
+    <details class="tl-reveal-drawer m-5 xl:m-0 xl:rounded-none xl:border-y-0 xl:border-r-0">
+      <summary>Regra e alertas</summary>
+      <div class="tl-reveal-body">
+    <aside class="grid content-start gap-0">
+      <% @operations.each do |operation| %>
+        <% presenter = @operation_presenters.fetch(operation.code) %>
+        <% context_panel_classes = ["grid content-start", (operation.code == @selected_operation_code ? nil : "hidden")].compact.join(" ") %>
+        <section class="<%= context_panel_classes %>" data-simulation-form-target="contextPanel" data-operation-code="<%= operation.code %>">
+          <div class="tl-panel-header">
+            <h2 class="tl-section-title">Regra aplicada</h2>
+            <p class="tl-panel-subtitle"><%= operation.name %> / <%= @tax_rule_version&.code || "sem versao" %></p>
+          </div>
+
+          <div class="grid gap-4 p-5">
+            <div class="tl-paper p-4">
+              <p class="tl-label">Dossie</p>
+              <h3 class="mt-2 text-xl font-semibold"><%= operation.name %></h3>
+              <p class="mt-3 text-sm leading-6"><%= operation.description %></p>
+            </div>
+
+          <div>
+            <h3 class="text-sm font-semibold text-white">Parametros usados</h3>
+            <div class="mt-3 divide-y divide-white/10 overflow-hidden border-y border-white/10">
+              <% if presenter[:parameters].any? %>
+                <% presenter[:parameters].each do |parameter| %>
+                  <article class="p-4 text-sm">
+                    <div class="flex flex-wrap items-center gap-2">
+                      <p class="font-semibold text-white"><%= parameter.name %></p>
+                      <span class="<%= status_badge_classes(parameter.validation_status) %>"><%= status_label(parameter.validation_status) %></span>
+                    </div>
+                    <p class="mt-1 font-semibold tabular-nums text-[color:var(--tl-ghost-strong)]"><%= number_with_delimiter(parameter.value_decimal.to_f, delimiter: ".", separator: ",") %> <%= parameter.unit %></p>
+                  </article>
+                <% end %>
+              <% else %>
+                <p class="tl-copy p-4 text-sm">Sem parametro numerico aplicado.</p>
+              <% end %>
+            </div>
+          </div>
+
+          <div>
+            <h3 class="text-sm font-semibold text-white">Alertas conhecidos</h3>
+            <div class="mt-3 divide-y divide-white/10 overflow-hidden border-y border-white/10">
+              <% presenter[:alerts].each do |alert| %>
+                <article class="p-4 text-sm">
+                  <div class="flex flex-wrap items-center gap-2">
+                    <p class="font-semibold text-white"><%= alert[:title] %></p>
+                    <span class="<%= status_badge_classes(alert[:status]) %>"><%= status_label(alert[:status]) %></span>
+                  </div>
+                  <p class="tl-copy mt-1"><%= alert[:description] %></p>
+                </article>
+              <% end %>
+            </div>
+          </div>
+          </div>
+        </section>
+      <% end %>
+    </aside>
+      </div>
+    </details>
+    </div>
   </section>
 </div>

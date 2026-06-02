@@ -1,0 +1,64 @@
+<% content_for :title, "Parametros - Prev Lab" %>
+
+<div class="mx-auto flex w-full max-w-7xl flex-col gap-6">
+  <header class="tl-header-card p-5 sm:p-6">
+    <div class="grid gap-5 sm:grid-cols-[1fr_auto] sm:items-end">
+      <div>
+        <p class="tl-kicker">Regras numericas</p>
+        <h1 class="tl-page-title tl-page-title--compact">Parametros</h1>
+        <p class="tl-page-subtitle mt-3 max-w-2xl"><%= @tax_module.name %>. Parametros usados pelos calculadores da etapa atual.</p>
+      </div>
+      <%= link_to "Painel", root_path, class: button_classes %>
+    </div>
+  </header>
+
+  <section class="grid gap-4 md:grid-cols-3">
+    <article class="tl-card tl-card-hover p-5">
+      <p class="tl-metric-label">Total</p>
+      <p class="tl-metric-value"><%= @parameters.size %></p>
+    </article>
+    <article class="tl-card tl-card-hover p-5">
+      <p class="tl-metric-label">Validados</p>
+      <p class="tl-metric-value"><%= @parameters.count { |parameter| parameter.validation_status == "validated" } %></p>
+    </article>
+    <article class="tl-card tl-card-hover p-5">
+      <p class="tl-metric-label">Pendentes</p>
+      <p class="tl-metric-value"><%= @parameters.count { |parameter| parameter.validation_status != "validated" } %></p>
+    </article>
+  </section>
+
+  <section class="tl-card overflow-hidden">
+    <div class="border-b border-white/10 px-5 py-4">
+      <h2 class="tl-section-title">Tabela de parametros</h2>
+      <p class="tl-panel-subtitle">Valores, vigencias e observacoes persistidas no banco local.</p>
+    </div>
+    <div class="tl-table-wrap">
+      <table class="tl-table">
+        <thead>
+          <tr>
+            <th>Codigo</th>
+            <th>Nome</th>
+            <th class="text-right">Valor</th>
+            <th>Modulo/operacao</th>
+            <th>Vigencia</th>
+            <th>Status</th>
+            <th>Observacoes</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% @parameters.each do |parameter| %>
+            <tr>
+              <td class="whitespace-nowrap tl-mono text-xs"><%= parameter.code %></td>
+              <td class="min-w-64 font-semibold text-white"><%= parameter.name %></td>
+              <td class="whitespace-nowrap text-right font-semibold tabular-nums text-white"><%= number_with_delimiter(parameter.value_decimal.to_f, delimiter: ".", separator: ",") %> <%= parameter.unit %></td>
+              <td class="min-w-56"><%= parameter.operation&.name || @tax_module.name %></td>
+              <td class="whitespace-nowrap"><%= [parameter.effective_from, parameter.effective_until].compact.join(" ate ").presence || "sem vigencia" %></td>
+              <td><span class="<%= status_badge_classes(parameter.validation_status) %>"><%= status_label(parameter.validation_status) %></span></td>
+              <td class="min-w-72"><%= parameter.notes %></td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  </section>
+</div>

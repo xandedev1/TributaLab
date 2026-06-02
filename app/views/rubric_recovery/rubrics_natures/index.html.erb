@@ -1,0 +1,130 @@
+<% content_for :title, "Rubricas + Natureza - Prev Lab" %>
+
+<div class="mx-auto flex w-full max-w-[96rem] flex-col gap-6">
+  <header class="tl-command-bar">
+    <div class="grid gap-5 lg:grid-cols-[1fr_auto] lg:items-end">
+      <div>
+        <p class="tl-kicker">Adequacao S-1010 via Pontuacao</p>
+        <h1 class="tl-page-title tl-page-title--compact">Rubricas + Natureza</h1>
+        <p class="tl-page-subtitle mt-3 max-w-3xl">Revise naturezas selecionadas e ajuste CP/IRRF/FGTS com justificativa e historico.</p>
+      </div>
+      <div class="flex flex-wrap gap-2">
+        <span class="tl-chip tl-chip--info">Eventos / S-1010</span>
+      </div>
+    </div>
+  </header>
+
+  <nav class="tl-section-tabs" aria-label="Navegacao S-1010">
+    <%= link_to "Pontuacao S-1010", rubric_recovery_adequacy_path, class: s1010_tab_classes(rubric_recovery_adequacy_path) %>
+    <%= link_to "Rubricas + Natureza", rubric_recovery_rubrics_natures_path, class: s1010_tab_classes(rubric_recovery_rubrics_natures_path) %>
+  </nav>
+
+  <section class="tl-panel overflow-hidden">
+    <div class="tl-panel-header flex flex-col gap-2 lg:flex-row lg:items-center lg:justify-between">
+      <div>
+        <h2 class="tl-section-title">Rubricas enquadradas</h2>
+        <p class="tl-panel-subtitle">Alteracoes em incidencia exigem justificativa e geram versao de auditoria.</p>
+      </div>
+      <span class="tl-chip tl-chip--ghost"><%= @assignments.size %> rubricas com natureza</span>
+    </div>
+
+    <div class="tl-table-wrap">
+      <table class="tl-table">
+        <thead>
+          <tr>
+            <th>Rubrica</th>
+            <th>Natureza</th>
+            <th>Origem</th>
+            <th>Indicadores CTE</th>
+            <th>Editar incidencias</th>
+            <th>Status</th>
+            <th>Historico</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% @assignments.each do |assignment| %>
+            <% event = assignment.rubric_event %>
+            <% nature = assignment.esocial_nature %>
+            <tr class="<%= assignment_row_classes(assignment) %>">
+              <td class="min-w-72">
+                <p class="font-semibold text-white"><%= event.event_code %> - <%= event.description %></p>
+                <div class="tl-score-stack mt-2">
+                  <span class="<%= score_badge_classes(assignment.selected_score) %>">Score <%= number_with_precision(assignment.selected_score, precision: 2) %></span>
+                  <div class="<%= score_bar_classes(assignment.selected_score) %>" aria-label="Score <%= number_with_precision(assignment.selected_score, precision: 2) %> de 10">
+                    <span style="width: <%= score_percentage(assignment.selected_score) %>%"></span>
+                  </div>
+                </div>
+              </td>
+              <td class="min-w-80">
+                <p class="font-semibold text-white"><%= nature.nature_code %> - <%= nature.name %></p>
+                <p class="tl-muted mt-1 text-xs"><%= nature.vigency_label %></p>
+              </td>
+              <td><span class="tl-chip tl-chip--info"><%= assignment.selection_origin %></span></td>
+              <td>
+                <div class="flex flex-wrap gap-2">
+                  <span class="tl-chip">InM <%= event.inm.presence || "-" %></span>
+                  <span class="tl-chip">IrM <%= event.irm.presence || "-" %></span>
+                  <span class="tl-chip">FN <%= event.fn.presence || "-" %></span>
+                </div>
+              </td>
+              <td class="min-w-[28rem]">
+                <%= form_with url: rubric_recovery_rubrics_nature_path(assignment), method: :patch, data: { turbo: false }, class: "grid gap-3" do %>
+                  <div class="grid gap-2 sm:grid-cols-4">
+                    <div>
+                      <%= label_tag "assignment_selected_cod_inc_cp_#{assignment.id}", "CP", class: "tl-label" %>
+                      <%= text_field_tag "assignment[selected_cod_inc_cp]", assignment.selected_cod_inc_cp, id: "assignment_selected_cod_inc_cp_#{assignment.id}", class: "tl-input" %>
+                      <% if assignment.override_cp %><span class="mt-2 tl-incidence-pill tl-incidence-pill--danger">alterado</span><% end %>
+                    </div>
+                    <div>
+                      <%= label_tag "assignment_selected_cod_inc_irrf_#{assignment.id}", "IRRF", class: "tl-label" %>
+                      <%= text_field_tag "assignment[selected_cod_inc_irrf]", assignment.selected_cod_inc_irrf, id: "assignment_selected_cod_inc_irrf_#{assignment.id}", class: "tl-input" %>
+                      <% if assignment.override_irrf %><span class="mt-2 tl-incidence-pill tl-incidence-pill--danger">alterado</span><% end %>
+                    </div>
+                    <div>
+                      <%= label_tag "assignment_selected_cod_inc_fgts_#{assignment.id}", "FGTS", class: "tl-label" %>
+                      <%= text_field_tag "assignment[selected_cod_inc_fgts]", assignment.selected_cod_inc_fgts, id: "assignment_selected_cod_inc_fgts_#{assignment.id}", class: "tl-input" %>
+                      <% if assignment.override_fgts %><span class="mt-2 tl-incidence-pill tl-incidence-pill--danger">alterado</span><% end %>
+                    </div>
+                    <div>
+                      <%= label_tag "assignment_status_#{assignment.id}", "Status", class: "tl-label" %>
+                      <%= select_tag "assignment[status]", options_for_select(RubricNatureAssignment::STATUSES.map { |status| [status_label(status), status] }, assignment.status), id: "assignment_status_#{assignment.id}", class: "tl-input" %>
+                    </div>
+                  </div>
+                  <div class="grid gap-2 sm:grid-cols-[1fr_auto] sm:items-end">
+                    <div>
+                      <%= label_tag "assignment_justification_#{assignment.id}", "Justificativa", class: "tl-label" %>
+                      <%= text_field_tag "assignment[justification]", nil, id: "assignment_justification_#{assignment.id}", class: "tl-input", placeholder: "Obrigatoria ao alterar CP/IRRF/FGTS" %>
+                      <p class="tl-required-hint mt-2">Obrigatoria quando CP, IRRF ou FGTS forem alterados.</p>
+                    </div>
+                    <%= submit_tag "Salvar revisao", class: button_classes(:success) %>
+                  </div>
+                <% end %>
+              </td>
+              <td><span class="<%= status_badge_classes(assignment.status) %>"><%= status_label(assignment.status) %></span></td>
+              <td class="min-w-64">
+                <span class="tl-badge tl-badge--info"><%= assignment.rubric_nature_assignment_versions.size %> versoes</span>
+                <% if assignment.rubric_nature_assignment_versions.any? %>
+                  <% latest = assignment.rubric_nature_assignment_versions.max_by(&:created_at) %>
+                  <div class="tl-history-rail mt-3">
+                    <article class="tl-history-item">
+                      <p class="tl-mono text-[10px] text-[color:var(--tl-info-strong)]"><%= latest.created_at.strftime("%Y-%m-%d %H:%M") %></p>
+                      <p class="tl-muted mt-1 text-xs"><%= truncate(latest.reason, length: 90) %></p>
+                    </article>
+                  </div>
+                <% end %>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+
+    <% if @assignments.empty? %>
+      <div class="tl-empty">
+        <h3 class="tl-section-title">Nenhuma rubrica selecionada</h3>
+        <p class="tl-copy mx-auto mt-2 max-w-md">Use a tela de pontuacao para selecionar a primeira natureza e liberar a revisao de incidencias.</p>
+        <%= link_to "Abrir pontuacao", rubric_recovery_adequacy_path, class: "mt-5 #{button_classes(:primary)}" %>
+      </div>
+    <% end %>
+  </section>
+</div>

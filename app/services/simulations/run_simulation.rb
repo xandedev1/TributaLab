@@ -4,15 +4,20 @@ module Simulations
       "sale_property" => TaxRules::RealEstate::SalePropertyCalculator,
       "sale_residential_lot" => TaxRules::RealEstate::SaleResidentialLotCalculator,
       "lease_property" => TaxRules::RealEstate::LeasePropertyCalculator,
+      "civil_construction" => TaxRules::RealEstate::ConstructionContractCalculator,
+      "management_brokerage" => TaxRules::RealEstate::BrokerageAdministrationCalculator,
+      "rights_assignment" => TaxRules::RealEstate::AssignmentRightsCalculator,
+      "exchange_without_boot" => TaxRules::RealEstate::ExchangeWithoutBootCalculator,
       "exchange_with_boot" => TaxRules::RealEstate::ExchangeWithBootCalculator
     }.freeze
 
-    def initialize(operation_code:, inputs:, name: nil, tax_module: nil, tax_rule_version: nil)
+    def initialize(operation_code:, inputs:, name: nil, tax_module: nil, tax_rule_version: nil, case_file: nil)
       @operation_code = operation_code
       @inputs = inputs.to_h
       @name = name.presence
       @tax_module = tax_module || TaxModule.find_by!(code: "real_estate_tax_reform")
       @tax_rule_version = tax_rule_version || @tax_module.tax_rule_versions.ordered.first
+      @case_file = case_file
     end
 
     def call
@@ -24,6 +29,7 @@ module Simulations
       Simulation.transaction do
         simulation = Simulation.create!(
           name: name || default_name(operation),
+          case_file:,
           tax_module:,
           operation:,
           tax_rule_version:,
@@ -59,12 +65,12 @@ module Simulations
 
     private
 
-    attr_reader :operation_code, :inputs, :name, :tax_module, :tax_rule_version
+    attr_reader :operation_code, :inputs, :name, :tax_module, :tax_rule_version, :case_file
 
     def calculator
       CALCULATORS.fetch(operation_code)
     rescue KeyError
-      raise ArgumentError, "Unsupported operation for Etapa 002: #{operation_code}"
+      raise ArgumentError, "Unsupported operation for Etapa 003: #{operation_code}"
     end
 
     def default_name(operation)

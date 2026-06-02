@@ -1,4 +1,4 @@
-/*
+﻿/*
  * This is a manifest file that'll be compiled into application.css.
  *
  * With Propshaft, assets are served efficiently without preprocessing steps. You can still include
@@ -8,3 +8,21 @@
  *
  * Consider organizing styles into separate files for maintainability.
  */
+
+html {
+	scroll-behavior: smooth;
+}
+
+body {
+	min-width: 320px;
+}
+
+::selection {
+	background: #C87740;
+	color: #2E1F26;
+}
+
+:focus-visible {
+	outline: 2px solid #C87740;
+	outline-offset: 2px;
+}

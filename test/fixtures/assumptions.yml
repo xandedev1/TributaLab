@@ -38,3 +38,47 @@ credit_exceeds_debit:
   source_reference: leitura_tabela_denis_reforma_imobiliaria_2026-05-28.md
   position: 4
   tax_module: real_estate_tax_reform
+
+civil_construction_full_rate:
+  code: civil_construction_full_rate
+  title: Confirmar construcao civil com aliquota cheia
+  description: Modelo inicial usa aliquota cheia com creditos, sem reducao especifica.
+  status: pending
+  impact: Afeta contratos de construcao civil.
+  source_reference: leitura_tabela_denis_reforma_imobiliaria_2026-05-28.md
+  position: 5
+  tax_module: real_estate_tax_reform
+  operation: civil_construction
+
+management_brokerage_full_rate:
+  code: management_brokerage_full_rate
+  title: Confirmar administracao/corretagem sem redutor
+  description: Modelo inicial usa aliquota cheia e creditos vinculados, sem redutor ou reducao.
+  status: pending
+  impact: Afeta servicos imobiliarios.
+  source_reference: leitura_tabela_denis_reforma_imobiliaria_2026-05-28.md
+  position: 6
+  tax_module: real_estate_tax_reform
+  operation: management_brokerage
+
+rights_assignment_rate:
+  code: rights_assignment_rate
+  title: Confirmar aliquota de cessao de direitos
+  description: A planilha indica reducao de 70% para locacao/cessao/arrendamento, mas a aba de calculo de cessao usa aliquota cheia. Validar com Denis.
+  status: divergent
+  impact: Afeta debito IBS/CBS e imposto estimado de cessao.
+  source_reference: leitura_tabela_denis_reforma_imobiliaria_2026-05-28.md
+  position: 7
+  tax_module: real_estate_tax_reform
+  operation: rights_assignment
+
+exchange_without_boot_screen:
+  code: exchange_without_boot_screen
+  title: Confirmar tela de permuta sem torna
+  description: Operacao tratada como sem incidencia no modelo inicial. Confirmar se deve existir apenas como informativa ou se precisa de simulador proprio.
+  status: pending
+  impact: Define se a operacao segue apenas informativa.
+  source_reference: leitura_tabela_denis_reforma_imobiliaria_2026-05-28.md
+  position: 8
+  tax_module: real_estate_tax_reform
+  operation: exchange_without_boot

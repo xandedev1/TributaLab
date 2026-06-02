@@ -1,0 +1,131 @@
+<% content_for :title, "Avaliar rubrica #{@event.event_code} - Prev Lab" %>
+
+<div class="mx-auto flex w-full max-w-[96rem] flex-col gap-6">
+  <header class="tl-command-bar">
+    <div class="grid gap-5 lg:grid-cols-[1fr_auto] lg:items-end">
+      <div>
+        <p class="tl-kicker">Pontuacao de Naturezas</p>
+        <h1 class="tl-page-title tl-page-title--compact"><%= @event.event_code %> - <%= @event.description %></h1>
+        <p class="tl-page-subtitle mt-3 max-w-3xl">Revise as 10 naturezas mais provaveis da Tabela 03. Casos ambiguos devem ser marcados para decisao humana.</p>
+      </div>
+      <div class="flex flex-wrap gap-2">
+        <%= link_to "Voltar", rubric_recovery_adequacy_path, class: button_classes %>
+        <%= link_to "Rubricas + Natureza", rubric_recovery_rubrics_natures_path, class: button_classes(:info) %>
+      </div>
+    </div>
+  </header>
+
+  <nav class="tl-section-tabs" aria-label="Navegacao S-1010">
+    <%= link_to "Pontuacao S-1010", rubric_recovery_adequacy_path, class: s1010_tab_classes(rubric_recovery_adequacy_path) %>
+    <%= link_to "Rubricas + Natureza", rubric_recovery_rubrics_natures_path, class: s1010_tab_classes(rubric_recovery_rubrics_natures_path) %>
+  </nav>
+
+  <section class="grid gap-4 lg:grid-cols-[1fr_1fr]">
+    <article class="tl-panel p-5">
+      <h2 class="tl-section-title">Dados CTE</h2>
+      <div class="mt-4 grid gap-3 sm:grid-cols-3">
+        <div class="tl-tile p-4"><p class="tl-metric-label">Tp.</p><p class="tl-metric-value tl-metric-value--small"><%= @event.tp.presence || "-" %></p></div>
+        <div class="tl-tile p-4"><p class="tl-metric-label">Nt.</p><p class="tl-metric-value tl-metric-value--small"><%= @event.nt.presence || "-" %></p></div>
+        <div class="tl-tile p-4"><p class="tl-metric-label">Rub.</p><p class="tl-metric-value tl-metric-value--small"><%= @event.rub.presence || "-" %></p></div>
+      </div>
+      <div class="mt-4 flex flex-wrap gap-2">
+        <span class="tl-chip">InM <%= @event.inm.presence || "-" %></span>
+        <span class="tl-chip">IrM <%= @event.irm.presence || "-" %></span>
+        <span class="tl-chip">FN <%= @event.fn.presence || "-" %></span>
+      </div>
+    </article>
+
+    <article class="tl-decision-panel p-5">
+      <h2 class="tl-section-title">Status de enquadramento</h2>
+      <div class="mt-4 flex flex-wrap items-center gap-3">
+        <span class="<%= status_badge_classes(@event.adequacy_status) %>"><%= status_label(@event.adequacy_status) %></span>
+        <% if @assignment&.esocial_nature %>
+          <span class="tl-chip tl-chip--success">Selecionada: <%= @assignment.esocial_nature.nature_code %> - <%= @assignment.esocial_nature.name %></span>
+        <% else %>
+          <span class="tl-chip tl-chip--warning">Decisao pendente</span>
+        <% end %>
+      </div>
+      <%= form_with url: rubric_recovery_adequacy_assignments_path(@event), method: :post, data: { turbo: false }, class: "mt-5 grid gap-3 sm:grid-cols-[1fr_auto] sm:items-end" do %>
+        <%= hidden_field_tag :assignment_action, "ambiguous" %>
+        <div>
+          <%= label_tag :justification, "Observacao", class: "tl-label" %>
+          <%= text_field_tag :justification, nil, class: "tl-input", placeholder: "Motivo para manter ambigua ou pendente" %>
+        </div>
+        <%= submit_tag "Marcar ambigua", class: button_classes(:danger) %>
+      <% end %>
+    </article>
+  </section>
+
+  <section class="tl-panel overflow-hidden">
+    <div class="tl-panel-header">
+      <h2 class="tl-section-title">Top 10 naturezas candidatas</h2>
+      <p class="tl-panel-subtitle">Score deterministico com sinais positivos, penalidades e codigos de incidencia da Tabela 03.</p>
+    </div>
+
+    <div class="tl-table-wrap">
+      <table class="tl-table">
+        <thead>
+          <tr>
+            <th>Rank</th>
+            <th>Score</th>
+            <th>Natureza</th>
+            <th>Vigencia</th>
+            <th>CP</th>
+            <th>IRRF</th>
+            <th>FGTS</th>
+            <th>Explicacao</th>
+            <th>Selecionar</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% @suggestions.each do |suggestion| %>
+            <% nature = suggestion.esocial_nature %>
+            <tr class="<%= suggestion_row_classes(suggestion, @assignment) %>">
+              <td class="tl-mono text-xs"><%= suggestion.rank %></td>
+              <td>
+                <div class="tl-score-stack">
+                  <span class="<%= score_badge_classes(suggestion.score) %>"><%= number_with_precision(suggestion.score, precision: 2) %></span>
+                  <div class="<%= score_bar_classes(suggestion.score) %>" aria-label="Score <%= number_with_precision(suggestion.score, precision: 2) %> de 10">
+                    <span style="width: <%= score_percentage(suggestion.score) %>%"></span>
+                  </div>
+                  <p class="tl-muted text-xs"><%= suggestion.confidence_label %></p>
+                </div>
+              </td>
+              <td class="min-w-80">
+                <div class="flex flex-wrap items-center gap-2">
+                  <p class="font-semibold text-white"><%= nature.nature_code %> - <%= nature.name %></p>
+                  <% if @assignment&.esocial_nature_id == nature.id %>
+                    <span class="tl-badge tl-badge--success">Selecionada</span>
+                  <% end %>
+                </div>
+                <p class="tl-muted mt-1 text-xs"><%= truncate(nature.description, length: 150) %></p>
+              </td>
+              <td class="whitespace-nowrap tl-mono text-xs"><%= nature.vigency_label %></td>
+              <% alignment = suggestion.incidence_alignment || {} %>
+              <td><span class="<%= incidence_pill_classes(alignment["cp"] || alignment[:cp]) %>">CP <%= nature.cod_inc_cp.presence || "-" %></span></td>
+              <td><span class="<%= incidence_pill_classes(alignment["irrf"] || alignment[:irrf]) %>">IRRF <%= nature.cod_inc_irrf.presence || "-" %></span></td>
+              <td><span class="<%= incidence_pill_classes(alignment["fgts"] || alignment[:fgts]) %>">FGTS <%= nature.cod_inc_fgts.presence || "-" %></span></td>
+              <td class="min-w-96">
+                <div class="flex flex-wrap gap-2">
+                  <% suggestion.positive_signals.each_with_index do |signal, index| %>
+                    <span class="tl-signal-chip <%= "tl-signal-chip--info" if index.odd? %>"><%= signal %></span>
+                  <% end %>
+                  <% suggestion.penalties.each do |penalty| %>
+                    <span class="tl-penalty-chip"><%= penalty %></span>
+                  <% end %>
+                </div>
+              </td>
+              <td>
+                <%= form_with url: rubric_recovery_adequacy_assignments_path(@event), method: :post, data: { turbo: false }, class: "grid gap-2 min-w-48" do %>
+                  <%= hidden_field_tag :esocial_nature_id, nature.id %>
+                  <%= text_field_tag :justification, nil, class: "tl-input", placeholder: "Observacao opcional" %>
+                  <%= submit_tag @assignment&.esocial_nature_id == nature.id ? "Selecionada" : "Selecionar natureza", class: button_classes(:success) %>
+                <% end %>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  </section>
+</div>

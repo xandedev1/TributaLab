@@ -46,6 +46,15 @@ tax_rule_version.assign_attributes(
 )
 tax_rule_version.save!
 
+case_file = CaseFile.find_or_initialize_by(reference_code: "RTI-VALIDACAO-001")
+case_file.assign_attributes(
+	name: "Caso interno de validacao - Reforma Tributaria Imobiliaria",
+	description: "Caso inicial para agrupar simulacoes internas sem dados sensiveis de empresas reais.",
+	status: "active",
+	notes: "Criado na Etapa 003 para validacao guiada do modulo imobiliario."
+)
+case_file.save!
+
 operations = [
 	["sale_property", "Venda de imovel / incorporacao", "Operacao tributada sobre o valor da operacao, com redutor social e reducao de aliquota indicados na planilha.", "active"],
 	["sale_residential_lot", "Venda de lote residencial", "Operacao tributada sobre o valor da venda, com redutor por lote residencial.", "active"],
@@ -142,3 +151,5 @@ end
 	)
 	legal_basis.save!
 end
+
+RubricRecovery::AdequacyImporter.ensure_loaded!

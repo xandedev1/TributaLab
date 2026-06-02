@@ -1,0 +1,80 @@
+<% content_for :title, "Caso interno - Prev Lab" %>
+
+<div class="mx-auto flex w-full max-w-7xl flex-col gap-6">
+  <header class="tl-header-card p-5 sm:p-6">
+    <div class="grid gap-5 sm:grid-cols-[1fr_auto] sm:items-end">
+      <div>
+        <p class="tl-kicker">Caso interno</p>
+        <h1 class="tl-page-title tl-page-title--compact"><%= @case_file.name %></h1>
+        <p class="tl-page-subtitle mt-3"><%= @case_file.reference_code.presence || "sem codigo" %> / <%= status_label(@case_file.status) %></p>
+      </div>
+      <div class="flex flex-wrap gap-3">
+        <%= link_to "Nova simulacao", new_simulation_path(case_file_id: @case_file.id), class: button_classes(:primary) %>
+        <%= link_to "Casos", case_files_path, class: button_classes %>
+      </div>
+    </div>
+  </header>
+
+  <% if notice.present? %>
+    <section class="tl-card p-4 text-sm font-semibold text-[color:var(--tl-ghost-strong)]"><%= notice %></section>
+  <% end %>
+
+  <section class="grid gap-6 xl:grid-cols-[0.75fr_1.25fr]">
+    <aside class="grid content-start gap-4">
+      <article class="tl-card p-5">
+        <div class="flex items-center justify-between gap-3">
+          <p class="tl-section-title">Status</p>
+          <span class="<%= status_badge_classes(@case_file.status) %>"><%= status_label(@case_file.status) %></span>
+        </div>
+        <div class="tl-copy mt-4 text-sm">
+          <%= simple_format(@case_file.description.presence || "Caso interno sem descricao.") %>
+        </div>
+      </article>
+
+      <% if @case_file.notes.present? %>
+        <article class="tl-card p-5">
+          <h2 class="tl-section-title">Notas</h2>
+          <div class="tl-copy mt-3 text-sm"><%= simple_format(@case_file.notes) %></div>
+        </article>
+      <% end %>
+    </aside>
+
+    <section class="tl-card overflow-hidden">
+      <div class="flex flex-col gap-2 border-b border-white/10 px-5 py-4 sm:flex-row sm:items-center sm:justify-between">
+        <div>
+          <h2 class="tl-section-title">Simulacoes vinculadas</h2>
+          <p class="tl-panel-subtitle">Historico deste caso interno.</p>
+        </div>
+        <span class="tl-chip"><%= @simulations.size %> registros</span>
+      </div>
+
+      <div class="tl-table-wrap">
+        <table class="tl-table">
+          <thead>
+            <tr>
+              <th>Data</th>
+              <th>Operacao</th>
+              <th class="text-right">Imposto estimado</th>
+              <th>Alertas</th>
+              <th>Detalhe</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% @simulations.each do |simulation| %>
+              <tr>
+                <td class="whitespace-nowrap tl-mono text-xs"><%= simulation.created_at.strftime("%Y-%m-%d %H:%M") %></td>
+                <td>
+                  <p class="font-semibold text-white"><%= simulation.name %></p>
+                  <p class="tl-muted mt-1 text-xs"><%= simulation.operation.name %></p>
+                </td>
+                <td class="whitespace-nowrap text-right font-semibold tabular-nums text-[color:var(--tl-ghost-strong)]"><%= number_to_currency(simulation.simulation_result.tax_due, unit: "R$ ", separator: ",", delimiter: ".") %></td>
+                <td><span class="tl-badge tl-badge--warning tabular-nums"><%= simulation.alert_count %></span></td>
+                <td><%= link_to "Abrir", simulation_path(simulation), class: "tl-link" %></td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </section>
+</div>

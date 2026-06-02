@@ -1,142 +1,42 @@
-<% content_for :title, "TributaLab" %>
+<% content_for :title, "Prev Lab" %>
 
-<div class="mx-auto flex w-full max-w-7xl flex-col gap-6">
-  <header class="border-b border-zinc-200 pb-5">
-    <div class="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
-      <div>
-        <p class="text-sm font-medium uppercase tracking-wide text-teal-700">TributaLab</p>
-        <h1 class="mt-1 text-3xl font-semibold tracking-normal text-zinc-950">Reforma Tributaria Imobiliaria</h1>
-        <p class="mt-2 max-w-3xl text-sm leading-6 text-zinc-600">
-          <% if @tax_module %>
-            <%= @tax_module.product_area.name %> / <%= @tax_module.sector.name %>
-          <% else %>
-            Execute os seeds para carregar o modulo inicial.
-          <% end %>
-        </p>
-      </div>
-
-      <div class="flex flex-wrap items-center gap-3">
-        <span class="rounded border border-zinc-300 bg-white px-3 py-2 text-sm font-medium text-zinc-700">
-          Versao de regras: <%= @tax_rule_version&.code || "mvp-001" %>
-        </span>
-        <%= link_to "Nova simulacao", new_simulation_path, class: "rounded bg-zinc-950 px-4 py-2 text-sm font-semibold text-white hover:bg-zinc-800" %>
-      </div>
-    </div>
-  </header>
-
+<div class="mx-auto flex w-full max-w-[92rem] flex-col gap-5">
   <% if @tax_module %>
-    <section class="grid gap-4 lg:grid-cols-4">
-      <div class="border border-zinc-200 bg-white p-4">
-        <p class="text-sm text-zinc-500">Area</p>
-        <p class="mt-1 text-lg font-semibold text-zinc-950"><%= @tax_module.product_area.name %></p>
-      </div>
-      <div class="border border-zinc-200 bg-white p-4">
-        <p class="text-sm text-zinc-500">Setor</p>
-        <p class="mt-1 text-lg font-semibold text-zinc-950"><%= @tax_module.sector.name %></p>
-      </div>
-      <div class="border border-zinc-200 bg-white p-4">
-        <p class="text-sm text-zinc-500">Operacoes</p>
-        <p class="mt-1 text-lg font-semibold text-zinc-950"><%= @operations.size %></p>
-      </div>
-      <div class="border border-amber-300 bg-amber-50 p-4">
-        <p class="text-sm text-amber-800">Pendencias de regra</p>
-        <p class="mt-1 text-lg font-semibold text-amber-950"><%= @alerts.size %></p>
-      </div>
-    </section>
-
-    <section class="grid gap-6 xl:grid-cols-[1.1fr_0.9fr]">
-      <div class="border border-zinc-200 bg-white">
-        <div class="border-b border-zinc-200 px-4 py-3">
-          <h2 class="text-base font-semibold text-zinc-950">Operacoes iniciais</h2>
+    <section class="tl-kinetic-hero tl-kinetic-hero--cockpit">
+      <div class="tl-kinetic-copy">
+        <p class="tl-kicker">Cockpit operacional</p>
+        <div class="tl-hero-logo-plate" aria-label="Prev Lab">
+          <%= image_tag "prevlab-logo-dark.png", alt: "Prev Lab", class: "tl-hero-logo" %>
         </div>
-        <div class="divide-y divide-zinc-200">
-          <% @operations.each do |operation| %>
-            <article class="grid gap-2 px-4 py-4 sm:grid-cols-[1fr_auto] sm:items-center">
-              <div>
-                <h3 class="text-sm font-semibold text-zinc-950"><%= operation.name %></h3>
-                <p class="mt-1 text-sm leading-6 text-zinc-600"><%= operation.description %></p>
-              </div>
-              <span class="w-fit rounded border border-zinc-300 px-2 py-1 text-xs font-medium uppercase text-zinc-600">
-                <%= operation.status %>
-              </span>
-            </article>
-          <% end %>
-        </div>
+        <p class="tl-page-subtitle mt-5 max-w-md">Mesa local para revisar casos, simulacoes e rubricas eSocial com trilha auditavel.</p>
       </div>
 
-      <div class="border border-amber-300 bg-amber-50">
-        <div class="border-b border-amber-200 px-4 py-3">
-          <h2 class="text-base font-semibold text-amber-950">Alertas de validacao</h2>
-        </div>
-        <div class="divide-y divide-amber-200">
-          <% @alerts.first(8).each do |alert| %>
-            <article class="px-4 py-4">
-              <div class="flex flex-wrap items-center gap-2">
-                <h3 class="text-sm font-semibold text-amber-950"><%= alert[:title] %></h3>
-                <span class="rounded border border-amber-300 bg-white px-2 py-0.5 text-xs font-medium text-amber-800"><%= alert[:status] %></span>
-              </div>
-              <% if alert[:operation].present? %>
-                <p class="mt-1 text-xs font-medium text-amber-800"><%= alert[:operation] %></p>
-              <% end %>
-              <p class="mt-2 text-sm leading-6 text-amber-900"><%= alert[:description] %></p>
-            </article>
-          <% end %>
-        </div>
-      </div>
-    </section>
+      <div class="tl-kinetic-stage" aria-label="Visualizacao cinetica do motor fiscal">
+        <svg class="tl-kinetic-svg" viewBox="0 0 620 420" role="img" aria-label="Trilhas animadas de calculo fiscal">
+          <path class="tl-kinetic-path" d="M30 312 C128 174 214 176 314 248 S486 330 590 104" />
+          <path class="tl-kinetic-path tl-kinetic-path--soft" d="M42 98 H154 L222 186 H320 L386 120 H558" />
+          <path class="tl-kinetic-path tl-kinetic-path--soft" d="M64 358 C152 278 226 318 302 202 S458 52 574 282" />
+          <path class="tl-kinetic-path" d="M86 220 L176 118 L266 224 L358 126 L494 238" />
+        </svg>
 
-    <section class="grid gap-6 xl:grid-cols-2">
-      <div class="border border-zinc-200 bg-white">
-        <div class="border-b border-zinc-200 px-4 py-3">
-          <h2 class="text-base font-semibold text-zinc-950">Parametros atuais</h2>
-        </div>
-        <div class="overflow-x-auto">
-          <table class="min-w-full divide-y divide-zinc-200 text-left text-sm">
-            <thead class="bg-zinc-100 text-xs uppercase text-zinc-600">
-              <tr>
-                <th class="px-4 py-3 font-semibold">Parametro</th>
-                <th class="px-4 py-3 font-semibold">Valor</th>
-                <th class="px-4 py-3 font-semibold">Status</th>
-              </tr>
-            </thead>
-            <tbody class="divide-y divide-zinc-200">
-              <% @parameters.each do |parameter| %>
-                <tr>
-                  <td class="px-4 py-3 align-top">
-                    <p class="font-medium text-zinc-950"><%= parameter.name %></p>
-                    <p class="mt-1 text-xs text-zinc-500"><%= parameter.operation&.name || "Modulo" %></p>
-                  </td>
-                  <td class="px-4 py-3 align-top text-zinc-700">
-                    <%= number_with_delimiter(parameter.value_decimal.to_f, delimiter: ".", separator: ",") %> <%= parameter.unit %>
-                  </td>
-                  <td class="px-4 py-3 align-top">
-                    <span class="rounded border border-zinc-300 px-2 py-1 text-xs font-medium text-zinc-600"><%= parameter.validation_status %></span>
-                  </td>
-                </tr>
-              <% end %>
-            </tbody>
-          </table>
-        </div>
-      </div>
-
-      <div class="border border-zinc-200 bg-white">
-        <div class="border-b border-zinc-200 px-4 py-3">
-          <h2 class="text-base font-semibold text-zinc-950">Categorias de credito</h2>
-        </div>
-        <div class="grid gap-3 p-4 sm:grid-cols-2">
-          <% @credit_categories.each do |category| %>
-            <article class="border border-zinc-200 p-3">
-              <h3 class="text-sm font-semibold text-zinc-950"><%= category.name %></h3>
-              <p class="mt-2 text-sm leading-6 text-zinc-600"><%= category.description %></p>
-            </article>
-          <% end %>
-        </div>
+        <div class="tl-core-frame" aria-hidden="true"></div>
+        <span class="tl-kinetic-node" style="--x: 13%; --y: 68%; --speed: 4.8s" aria-hidden="true"></span>
+        <span class="tl-kinetic-node" style="--x: 30%; --y: 30%; --speed: 6.2s" aria-hidden="true"></span>
+        <span class="tl-kinetic-node" style="--x: 53%; --y: 55%; --speed: 5.4s" aria-hidden="true"></span>
+        <span class="tl-kinetic-node" style="--x: 75%; --y: 24%; --speed: 7s" aria-hidden="true"></span>
+        <span class="tl-kinetic-node" style="--x: 84%; --y: 70%; --speed: 5.8s" aria-hidden="true"></span>
       </div>
     </section>
   <% else %>
-    <section class="border border-amber-300 bg-amber-50 p-5 text-amber-950">
-      <h2 class="text-base font-semibold">Dados iniciais ausentes</h2>
-      <p class="mt-2 text-sm leading-6">Rode <span class="font-mono">ruby bin/rails db:seed</span> depois de criar e migrar o banco PostgreSQL.</p>
+    <section class="tl-kinetic-hero tl-kinetic-hero--cockpit">
+      <div class="tl-kinetic-copy">
+        <p class="tl-kicker">Preparacao pendente</p>
+        <div class="tl-hero-logo-plate" aria-label="Prev Lab">
+          <%= image_tag "prevlab-logo-dark.png", alt: "Prev Lab", class: "tl-hero-logo" %>
+        </div>
+        <p class="tl-page-subtitle mt-5">Rode <span class="tl-mono">ruby bin/rails db:seed</span> para carregar o modulo fiscal inicial.</p>
+      </div>
+      <div class="tl-kinetic-stage" aria-hidden="true"><div class="tl-core-frame"></div></div>
     </section>
   <% end %>
 </div>

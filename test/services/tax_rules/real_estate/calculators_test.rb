@@ -71,4 +71,74 @@ class TaxRules::RealEstate::CalculatorsTest < ActiveSupport::TestCase
     assert_equal BigDecimal("2000"), result.fetch(:credits_amount)
     assert_equal BigDecimal("11250"), result.fetch(:tax_due)
   end
+
+  test "calculates construction contract with full rate and credits" do
+    calculation = TaxRules::RealEstate::ConstructionContractCalculator.new(
+      tax_module: @tax_module,
+      tax_rule_version: @tax_rule_version,
+      inputs: { contract_amount: "1000000", credits_amount: "150000" }
+    ).call
+
+    result = calculation.fetch(:result)
+    alert_codes = calculation.fetch(:alerts).map { |alert| alert.fetch(:code) }
+
+    assert_equal "civil_construction", calculation.fetch(:operation_code)
+    assert_equal BigDecimal("1000000"), result.fetch(:gross_base)
+    assert_equal BigDecimal("265000"), result.fetch(:debit_amount)
+    assert_equal BigDecimal("150000"), result.fetch(:credits_amount)
+    assert_equal BigDecimal("115000"), result.fetch(:tax_due)
+    assert_includes alert_codes, "civil_construction_full_rate"
+  end
+
+  test "calculates brokerage administration with full rate and credits" do
+    calculation = TaxRules::RealEstate::BrokerageAdministrationCalculator.new(
+      tax_module: @tax_module,
+      tax_rule_version: @tax_rule_version,
+      inputs: { service_amount: "50000", credits_amount: "5000" }
+    ).call
+
+    result = calculation.fetch(:result)
+    alert_codes = calculation.fetch(:alerts).map { |alert| alert.fetch(:code) }
+
+    assert_equal "management_brokerage", calculation.fetch(:operation_code)
+    assert_equal BigDecimal("13250"), result.fetch(:debit_amount)
+    assert_equal BigDecimal("8250"), result.fetch(:tax_due)
+    assert_includes alert_codes, "management_brokerage_full_rate"
+  end
+
+  test "calculates rights assignment with parameterized divergent reduction" do
+    calculation = TaxRules::RealEstate::AssignmentRightsCalculator.new(
+      tax_module: @tax_module,
+      tax_rule_version: @tax_rule_version,
+      inputs: { assignment_amount: "50000", credits_amount: "500" }
+    ).call
+
+    result = calculation.fetch(:result)
+    alert_codes = calculation.fetch(:alerts).map { |alert| alert.fetch(:code) }
+
+    assert_equal "rights_assignment", calculation.fetch(:operation_code)
+    assert_equal BigDecimal("0.0795"), result.fetch(:effective_rate)
+    assert_equal BigDecimal("3975"), result.fetch(:debit_amount)
+    assert_equal BigDecimal("3475"), result.fetch(:tax_due)
+    assert_includes alert_codes, "rights_assignment_reduction"
+    assert_includes alert_codes, "rights_assignment_rate"
+    assert_equal "apply_parameterized_reduction_pending_validation", calculation.fetch(:calculation_details).fetch(:rights_assignment_rate_path)
+  end
+
+  test "calculates exchange without boot as informational zero tax operation" do
+    calculation = TaxRules::RealEstate::ExchangeWithoutBootCalculator.new(
+      tax_module: @tax_module,
+      tax_rule_version: @tax_rule_version,
+      inputs: {}
+    ).call
+
+    result = calculation.fetch(:result)
+    alert_codes = calculation.fetch(:alerts).map { |alert| alert.fetch(:code) }
+
+    assert_equal "exchange_without_boot", calculation.fetch(:operation_code)
+    assert_equal BigDecimal("0"), result.fetch(:gross_base)
+    assert_equal BigDecimal("0"), result.fetch(:tax_due)
+    assert_includes alert_codes, "exchange_without_boot_screen"
+    assert calculation.fetch(:calculation_details).fetch(:informational_operation)
+  end
 end

@@ -41,4 +41,32 @@ class Simulations::RunSimulationTest < ActiveSupport::TestCase
     assert_includes alert_codes, "lease_deduct_iptu_condo"
     assert_equal "deduct_iptu_and_condominium", simulation.simulation_result.calculation_details.fetch("lease_base_path")
   end
+
+  test "persists case file association when provided" do
+    simulation = Simulations::RunSimulation.new(
+      operation_code: "civil_construction",
+      inputs: { contract_amount: "1000000", credits_amount: "150000" },
+      tax_module: tax_modules(:real_estate_tax_reform),
+      tax_rule_version: tax_rule_versions(:real_estate_tax_reform_v1),
+      case_file: case_files(:validation_case)
+    ).call
+
+    assert_equal case_files(:validation_case), simulation.case_file
+    assert_equal BigDecimal("115000"), simulation.simulation_result.tax_due
+  end
+
+  test "persists mandatory rights assignment alerts in snapshots" do
+    simulation = Simulations::RunSimulation.new(
+      operation_code: "rights_assignment",
+      inputs: { assignment_amount: "50000", credits_amount: "500" },
+      tax_module: tax_modules(:real_estate_tax_reform),
+      tax_rule_version: tax_rule_versions(:real_estate_tax_reform_v1)
+    ).call
+
+    alert_codes = simulation.alerts_snapshot.map { |alert| alert.fetch("code") }
+
+    assert_includes alert_codes, "rights_assignment_reduction"
+    assert_includes alert_codes, "rights_assignment_rate"
+    assert_equal "apply_parameterized_reduction_pending_validation", simulation.simulation_result.calculation_details.fetch("rights_assignment_rate_path")
+  end
 end

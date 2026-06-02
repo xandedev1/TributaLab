@@ -22,10 +22,42 @@ lease_property:
   status: active
   position: 3
 
+civil_construction:
+  code: civil_construction
+  name: Construcao civil
+  description: Contratos de construcao civil com creditos vinculados.
+  tax_module: real_estate_tax_reform
+  status: active
+  position: 4
+
+management_brokerage:
+  code: management_brokerage
+  name: Administracao / corretagem
+  description: Servicos imobiliarios com creditos vinculados.
+  tax_module: real_estate_tax_reform
+  status: active
+  position: 5
+
+rights_assignment:
+  code: rights_assignment
+  name: Cessao de direitos
+  description: Cessao com reducao divergente pendente de validacao.
+  tax_module: real_estate_tax_reform
+  status: active
+  position: 6
+
+exchange_without_boot:
+  code: exchange_without_boot
+  name: Permuta sem torna
+  description: Permuta informativa sem incidencia no modelo inicial.
+  tax_module: real_estate_tax_reform
+  status: informational
+  position: 7
+
 exchange_with_boot:
   code: exchange_with_boot
   name: Permuta com torna
   description: Permuta com incidencia parcial sobre a torna.
   tax_module: real_estate_tax_reform
   status: active
-  position: 4
+  position: 8

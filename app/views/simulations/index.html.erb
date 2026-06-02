@@ -1,0 +1,109 @@
+<% content_for :title, "Simulacoes - Prev Lab" %>
+
+<div class="mx-auto flex w-full max-w-[92rem] flex-col gap-6">
+  <header class="tl-command-bar">
+    <div class="grid gap-5 lg:grid-cols-[1fr_auto] lg:items-end">
+      <div>
+        <p class="tl-kicker">Dossies / Historico</p>
+        <h1 class="tl-page-title tl-page-title--compact">Simulacoes salvas</h1>
+        <p class="tl-page-subtitle mt-3 max-w-2xl">Arquivo operacional com resultado, regra, alerta e registro tecnico.</p>
+      </div>
+      <div class="flex flex-wrap gap-3">
+        <%= link_to "Nova simulacao", new_simulation_path, class: button_classes(:primary) %>
+        <%= link_to "Painel", root_path, class: button_classes %>
+      </div>
+    </div>
+  </header>
+
+  <section class="tl-stat-strip">
+    <article class="tl-stat-cell">
+      <p class="tl-metric-label">Resultados na lista</p>
+      <p class="tl-metric-value"><%= @simulations.size %></p>
+    </article>
+    <article class="tl-stat-cell">
+      <p class="tl-metric-label">Operacoes filtraveis</p>
+      <p class="tl-metric-value"><%= @operations.size %></p>
+    </article>
+    <article class="tl-stat-cell">
+      <p class="tl-metric-label">Filtro de alertas</p>
+      <p class="tl-metric-value tl-metric-value--small"><%= @alert_state.present? ? status_label(@alert_state) : "Todos" %></p>
+    </article>
+  </section>
+
+  <section class="tl-panel p-5">
+    <%= form_with url: simulations_path, method: :get, data: { turbo: false }, class: "grid gap-4 lg:grid-cols-[1.3fr_1fr_1fr_1fr_auto] lg:items-end" do %>
+      <div>
+        <%= label_tag :operation_code, "Operacao", class: "tl-label" %>
+        <%= select_tag :operation_code, options_from_collection_for_select(@operations, :code, :name, @selected_operation_code), include_blank: "Todas", class: "tl-input" %>
+      </div>
+      <div>
+        <%= label_tag :date_from, "Data inicial", class: "tl-label" %>
+        <%= date_field_tag :date_from, @date_from, class: "tl-input" %>
+      </div>
+      <div>
+        <%= label_tag :date_until, "Data final", class: "tl-label" %>
+        <%= date_field_tag :date_until, @date_until, class: "tl-input" %>
+      </div>
+      <div>
+        <%= label_tag :alert_state, "Alertas", class: "tl-label" %>
+        <%= select_tag :alert_state, options_for_select([["Todos", ""], ["Com alertas", "with_alerts"], ["Sem alertas", "without_alerts"]], @alert_state), class: "tl-input" %>
+      </div>
+      <div class="flex gap-2">
+        <%= submit_tag "Filtrar", class: button_classes(:primary) %>
+        <%= link_to "Limpar", simulations_path, class: button_classes %>
+      </div>
+    <% end %>
+  </section>
+
+  <section class="tl-panel overflow-hidden">
+    <div class="tl-panel-header flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+      <div>
+        <h2 class="tl-section-title">Historico de simulacoes</h2>
+        <p class="tl-panel-subtitle">Valores persistidos com snapshots de entrada, regra e alertas.</p>
+      </div>
+      <span class="tl-chip"><%= @tax_module&.name || "Todos os modulos" %></span>
+    </div>
+
+    <div class="tl-table-wrap">
+      <table class="tl-table">
+        <thead>
+          <tr>
+            <th>Data</th>
+            <th>Simulacao</th>
+            <th>Modulo</th>
+            <th>Regra</th>
+            <th class="text-right">Valor principal</th>
+            <th class="text-right">Imposto estimado</th>
+            <th>Alertas</th>
+            <th>Detalhe</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% @simulations.each do |simulation| %>
+            <tr>
+              <td class="whitespace-nowrap tl-mono text-xs"><%= simulation.created_at.strftime("%Y-%m-%d %H:%M") %></td>
+              <td class="min-w-72">
+                <p class="font-semibold text-white"><%= simulation.name %></p>
+                <p class="tl-muted mt-1 text-xs leading-5"><%= simulation.operation.name %> / <%= simulation.case_file&.name || "Sem caso" %></p>
+              </td>
+              <td><%= simulation.tax_module.name %></td>
+              <td class="whitespace-nowrap tl-mono text-xs"><%= simulation.rule_version %></td>
+              <td class="whitespace-nowrap text-right font-semibold tabular-nums text-white"><%= number_to_currency(simulation.primary_amount, unit: "R$ ", separator: ",", delimiter: ".") %></td>
+              <td class="whitespace-nowrap text-right font-semibold tabular-nums text-[color:var(--tl-ghost-strong)]"><%= number_to_currency(simulation.simulation_result.tax_due, unit: "R$ ", separator: ",", delimiter: ".") %></td>
+              <td><span class="tl-badge tl-badge--warning tabular-nums"><%= simulation.alert_count %></span></td>
+              <td><%= link_to "Abrir", simulation_path(simulation), class: "tl-link" %></td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+
+    <% if @simulations.empty? %>
+      <div class="tl-empty">
+        <h3 class="tl-section-title">Nenhuma simulacao encontrada</h3>
+        <p class="tl-copy mx-auto mt-2 max-w-md">Ajuste os filtros ou crie uma nova simulacao para revisar o calculo com snapshots completos.</p>
+        <%= link_to "Nova simulacao", new_simulation_path, class: "mt-5 #{button_classes(:primary)}" %>
+      </div>
+    <% end %>
+  </section>
+</div>

@@ -14,3 +14,5 @@
 10. Confirmar se permuta sem torna sera apenas informativa ou tera tela propria.
 11. Confirmar se o usuario final da primeira versao sera interno, consultor tributario ou cliente externo.
 12. Confirmar se a primeira versao precisa salvar clientes/casos ou se pode simular sem cadastro de cliente.
+13. Confirmar quais campos minimos podem identificar um caso interno sem expor dados sensiveis de empresa real.
+14. Confirmar qual formato Denis precisa para validar os resultados: tela, tabela, CSV, PDF ou Markdown.

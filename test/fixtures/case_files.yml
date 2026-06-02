@@ -1,0 +1,6 @@
+validation_case:
+  name: Caso interno de validacao
+  description: Caso usado para testes internos da Reforma Tributaria Imobiliaria.
+  status: active
+  reference_code: RTI-TEST-001
+  notes: Sem dados sensiveis.

@@ -1,0 +1,56 @@
+<% content_for :title, "Novo caso interno - Prev Lab" %>
+<% input_classes = "tl-input" %>
+<% label_classes = "tl-label" %>
+
+<div class="mx-auto flex w-full max-w-4xl flex-col gap-6">
+  <header class="tl-header-card p-5 sm:p-6">
+    <div class="grid gap-5 sm:grid-cols-[1fr_auto] sm:items-end">
+      <div>
+        <p class="tl-kicker">Casos internos</p>
+        <h1 class="tl-page-title tl-page-title--compact">Novo caso interno</h1>
+        <p class="tl-page-subtitle mt-3">Crie um agrupador interno para simulacoes de validacao.</p>
+      </div>
+      <%= link_to "Casos", case_files_path, class: button_classes %>
+    </div>
+  </header>
+
+  <section class="tl-card overflow-hidden">
+    <%= form_with model: @case_file, data: { turbo: false }, class: "grid gap-5 p-5" do |form| %>
+      <% if @case_file.errors.any? %>
+        <div class="tl-tile p-4 text-sm text-[color:var(--tl-danger)]"><%= @case_file.errors.full_messages.to_sentence %></div>
+      <% end %>
+
+      <div class="grid gap-4 md:grid-cols-2">
+        <div>
+          <%= form.label :name, "Nome", class: label_classes %>
+          <%= form.text_field :name, class: input_classes %>
+        </div>
+        <div>
+          <%= form.label :reference_code, "Codigo de referencia", class: label_classes %>
+          <%= form.text_field :reference_code, class: input_classes %>
+        </div>
+      </div>
+
+      <div>
+        <%= form.label :description, "Descricao", class: label_classes %>
+        <%= form.text_area :description, rows: 4, class: input_classes %>
+      </div>
+
+      <div class="grid gap-4 md:grid-cols-[0.7fr_1.3fr]">
+        <div>
+          <%= form.label :status, "Status", class: label_classes %>
+          <%= form.select :status, CaseFile::STATUSES, {}, class: input_classes %>
+        </div>
+        <div>
+          <%= form.label :notes, "Notas", class: label_classes %>
+          <%= form.text_area :notes, rows: 4, class: input_classes %>
+        </div>
+      </div>
+
+      <div class="tl-action-bar border-t border-white/10 pt-5">
+        <%= link_to "Cancelar", case_files_path, class: button_classes %>
+        <%= form.submit "Salvar caso", class: button_classes(:primary) %>
+      </div>
+    <% end %>
+  </section>
+</div>

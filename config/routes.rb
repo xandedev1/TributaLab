@@ -12,5 +12,19 @@ Rails.application.routes.draw do
   # Defines the root path route ("/")
   root "dashboard#index"
 
-  resources :simulations, only: [:new, :create, :show]
+  get "legal_basis", to: "legal_basis#index", as: :legal_basis
+
+  namespace :rubric_recovery do
+    get "radar", to: "radar#show", as: :radar
+    get "adequacy", to: "adequacy#index", as: :adequacy
+    get "adequacy/:rubric_event_id", to: "adequacy#show", as: :adequacy_event
+    post "adequacy/:rubric_event_id/assignments", to: "adequacy_assignments#create", as: :adequacy_assignments
+    get "rubrics_natures", to: "rubrics_natures#index", as: :rubrics_natures
+    patch "rubrics_natures/:assignment_id", to: "rubrics_natures#update", as: :rubrics_nature
+  end
+
+  resources :case_files, only: [:index, :new, :create, :show]
+  resources :simulations, only: [:index, :new, :create, :show]
+  resources :tax_parameters, only: [:index]
+  resources :assumptions, only: [:index]
 end
