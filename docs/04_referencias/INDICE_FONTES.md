@@ -134,3 +134,40 @@ docs/04_referencias/pesquisa_original/base_legal/relatorio_recuperacao_credito.x
 - Nao apresentar credito financeiro confirmado a partir desta fonte isolada.
 - Nao consultar eSocial para carregar esta tela.
 - Manter as abas da planilha visiveis como tabelas separadas.
+
+## Atualizacao Rebuild 2026-06-02 - Fontes novas de rubricas/eSocial
+
+Data da atualizacao: 2026-06-02
+
+Objetivo: preservar as fontes novas usadas para decidir o rebuild do modulo de rubricas CTE, com foco em catalogo CTE, natureza eSocial esperada e chain walk historico S-1010.
+
+Copias locais no repo Rails:
+
+```text
+docs/04_referencias/pesquisa_original/reconstrucao_2026_06_02/natureza_esocial_por_rubrica_cte.xlsx
+docs/04_referencias/pesquisa_original/reconstrucao_2026_06_02/s1010_todos_os_anos_cte_2026_06_02.zip
+```
+
+| Arquivo | Origem | Papel no produto | SHA256 |
+| --- | --- | --- | --- |
+| `natureza_esocial_por_rubrica_cte.xlsx` | `C:/Users/xandao/Downloads/Natureza E-Social por Rubrica CTE.xlsx` | Fonte primaria nova para mapear rubrica CTE -> natureza eSocial esperada pela coluna `eSoc`, com incidencias e vigencias auxiliares. | `0B1B647B44D083CFD161787E28FB53DB88E493D38A59A596F5678F063C0FC2B7` |
+| `s1010_todos_os_anos_cte_2026_06_02.zip` | `C:/Users/xandao/Downloads/S1010 todos os anos CTE.zip` | Fonte historica local para chain walk S-1010 de 2018 a 2026, sem consulta ao eSocial. | `D86534A1C783FE639937641556D998E9BD7E8BA60AC6488E38FFD68025B97DF8` |
+
+Documentos de analise criados:
+
+```text
+docs/03_comunicacao/REBUILD_001_FONTE_S1010_CHAIN_WALK.md
+docs/03_comunicacao/REBUILD_002_FONTE_NATUREZA_ESOCIAL_RUBRICA_CTE.md
+docs/03_comunicacao/REBUILD_003_FONTE_ARQUIVO_ENQUADRADO.md
+docs/03_comunicacao/REBUILD_004_FONTE_RELATORIO_RECUPERACAO_CREDITO.md
+docs/03_comunicacao/REBUILD_005_PLANO_SISTEMA_NOVO_RUBRICAS_CTE.md
+```
+
+### Regras de uso para o rebuild
+
+- `Natureza E-Social por Rubrica CTE.xlsx` passa a ser fonte primaria do mapeamento esperado, nao apenas apoio de score.
+- O ZIP S-1010 deve ser lido localmente e recursivamente, abrindo ZIPs mensais aninhados.
+- O `arquivo_enquadrado` vira diagnostico legado/QA, nao fonte primaria.
+- O `relatorio_recuperacao_credito` vira biblioteca de teses/base legal, nao catalogo completo.
+- Nao calcular credito financeiro sem folha e recolhimentos.
+- Nao consultar eSocial para esse rebuild sem permissao explicita.

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_06_01_090000) do
+ActiveRecord::Schema[8.1].define(version: 2026_06_02_091000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -215,6 +215,222 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_01_090000) do
     t.index ["score"], name: "index_rubric_nature_suggestions_on_score"
   end
 
+  create_table "rubricas_cte_catalog_rubrics", force: :cascade do |t|
+    t.string "active_from"
+    t.string "active_to"
+    t.datetime "created_at", null: false
+    t.string "cte_code", null: false
+    t.string "description", null: false
+    t.integer "first_source_row"
+    t.integer "last_source_row"
+    t.string "normalized_description"
+    t.bigint "source_file_id", null: false
+    t.integer "source_rows_count", default: 0, null: false
+    t.string "table_code"
+    t.datetime "updated_at", null: false
+    t.index ["cte_code"], name: "idx_rcte_catalog_cte_code"
+    t.index ["cte_code"], name: "idx_rcte_catalog_unique_cte_code", unique: true
+    t.index ["normalized_description"], name: "idx_rcte_catalog_norm_desc"
+    t.index ["source_file_id"], name: "idx_rcte_catalog_source"
+  end
+
+  create_table "rubricas_cte_expected_incidences", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.string "expected_flag", default: "unknown", null: false
+    t.bigint "expected_mapping_id", null: false
+    t.string "indicator_code", null: false
+    t.string "raw_value"
+    t.string "tax_kind", null: false
+    t.datetime "updated_at", null: false
+    t.index ["expected_mapping_id", "tax_kind", "indicator_code"], name: "idx_rcte_incidences_unique", unique: true
+    t.index ["expected_mapping_id"], name: "idx_rcte_incidences_mapping"
+    t.index ["tax_kind", "expected_flag"], name: "idx_rcte_incidences_tax_flag"
+  end
+
+  create_table "rubricas_cte_expected_mappings", force: :cascade do |t|
+    t.string "car"
+    t.bigint "catalog_rubric_id", null: false
+    t.string "cmp_inc"
+    t.datetime "created_at", null: false
+    t.string "esocial_nature_code"
+    t.string "fd"
+    t.string "fdi"
+    t.string "fim"
+    t.string "fn"
+    t.string "fni"
+    t.string "ina"
+    t.jsonb "incidence_profile", default: {}, null: false
+    t.string "ind"
+    t.string "inicio"
+    t.string "inm"
+    t.string "ipd"
+    t.string "ipf"
+    t.string "ipm"
+    t.string "ir"
+    t.string "ira"
+    t.string "ird"
+    t.string "irf"
+    t.string "irm"
+    t.string "irr"
+    t.string "pid"
+    t.string "pis"
+    t.jsonb "raw_values", default: {}, null: false
+    t.string "rem"
+    t.string "rp"
+    t.string "seq"
+    t.bigint "source_file_id", null: false
+    t.integer "source_row", null: false
+    t.string "source_sheet", null: false
+    t.string "tp"
+    t.string "tr"
+    t.datetime "updated_at", null: false
+    t.string "vinculo"
+    t.index ["catalog_rubric_id"], name: "idx_rcte_mappings_catalog"
+    t.index ["esocial_nature_code"], name: "idx_rcte_mappings_esoc"
+    t.index ["source_file_id", "source_row"], name: "idx_rcte_mappings_source_row", unique: true
+    t.index ["source_file_id"], name: "idx_rcte_mappings_source"
+  end
+
+  create_table "rubricas_cte_findings", force: :cascade do |t|
+    t.bigint "catalog_rubric_id", null: false
+    t.string "confidence", default: "needs_review", null: false
+    t.boolean "cp_divergent", default: false, null: false
+    t.datetime "created_at", null: false
+    t.string "declared_cp_code"
+    t.string "declared_fgts_code"
+    t.string "declared_irrf_code"
+    t.string "declared_nature_code"
+    t.string "divergence_kind", default: "not_evaluated", null: false
+    t.jsonb "divergence_kinds", default: [], null: false
+    t.jsonb "evidence_json", default: {}, null: false
+    t.string "expected_cp_indicator"
+    t.string "expected_fgts_indicator"
+    t.string "expected_irrf_indicator"
+    t.bigint "expected_mapping_id"
+    t.string "expected_nature_code"
+    t.boolean "fgts_divergent", default: false, null: false
+    t.boolean "irrf_divergent", default: false, null: false
+    t.boolean "nature_divergent", default: false, null: false
+    t.string "period_end"
+    t.string "period_start"
+    t.string "review_status", default: "pending", null: false
+    t.bigint "rubric_identity_link_id"
+    t.bigint "s1010_timeline_segment_id"
+    t.datetime "updated_at", null: false
+    t.index ["catalog_rubric_id"], name: "idx_rcte_findings_catalog"
+    t.index ["cp_divergent"], name: "idx_rcte_findings_cp"
+    t.index ["divergence_kind"], name: "idx_rcte_findings_kind"
+    t.index ["expected_mapping_id"], name: "idx_rcte_findings_mapping"
+    t.index ["fgts_divergent"], name: "idx_rcte_findings_fgts"
+    t.index ["irrf_divergent"], name: "idx_rcte_findings_irrf"
+    t.index ["nature_divergent"], name: "idx_rcte_findings_nature"
+    t.index ["rubric_identity_link_id"], name: "idx_rcte_findings_link"
+    t.index ["s1010_timeline_segment_id"], name: "idx_rcte_findings_segment"
+  end
+
+  create_table "rubricas_cte_import_runs", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.text "error_message"
+    t.datetime "finished_at"
+    t.string "kind", null: false
+    t.integer "rows_read", default: 0, null: false
+    t.integer "rows_written", default: 0, null: false
+    t.bigint "source_file_id", null: false
+    t.datetime "started_at", null: false
+    t.jsonb "stats", default: {}, null: false
+    t.string "status", default: "running", null: false
+    t.datetime "updated_at", null: false
+    t.index ["source_file_id"], name: "idx_rcte_runs_source"
+    t.index ["status"], name: "idx_rcte_runs_status"
+  end
+
+  create_table "rubricas_cte_rubric_identity_links", force: :cascade do |t|
+    t.jsonb "candidates", default: [], null: false
+    t.bigint "catalog_rubric_id", null: false
+    t.string "cod_rubr_normalized"
+    t.string "cod_rubr_raw"
+    t.decimal "confidence", precision: 5, scale: 2, default: "0.0", null: false
+    t.datetime "created_at", null: false
+    t.string "ide_tab_rubr"
+    t.string "match_method", default: "unmatched", null: false
+    t.string "review_status", default: "pending", null: false
+    t.string "s1010_key"
+    t.datetime "updated_at", null: false
+    t.index ["catalog_rubric_id"], name: "idx_rcte_links_catalog", unique: true
+    t.index ["review_status"], name: "idx_rcte_links_review"
+    t.index ["s1010_key"], name: "idx_rcte_links_s1010_key"
+  end
+
+  create_table "rubricas_cte_s1010_events", force: :cascade do |t|
+    t.string "cod_inc_cp"
+    t.string "cod_inc_fgts"
+    t.string "cod_inc_irrf"
+    t.string "cod_rubr_normalized"
+    t.string "cod_rubr_raw"
+    t.datetime "created_at", null: false
+    t.string "dsc_rubr"
+    t.string "event_action"
+    t.string "event_id"
+    t.string "fim_valid"
+    t.string "ide_tab_rubr"
+    t.string "ini_valid"
+    t.string "nat_rubr"
+    t.string "nested_zip_path"
+    t.string "normalized_description"
+    t.string "nr_recibo"
+    t.text "observacao"
+    t.bigint "source_file_id", null: false
+    t.string "tp_rubr"
+    t.datetime "updated_at", null: false
+    t.string "xml_path", null: false
+    t.string "xml_sha256", null: false
+    t.index ["cod_rubr_normalized"], name: "idx_rcte_s1010_norm_code"
+    t.index ["ide_tab_rubr", "cod_rubr_raw", "ini_valid"], name: "idx_rcte_s1010_key_valid"
+    t.index ["nat_rubr"], name: "idx_rcte_s1010_nat"
+    t.index ["source_file_id"], name: "idx_rcte_s1010_source"
+    t.index ["xml_sha256"], name: "idx_rcte_s1010_xml_sha", unique: true
+  end
+
+  create_table "rubricas_cte_s1010_timeline_segments", force: :cascade do |t|
+    t.jsonb "changed_fields", default: [], null: false
+    t.string "cod_inc_cp"
+    t.string "cod_inc_fgts"
+    t.string "cod_inc_irrf"
+    t.string "cod_rubr_normalized"
+    t.string "cod_rubr_raw"
+    t.datetime "created_at", null: false
+    t.string "dsc_rubr"
+    t.string "ide_tab_rubr"
+    t.string "nat_rubr"
+    t.string "period_end"
+    t.string "period_start"
+    t.string "previous_signature"
+    t.bigint "s1010_event_id", null: false
+    t.string "s1010_key", null: false
+    t.string "signature"
+    t.bigint "source_file_id", null: false
+    t.string "tp_rubr"
+    t.datetime "updated_at", null: false
+    t.index ["cod_rubr_normalized"], name: "idx_rcte_segments_norm_code"
+    t.index ["s1010_event_id"], name: "idx_rcte_segments_event"
+    t.index ["s1010_key", "period_start"], name: "idx_rcte_segments_key_period"
+    t.index ["source_file_id"], name: "idx_rcte_segments_source"
+  end
+
+  create_table "rubricas_cte_source_files", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.bigint "file_size"
+    t.string "kind", null: false
+    t.datetime "loaded_at"
+    t.text "notes"
+    t.string "original_path"
+    t.string "repo_path", null: false
+    t.string "sha256", null: false
+    t.datetime "updated_at", null: false
+    t.index ["kind"], name: "idx_rcte_sources_kind"
+    t.index ["sha256"], name: "idx_rcte_sources_sha256", unique: true
+  end
+
   create_table "sectors", force: :cascade do |t|
     t.string "code", null: false
     t.datetime "created_at", null: false
@@ -329,6 +545,19 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_01_090000) do
   add_foreign_key "rubric_nature_assignments", "rubric_events"
   add_foreign_key "rubric_nature_suggestions", "esocial_natures"
   add_foreign_key "rubric_nature_suggestions", "rubric_events"
+  add_foreign_key "rubricas_cte_catalog_rubrics", "rubricas_cte_source_files", column: "source_file_id"
+  add_foreign_key "rubricas_cte_expected_incidences", "rubricas_cte_expected_mappings", column: "expected_mapping_id"
+  add_foreign_key "rubricas_cte_expected_mappings", "rubricas_cte_catalog_rubrics", column: "catalog_rubric_id"
+  add_foreign_key "rubricas_cte_expected_mappings", "rubricas_cte_source_files", column: "source_file_id"
+  add_foreign_key "rubricas_cte_findings", "rubricas_cte_catalog_rubrics", column: "catalog_rubric_id"
+  add_foreign_key "rubricas_cte_findings", "rubricas_cte_expected_mappings", column: "expected_mapping_id"
+  add_foreign_key "rubricas_cte_findings", "rubricas_cte_rubric_identity_links", column: "rubric_identity_link_id"
+  add_foreign_key "rubricas_cte_findings", "rubricas_cte_s1010_timeline_segments", column: "s1010_timeline_segment_id"
+  add_foreign_key "rubricas_cte_import_runs", "rubricas_cte_source_files", column: "source_file_id"
+  add_foreign_key "rubricas_cte_rubric_identity_links", "rubricas_cte_catalog_rubrics", column: "catalog_rubric_id"
+  add_foreign_key "rubricas_cte_s1010_events", "rubricas_cte_source_files", column: "source_file_id"
+  add_foreign_key "rubricas_cte_s1010_timeline_segments", "rubricas_cte_s1010_events", column: "s1010_event_id"
+  add_foreign_key "rubricas_cte_s1010_timeline_segments", "rubricas_cte_source_files", column: "source_file_id"
   add_foreign_key "simulation_results", "simulations"
   add_foreign_key "simulations", "case_files"
   add_foreign_key "simulations", "operations"

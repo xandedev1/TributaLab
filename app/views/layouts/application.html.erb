@@ -88,12 +88,12 @@
                 </span>
                 <span class="tl-mobile-wordmark" aria-hidden="true"><span>Prev</span><span>Lab</span></span>
               <% end %>
-              <%= link_to "Eventos", rubric_recovery_adequacy_path, class: button_classes(:info) %>
+              <%= link_to "Rubricas CTE", rubricas_cte_root_path, class: button_classes(:info) %>
             </div>
             <nav class="flex gap-2 overflow-x-auto pb-1" aria-label="Navegacao principal mobile">
               <%= link_to "Painel", root_path, class: "whitespace-nowrap #{shell_nav_active?(root_path) ? "tl-chip tl-chip--info" : "tl-chip"}" %>
-              <%= link_to "Laboratorio", case_files_path, class: "whitespace-nowrap #{request.path.start_with?(case_files_path, simulations_path, rubric_recovery_radar_path) ? "tl-chip tl-chip--info" : "tl-chip"}" %>
-              <%= link_to "Eventos", rubric_recovery_adequacy_path, class: "whitespace-nowrap #{request.path.start_with?(rubric_recovery_adequacy_path, rubric_recovery_rubrics_natures_path) ? "tl-chip tl-chip--info" : "tl-chip"}" %>
+              <%= link_to "Rubricas CTE", rubricas_cte_root_path, class: "whitespace-nowrap #{request.path.start_with?(rubricas_cte_root_path, rubricas_cte_chain_walk_path) ? "tl-chip tl-chip--info" : "tl-chip"}" %>
+              <%= link_to "Base Legal", legal_basis_path, class: "whitespace-nowrap #{shell_nav_active?(legal_basis_path) ? "tl-chip tl-chip--info" : "tl-chip"}" %>
               <%= link_to "Configuracoes", tax_parameters_path, class: "whitespace-nowrap #{request.path.start_with?(tax_parameters_path, assumptions_path) ? "tl-chip tl-chip--info" : "tl-chip"}" %>
             </nav>
           </div>

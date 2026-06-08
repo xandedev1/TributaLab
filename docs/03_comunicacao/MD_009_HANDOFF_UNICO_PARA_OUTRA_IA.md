@@ -505,6 +505,25 @@ Se o usuario pedir continuar S-1010 historico:
 - preservar vigencias e retificacoes;
 - nunca assumir recibo por tabela obsoleta.
 
+Se o usuario pedir o rebuild do modulo de rubricas CTE:
+
+- ler primeiro `docs/03_comunicacao/REBUILD_005_PLANO_SISTEMA_NOVO_RUBRICAS_CTE.md`;
+- tratar `Natureza E-Social por Rubrica CTE.xlsx` como fonte primaria de rubrica CTE -> natureza eSocial pela coluna `eSoc`;
+- tratar o score/top 10 da 004C como fallback, QA e comparacao, nao como decisor principal;
+- tratar o ZIP `S1010 todos os anos CTE.zip` como fonte local de chain walk historico, abrindo os ZIPs mensais aninhados;
+- manter `relatorio_recuperacao_credito` como biblioteca de base legal/tese, nao como catalogo completo;
+- nao calcular credito financeiro sem folha e recolhimentos.
+
+Documentos do rebuild criados:
+
+```text
+docs/03_comunicacao/REBUILD_001_FONTE_S1010_CHAIN_WALK.md
+docs/03_comunicacao/REBUILD_002_FONTE_NATUREZA_ESOCIAL_RUBRICA_CTE.md
+docs/03_comunicacao/REBUILD_003_FONTE_ARQUIVO_ENQUADRADO.md
+docs/03_comunicacao/REBUILD_004_FONTE_RELATORIO_RECUPERACAO_CREDITO.md
+docs/03_comunicacao/REBUILD_005_PLANO_SISTEMA_NOVO_RUBRICAS_CTE.md
+```
+
 ## 12. Estado final conhecido
 
 Estado conhecido apos a ultima validacao:
@@ -512,6 +531,7 @@ Estado conhecido apos a ultima validacao:
 - Frontend 004 implementado.
 - Etapa 004C implementada.
 - Base Legal implementada com leitura XLSX local e rota `/legal_basis`.
+- Analise de rebuild das quatro fontes de rubricas/eSocial documentada em `REBUILD_001` a `REBUILD_005`.
 - Testes Rails verdes.
 - Tailwind build verde.
 - Zeitwerk verde.

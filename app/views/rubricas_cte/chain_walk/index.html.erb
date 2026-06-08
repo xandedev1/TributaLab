@@ -1,0 +1,285 @@
+<% content_for :title, "Rubricas CTE - Prev Lab" %>
+
+<div class="mx-auto flex w-full max-w-[110rem] flex-col gap-6">
+  <header class="tl-command-bar">
+    <div class="grid gap-5 xl:grid-cols-[1fr_auto] xl:items-end">
+      <div>
+        <p class="tl-kicker">Produto unico / CTE x S-1010 / auditoria</p>
+        <h1 class="tl-page-title tl-page-title--compact">Rubricas CTE</h1>
+        <p class="tl-page-subtitle mt-3 max-w-4xl">Fila priorizada de divergencias, dossie da rubrica e Chain Walk historico em uma unica tela operacional.</p>
+      </div>
+      <div class="flex flex-wrap gap-2">
+        <span class="tl-chip tl-chip--success">produto oficial</span>
+        <span class="tl-chip tl-chip--info">S-1010 local</span>
+        <span class="tl-chip tl-chip--ghost">sem consulta eSocial</span>
+      </div>
+    </div>
+  </header>
+
+  <section class="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+    <% @snapshot.metrics.each do |metric| %>
+      <article class="tl-card tl-card-hover p-4">
+        <p class="tl-metric-label"><%= metric.label %></p>
+        <p class="tl-metric-value"><%= metric.value %></p>
+        <p class="tl-copy mt-2 text-xs"><%= metric.detail %></p>
+      </article>
+    <% end %>
+  </section>
+
+  <section class="tl-panel p-5">
+    <div class="mb-4 flex flex-wrap gap-2">
+      <% @snapshot.status_options.each do |label, value| %>
+        <%= link_to label, rubricas_cte_root_path(status: value), class: "tl-tab #{'tl-tab--active' if @snapshot.status == value}" %>
+      <% end %>
+      <a href="#legenda" class="tl-tab">Legenda</a>
+    </div>
+
+    <%= form_with url: rubricas_cte_root_path, method: :get, data: { turbo: false }, class: "grid gap-4 xl:grid-cols-[1.2fr_1fr_auto] xl:items-end" do %>
+      <div>
+        <%= label_tag :q, "Buscar na linha do tempo", class: "tl-label" %>
+        <%= text_field_tag :q, @snapshot.query, class: "tl-input", placeholder: "Codigo CTE, descricao ou codRubr S-1010" %>
+      </div>
+      <div>
+        <%= label_tag :status, "Filtro da fila", class: "tl-label" %>
+        <%= select_tag :status, options_for_select(@snapshot.status_options, @snapshot.status), class: "tl-input" %>
+      </div>
+      <div class="flex flex-wrap gap-2">
+        <%= submit_tag "Filtrar", class: button_classes(:primary) %>
+        <%= link_to "Limpar", rubricas_cte_root_path, class: button_classes %>
+      </div>
+    <% end %>
+  </section>
+
+  <section id="legenda" class="tl-panel p-5">
+    <div class="grid gap-4 lg:grid-cols-4">
+      <div>
+        <p class="tl-section-title">Sem vinculo</p>
+        <p class="tl-copy mt-2 text-sm">A rubrica CTE ainda nao encontrou um unico <span class="tl-mono">codRubr</span> S-1010 com seguranca. Nao significa que ela nao exista.</p>
+      </div>
+      <div>
+        <p class="tl-section-title">Divergente</p>
+        <p class="tl-copy mt-2 text-sm">A fonte CTE esperava uma natureza/incidencia e o S-1010 local declarou outra.</p>
+      </div>
+      <div>
+        <p class="tl-section-title">Mudou no historico</p>
+        <p class="tl-copy mt-2 text-sm">Houve alteracao entre marcos S-1010. Isso nao e automaticamente erro; a tabela de disputa diz se conflita.</p>
+      </div>
+      <div>
+        <p class="tl-section-title">Codigos</p>
+        <p class="tl-copy mt-2 text-sm"><span class="tl-mono">00</span> = nao incide. <span class="tl-mono">11</span> = incide/base mensal. Outros codigos aparecem traduzidos quando possivel.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="grid gap-6 xl:grid-cols-[25rem_1fr]">
+    <aside class="tl-panel overflow-hidden">
+      <div class="tl-panel-header">
+        <h2 class="tl-section-title"><%= @snapshot.queue_title %></h2>
+        <p class="tl-panel-subtitle"><%= @snapshot.rubrics.size %> itens. <%= @snapshot.queue_subtitle %></p>
+      </div>
+      <div class="max-h-[68vh] overflow-auto p-3">
+        <div class="grid gap-2">
+          <% @snapshot.rubrics.each do |rubric| %>
+            <% active = @snapshot.selected_rubric&.id == rubric.id %>
+            <%= link_to rubricas_cte_root_path(q: @snapshot.query.presence, status: @snapshot.status.presence, rubric_id: rubric.id), class: "tl-tile block p-3 #{active ? "tl-row-selected" : ""}" do %>
+              <div class="flex items-start justify-between gap-3">
+                <div class="min-w-0">
+                  <p class="tl-mono text-sm font-semibold text-white"><%= rubric.cte_code %></p>
+                  <p class="mt-1 text-sm font-semibold text-white"><%= rubric.description %></p>
+                </div>
+                <span class="<%= @snapshot.rubric_status_classes(rubric) %>"><%= @snapshot.rubric_status_label(rubric) %></span>
+              </div>
+              <div class="mt-3 flex flex-wrap gap-2">
+                <span class="<%= @snapshot.priority_classes(rubric) %>"><%= @snapshot.priority_label(rubric) %></span>
+                <% @snapshot.priority_breakdown(rubric).first(2).each do |item| %>
+                  <span class="<%= @snapshot.priority_breakdown_classes(item) %>"><%= item %></span>
+                <% end %>
+              </div>
+              <p class="tl-copy mt-3 text-xs"><%= @snapshot.rubric_hint(rubric) %></p>
+            <% end %>
+          <% end %>
+        </div>
+      </div>
+    </aside>
+
+    <main class="flex flex-col gap-6">
+      <% if @snapshot.selected_rubric.present? %>
+        <% rubric = @snapshot.selected_rubric %>
+        <% summary = @snapshot.expected_summary %>
+        <% selected_entry = @snapshot.selected_entry %>
+        <section class="tl-panel p-5">
+          <div class="grid gap-5 xl:grid-cols-[1fr_auto] xl:items-start">
+            <div>
+            <p class="tl-kicker">Dossie da rubrica</p>
+              <h2 class="tl-section-title"><span class="tl-mono"><%= rubric.cte_code %></span> - <%= rubric.description %></h2>
+              <p class="tl-panel-subtitle mt-2">Tabela <%= rubric.table_code.presence || "-" %> / fonte linhas <%= rubric.first_source_row %>-<%= rubric.last_source_row %> / <%= summary["linhas"] %> linhas de mapeamento CTE.</p>
+            </div>
+            <div class="flex flex-wrap gap-2 xl:justify-end">
+              <span class="tl-chip tl-chip--info">CTE eSoc <%= Array(summary["eSoc"]).join(", ") %></span>
+              <span class="<%= @snapshot.priority_classes(rubric) %>"><%= @snapshot.priority_label(rubric) %></span>
+              <% if @snapshot.selected_link&.linked? %>
+                <span class="tl-chip">S-1010 <%= @snapshot.selected_link.cod_rubr_raw %></span>
+              <% else %>
+                <span class="tl-chip tl-chip--warning">sem vinculo unico</span>
+              <% end %>
+            </div>
+          </div>
+        </section>
+
+        <section class="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+          <% @snapshot.dossier_cards.each do |card| %>
+            <article class="tl-panel p-4">
+              <p class="tl-metric-label"><%= card.label %></p>
+              <p class="tl-metric-value tl-metric-value--small"><%= card.value %></p>
+              <p class="tl-copy mt-2 text-xs"><%= card.detail %></p>
+            </article>
+          <% end %>
+        </section>
+
+        <section class="tl-panel p-5">
+          <div class="flex flex-col gap-3 xl:flex-row xl:items-center xl:justify-between">
+            <div>
+              <h2 class="tl-section-title">Por que esta na fila</h2>
+              <p class="tl-panel-subtitle">A pontuacao nasce destes motivos, sem misturar rubricas alinhadas.</p>
+            </div>
+            <div class="flex flex-wrap gap-2 xl:justify-end">
+              <% @snapshot.priority_breakdown(rubric).each do |item| %>
+                <span class="<%= @snapshot.priority_breakdown_classes(item) %>"><%= item %></span>
+              <% end %>
+            </div>
+          </div>
+        </section>
+
+        <% if @snapshot.selected_link&.linked? && selected_entry.present? %>
+          <section class="tl-panel overflow-hidden">
+            <div class="tl-panel-header flex flex-col gap-2 xl:flex-row xl:items-center xl:justify-between">
+              <div>
+                <h2 class="tl-section-title">Linha do tempo S-1010</h2>
+                <p class="tl-panel-subtitle">Cada marco e uma inclusao, alteracao ou exclusao declarada no XML local.</p>
+              </div>
+              <span class="tl-chip tl-chip--ghost"><%= @snapshot.timeline_entries.size %> marcos</span>
+            </div>
+            <div class="tl-event-rail-wrap">
+              <div class="tl-event-rail">
+                <% @snapshot.timeline_entries.each_with_index do |entry, index| %>
+                  <%= link_to rubricas_cte_root_path(q: @snapshot.query.presence, status: @snapshot.status.presence, rubric_id: rubric.id, segment_id: entry.segment.id), class: @snapshot.timeline_node_classes(entry) do %>
+                    <span class="tl-event-rail-dot" aria-hidden="true"></span>
+                    <span class="tl-metric-label">Marco <%= index + 1 %></span>
+                    <span class="tl-mono mt-1 block text-xs font-semibold text-white"><%= @snapshot.period_label(entry.segment) %></span>
+                    <span class="mt-2 block text-xs"><%= @snapshot.entry_status_label(entry) %></span>
+                  <% end %>
+                <% end %>
+              </div>
+            </div>
+          </section>
+
+          <section class="grid gap-5 2xl:grid-cols-[18rem_1fr]">
+            <aside class="tl-panel overflow-hidden">
+              <div class="tl-panel-header">
+                <h2 class="tl-section-title">Historico S-1010</h2>
+                <p class="tl-panel-subtitle"><%= @snapshot.timeline_entries.size %> marcos para esta rubrica.</p>
+              </div>
+              <div class="max-h-[62vh] overflow-auto p-3">
+                <div class="tl-chain-timeline">
+                  <% @snapshot.timeline_entries.each_with_index do |entry, index| %>
+                    <% active = selected_entry.segment.id == entry.segment.id %>
+                    <% node_classes = ["tl-chain-node"] %>
+                    <% node_classes << "tl-chain-node--active" if active %>
+                    <% node_classes << "tl-chain-node--danger" if entry.divergence_kinds.any? %>
+                    <%= link_to rubricas_cte_root_path(q: @snapshot.query.presence, status: @snapshot.status.presence, rubric_id: rubric.id, segment_id: entry.segment.id), class: "#{node_classes.join(' ')} tl-tile block p-3 #{active ? "tl-row-selected" : ""}" do %>
+                      <div class="flex items-start justify-between gap-3">
+                        <div>
+                          <p class="tl-metric-label">Marco <%= index + 1 %></p>
+                          <p class="tl-mono mt-1 text-sm font-semibold text-white"><%= @snapshot.period_label(entry.segment) %></p>
+                        </div>
+                        <span class="<%= @snapshot.timeline_badge_classes(entry) %>"><%= @snapshot.entry_status_label(entry) %></span>
+                      </div>
+                      <div class="mt-3 flex flex-wrap gap-2">
+                        <span class="<%= @snapshot.action_badge_classes(entry.event.event_action) %>"><%= @snapshot.action_label(entry.event.event_action) %></span>
+                      </div>
+                      <p class="tl-copy mt-3 text-xs"><%= @snapshot.entry_change_label(entry) %></p>
+                    <% end %>
+                  <% end %>
+                </div>
+              </div>
+            </aside>
+
+            <section class="tl-panel overflow-hidden">
+              <div class="tl-panel-header flex flex-col gap-2 xl:flex-row xl:items-center xl:justify-between">
+                <div>
+                  <h2 class="tl-section-title">Disputa do marco selecionado</h2>
+                  <p class="tl-panel-subtitle">Vigencia <span class="tl-mono"><%= @snapshot.period_label(selected_entry.segment) %></span> / acao <%= @snapshot.action_label(selected_entry.event.event_action) %>.</p>
+                </div>
+                <span class="<%= @snapshot.timeline_badge_classes(selected_entry) %>"><%= @snapshot.entry_status_label(selected_entry) %></span>
+              </div>
+
+              <div class="tl-table-wrap">
+                <table class="tl-table">
+                  <thead>
+                    <tr>
+                      <th>Campo</th>
+                      <th>CTE esperado</th>
+                      <th>S-1010 declarado</th>
+                      <th>Leitura</th>
+                      <th>Status</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <% @snapshot.comparison_rows(selected_entry).each do |row| %>
+                      <tr>
+                        <td class="font-semibold text-white"><%= row.field %></td>
+                        <td><%= row.expected %></td>
+                        <td><%= row.declared %></td>
+                        <td><%= row.reading %></td>
+                        <td><span class="<%= @snapshot.comparison_badge_classes(row) %>"><%= @snapshot.comparison_status_label(row) %></span></td>
+                      </tr>
+                    <% end %>
+                  </tbody>
+                </table>
+              </div>
+
+              <details class="tl-reveal-drawer m-5">
+                <summary>Fonte local do marco</summary>
+                <div class="tl-reveal-body grid gap-3 md:grid-cols-3">
+                  <div>
+                    <p class="tl-metric-label">XML</p>
+                    <p class="tl-copy mt-1 text-xs"><%= selected_entry.event.xml_path %></p>
+                  </div>
+                  <div>
+                    <p class="tl-metric-label">ZIP</p>
+                    <p class="tl-copy mt-1 text-xs"><%= selected_entry.event.nested_zip_path.presence || "raiz" %></p>
+                  </div>
+                  <div>
+                    <p class="tl-metric-label">Recibo</p>
+                    <p class="tl-copy mt-1 text-xs"><%= selected_entry.event.nr_recibo.presence || "-" %></p>
+                  </div>
+                </div>
+              </details>
+            </section>
+          </section>
+        <% else %>
+          <section class="tl-panel p-5">
+            <h2 class="tl-section-title">Sem vinculo unico com S-1010</h2>
+            <p class="tl-panel-subtitle mt-2">Esta rubrica ainda precisa de revisao de match. A v2 nao força cruzamento silencioso quando ha ambiguidade.</p>
+            <% if @snapshot.candidates.any? %>
+              <div class="mt-5 grid gap-3 lg:grid-cols-2">
+                <% @snapshot.candidates.each do |candidate| %>
+                  <div class="tl-tile p-4">
+                    <p class="tl-mono text-sm font-semibold text-white"><%= candidate["cod_rubr_raw"] %></p>
+                    <p class="tl-copy mt-2 text-sm"><%= candidate["description"] %></p>
+                    <p class="tl-muted mt-2 text-xs">natRubr <%= candidate["nat_rubr"] %> / <%= candidate["s1010_key"] %></p>
+                  </div>
+                <% end %>
+              </div>
+            <% end %>
+          </section>
+        <% end %>
+      <% else %>
+        <section class="tl-empty">
+          <h2 class="tl-section-title">Nenhuma rubrica encontrada</h2>
+          <p class="tl-copy mx-auto mt-2 max-w-md">Ajuste os filtros para navegar pela linha do tempo S-1010.</p>
+        </section>
+      <% end %>
+    </main>
+  </section>
+</div>

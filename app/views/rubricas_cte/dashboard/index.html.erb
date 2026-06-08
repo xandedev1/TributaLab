@@ -1,0 +1,104 @@
+<% content_for :title, "Rubricas CTE v2 - Prev Lab" %>
+
+<div class="mx-auto flex w-full max-w-[96rem] flex-col gap-6">
+  <header class="tl-command-bar">
+    <div class="grid gap-5 lg:grid-cols-[1fr_auto] lg:items-end">
+      <div>
+        <p class="tl-kicker">Eventos / S-1010 historico</p>
+        <h1 class="tl-page-title tl-page-title--compact">Rubricas CTE v2</h1>
+        <p class="tl-page-subtitle mt-3 max-w-3xl">Catalogo CTE pela fonte eSoc, S-1010 local em linha do tempo e divergencias iniciais de natureza, CP, IRRF e FGTS.</p>
+      </div>
+      <div class="flex flex-wrap gap-2">
+        <%= link_to "Abrir Chain Walk", rubricas_cte_chain_walk_path, class: button_classes(:primary) %>
+        <span class="tl-chip tl-chip--info">Etapa 004D</span>
+        <span class="tl-chip tl-chip--ghost">sem credito financeiro</span>
+        <span class="tl-chip">fonte local</span>
+      </div>
+    </div>
+  </header>
+
+  <section class="grid gap-4 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-9">
+    <% @snapshot.metrics.each do |metric| %>
+      <article class="tl-card tl-card-hover p-4">
+        <p class="tl-metric-label"><%= metric.label %></p>
+        <p class="tl-metric-value"><%= metric.value %></p>
+        <p class="tl-copy mt-2 text-xs"><%= metric.detail %></p>
+      </article>
+    <% end %>
+  </section>
+
+  <section class="tl-panel p-5">
+    <%= form_with url: rubricas_cte_dashboard_path, method: :get, data: { turbo: false }, class: "grid gap-4 lg:grid-cols-[1.2fr_1fr_auto] lg:items-end" do %>
+      <div>
+        <%= label_tag :q, "Buscar rubrica", class: "tl-label" %>
+        <%= text_field_tag :q, @snapshot.query, class: "tl-input", placeholder: "Codigo CTE ou descricao" %>
+      </div>
+      <div>
+        <%= label_tag :status, "Status", class: "tl-label" %>
+        <%= select_tag :status, options_for_select(@snapshot.status_options, @snapshot.status), class: "tl-input" %>
+      </div>
+      <div class="flex gap-2">
+        <%= submit_tag "Filtrar", class: button_classes(:primary) %>
+        <%= link_to "Limpar", rubricas_cte_dashboard_path, class: button_classes %>
+      </div>
+    <% end %>
+  </section>
+
+  <section class="tl-panel overflow-hidden">
+    <div class="tl-panel-header flex flex-col gap-2 lg:flex-row lg:items-center lg:justify-between">
+      <div>
+        <h2 class="tl-section-title">Catalogo CTE x S-1010</h2>
+        <p class="tl-panel-subtitle">Primeira leitura operacional com match deterministico inicial e contagem de divergencias por rubrica.</p>
+      </div>
+      <span class="tl-chip tl-chip--ghost"><%= @snapshot.rubrics.size %> rubricas na lista</span>
+    </div>
+
+    <div class="tl-table-wrap">
+      <table class="tl-table">
+        <thead>
+          <tr>
+            <th>Codigo</th>
+            <th>Rubrica CTE</th>
+            <th>eSoc esperado</th>
+            <th>Vinculo S-1010</th>
+            <th>Periodo inicial</th>
+            <th>Natureza</th>
+            <th>CP</th>
+            <th>IRRF</th>
+            <th>FGTS</th>
+            <th>Nao avaliada</th>
+            <th>Timeline</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% @snapshot.rubrics.each do |rubric| %>
+            <% counts = @snapshot.finding_counts(rubric) %>
+            <tr>
+              <td class="whitespace-nowrap tl-mono text-xs"><%= rubric.cte_code %></td>
+              <td class="min-w-72">
+                <p class="font-semibold text-white"><%= rubric.description %></p>
+                <p class="tl-muted mt-1 text-xs">Tabela <%= rubric.table_code.presence || "-" %> / linhas <%= rubric.first_source_row %>-<%= rubric.last_source_row %></p>
+              </td>
+              <td class="min-w-36"><span class="tl-chip"><%= @snapshot.expected_natures_for(rubric) %></span></td>
+              <td class="min-w-44"><span class="<%= @snapshot.link_badge_class(rubric) %>"><%= @snapshot.link_label(rubric) %></span></td>
+              <td class="whitespace-nowrap tl-mono text-xs"><%= @snapshot.first_period(rubric) %></td>
+              <td><span class="tl-badge <%= counts[:nature].positive? ? "tl-badge--danger" : "tl-badge--success" %>"><%= counts[:nature] %></span></td>
+              <td><span class="tl-badge <%= counts[:cp].positive? ? "tl-badge--danger" : "tl-badge--success" %>"><%= counts[:cp] %></span></td>
+              <td><span class="tl-badge <%= counts[:irrf].positive? ? "tl-badge--danger" : "tl-badge--success" %>"><%= counts[:irrf] %></span></td>
+              <td><span class="tl-badge <%= counts[:fgts].positive? ? "tl-badge--danger" : "tl-badge--success" %>"><%= counts[:fgts] %></span></td>
+              <td><span class="tl-badge <%= counts[:not_evaluated].positive? ? "tl-badge--warning" : "tl-badge--muted" %>"><%= counts[:not_evaluated] %></span></td>
+              <td><%= link_to "Chain Walk", rubricas_cte_chain_walk_path(rubric_id: rubric.id), class: "tl-link" %></td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+
+    <% if @snapshot.rubrics.empty? %>
+      <div class="tl-empty">
+        <h3 class="tl-section-title">Nenhuma rubrica no filtro atual</h3>
+        <p class="tl-copy mx-auto mt-2 max-w-md">Ajuste a busca ou o status para revisar o catalogo importado.</p>
+      </div>
+    <% end %>
+  </section>
+</div>

@@ -23,6 +23,12 @@ Rails.application.routes.draw do
     patch "rubrics_natures/:assignment_id", to: "rubrics_natures#update", as: :rubrics_nature
   end
 
+  namespace :rubricas_cte do
+    root "chain_walk#index"
+    get "dashboard", to: "dashboard#index", as: :dashboard
+    get "chain_walk", to: "chain_walk#index", as: :chain_walk
+  end
+
   resources :case_files, only: [:index, :new, :create, :show]
   resources :simulations, only: [:index, :new, :create, :show]
   resources :tax_parameters, only: [:index]

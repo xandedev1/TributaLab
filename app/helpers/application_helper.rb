@@ -2,11 +2,7 @@ module ApplicationHelper
 	def shell_nav_items
 		[
 			["Painel", root_path],
-			["Casos", case_files_path],
-			["Simulacoes", simulations_path],
-			["Radar de Rubricas", rubric_recovery_radar_path],
-			["Pontuacao S-1010", rubric_recovery_adequacy_path],
-			["Rubricas + Natureza", rubric_recovery_rubrics_natures_path],
+			["Rubricas CTE", rubricas_cte_root_path],
 			["Base Legal", legal_basis_path],
 			["Parametros", tax_parameters_path],
 			["Premissas", assumptions_path]
@@ -17,24 +13,10 @@ module ApplicationHelper
 		[
 			{ label: "Painel", path: root_path },
 			{
-				label: "Laboratorio",
-				items: [
-					{ label: "Casos", path: case_files_path },
-					{ label: "Simulacoes", path: simulations_path },
-					{ label: "Radar de Rubricas", path: rubric_recovery_radar_path }
-				]
-			},
-			{
 				label: "Eventos",
 				items: [
-					{ label: "Base Legal", path: legal_basis_path },
-					{
-						label: "S-1010",
-						children: [
-							{ label: "Pontuacao S-1010", path: rubric_recovery_adequacy_path },
-							{ label: "Rubricas + Natureza", path: rubric_recovery_rubrics_natures_path }
-						]
-					}
+					{ label: "Rubricas CTE", path: rubricas_cte_root_path },
+					{ label: "Base Legal", path: legal_basis_path }
 				]
 			},
 			{
