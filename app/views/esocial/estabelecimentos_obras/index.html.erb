@@ -1,0 +1,177 @@
+<% content_for :title, "Estabelecimentos e Obras - Prev Lab" %>
+
+<div class="mx-auto flex w-full max-w-[96rem] flex-col gap-6">
+  <header class="tl-command-bar">
+    <div class="grid gap-5 lg:grid-cols-[1fr_auto] lg:items-end">
+      <div>
+        <p class="tl-kicker">eSocial / S-1005</p>
+        <h1 class="tl-page-title tl-page-title--compact">Estabelecimentos e Obras</h1>
+        <p class="tl-page-subtitle mt-3 max-w-3xl">Historico de validade por estabelecimento ou obra, com CNAE preponderante, GILRAT/RAT, FAP, RAT ajustado e data de recepcao.</p>
+      </div>
+      <div class="flex flex-wrap gap-2 lg:justify-end">
+        <span class="tl-chip <%= @snapshot.data_from_csv? ? "tl-chip--success" : "tl-chip--warning" %>"><%= @snapshot.source_label %></span>
+        <span class="tl-chip tl-chip--info"><%= @snapshot.events_count %> eventos S-1005</span>
+        <span class="tl-chip"><%= @snapshot.source_detail %></span>
+        <%= link_to "Lotacoes", esocial_lotacoes_path, class: button_classes(:info) %>
+      </div>
+    </div>
+  </header>
+
+  <% if @snapshot.load_error.present? %>
+    <section class="tl-panel p-4">
+      <p class="tl-copy text-sm text-amber-200">Falha ao ler CSV: <%= @snapshot.load_error %></p>
+    </section>
+  <% end %>
+
+  <section class="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+    <% @snapshot.metrics.each do |metric| %>
+      <article class="tl-card tl-card-hover p-4">
+        <p class="tl-metric-label"><%= metric.label %></p>
+        <p class="tl-metric-value tl-metric-value--small"><%= metric.value %></p>
+        <p class="tl-copy mt-2 text-xs"><%= metric.detail %></p>
+      </article>
+    <% end %>
+  </section>
+
+  <section class="grid gap-5 xl:grid-cols-[0.9fr_1.1fr]">
+    <section class="tl-panel overflow-hidden">
+      <div class="tl-panel-header">
+        <h2 class="tl-section-title">Situacao atual</h2>
+        <p class="tl-panel-subtitle">Registro vigente por tipo e numero de inscricao.</p>
+      </div>
+      <div class="grid gap-4 p-5">
+        <% @snapshot.current_rows.each do |row| %>
+          <article class="tl-tile p-4">
+            <div class="flex flex-wrap items-start justify-between gap-3">
+              <div>
+                <p class="tl-kicker">Inscricao <%= row.estabelecimento_tp_insc.presence || "-" %></p>
+                <p class="tl-mono mt-2 text-lg font-bold text-white"><%= row.estabelecimento_nr_insc.presence || "-" %></p>
+              </div>
+              <span class="tl-badge tl-badge--success"><%= row.periodo_label %></span>
+            </div>
+            <div class="mt-4 grid gap-3 sm:grid-cols-2">
+              <div>
+                <p class="tl-metric-label">CNAE preponderante</p>
+                <p class="tl-mono mt-1 text-base font-bold text-white"><%= row.cnae_preponderante.presence || "-" %></p>
+              </div>
+              <div>
+                <p class="tl-metric-label">Data de recepcao</p>
+                <p class="tl-mono mt-1 text-sm text-white"><%= row.data_recepcao.presence || "-" %></p>
+              </div>
+              <div>
+                <p class="tl-metric-label">GILRAT/RAT</p>
+                <p class="tl-mono mt-1 text-base font-bold text-white"><%= row.aliquota_gilrat.presence || "-" %></p>
+              </div>
+              <div>
+                <p class="tl-metric-label">FAP</p>
+                <p class="tl-mono mt-1 text-base font-bold text-white"><%= row.aliquota_fap.presence || "-" %></p>
+              </div>
+            </div>
+            <div class="mt-4 flex flex-wrap gap-2">
+              <span class="tl-chip tl-chip--info">RAT ajustado <%= row.aliquota_rat_ajustada.presence || "-" %></span>
+              <span class="tl-chip">Recibo <%= row.nr_recibo.presence || "-" %></span>
+            </div>
+          </article>
+        <% end %>
+      </div>
+    </section>
+
+    <section class="tl-panel overflow-hidden">
+      <div class="tl-panel-header flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+        <div>
+          <h2 class="tl-section-title">Linha do tempo S-1005</h2>
+          <p class="tl-panel-subtitle">Sequencia anual de validade e alteracoes do enquadramento.</p>
+        </div>
+        <span class="tl-chip tl-chip--ghost"><%= @snapshot.rows.size %> periodos</span>
+      </div>
+      <div class="tl-event-rail-wrap">
+        <div class="tl-event-rail">
+          <% @snapshot.rows.each do |row| %>
+            <article class="tl-event-rail-node <%= row.atual? ? "tl-event-rail-node--active" : "" %>">
+              <span class="tl-event-rail-dot" aria-hidden="true"></span>
+              <p class="tl-mono text-xs font-bold text-white"><%= row.ini_valid.presence || "-" %></p>
+              <p class="tl-muted mt-1 text-xs"><%= row.fim_valid_label %></p>
+              <div class="mt-3 grid gap-1 text-xs">
+                <p><span class="tl-muted">FAP</span> <span class="tl-mono text-white"><%= row.aliquota_fap.presence || "-" %></span></p>
+                <p><span class="tl-muted">RAT</span> <span class="tl-mono text-white"><%= row.aliquota_gilrat.presence || "-" %></span></p>
+                <p><span class="tl-muted">Ajust.</span> <span class="tl-mono text-white"><%= row.aliquota_rat_ajustada.presence || "-" %></span></p>
+              </div>
+            </article>
+          <% end %>
+        </div>
+      </div>
+    </section>
+  </section>
+
+  <section class="tl-panel p-5">
+    <%= form_with url: esocial_estabelecimentos_obras_path, method: :get, data: { turbo: false }, class: "grid gap-4 lg:grid-cols-[1fr_auto] lg:items-end" do %>
+      <div>
+        <%= label_tag :q, "Filtrar estabelecimentos/obras", class: "tl-label" %>
+        <%= text_field_tag :q, @snapshot.query, class: "tl-input", placeholder: "CNPJ, CNAE, FAP, recibo ou vigencia" %>
+      </div>
+      <div class="flex gap-2">
+        <%= submit_tag "Filtrar", class: button_classes(:primary) %>
+        <%= link_to "Limpar", esocial_estabelecimentos_obras_path, class: button_classes %>
+      </div>
+    <% end %>
+  </section>
+
+  <% @snapshot.estabelecimento_groups.each do |group| %>
+    <section class="tl-panel overflow-hidden">
+      <div class="tl-panel-header flex flex-col gap-2 lg:flex-row lg:items-center lg:justify-between">
+        <div>
+          <h2 class="tl-section-title">Inscricao <%= group.tp_insc.presence || "-" %> / <%= group.nr_insc.presence || "-" %></h2>
+          <p class="tl-panel-subtitle">Historico completo retornado pelo S-1005 para esta inscricao.</p>
+        </div>
+        <span class="tl-chip tl-chip--ghost"><%= group.rows.size %> vigencias</span>
+      </div>
+
+      <div class="tl-table-wrap">
+        <table class="tl-table">
+          <thead>
+            <tr>
+              <th>Inicio</th>
+              <th>Fim</th>
+              <th>Status</th>
+              <th>CNAE prep.</th>
+              <th>GILRAT/RAT</th>
+              <th>FAP</th>
+              <th>RAT ajustado</th>
+              <th>Data recepcao</th>
+              <th>Recibo</th>
+              <th>Fonte</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% group.rows.each do |row| %>
+              <tr>
+                <td class="whitespace-nowrap tl-mono text-xs font-bold text-white"><%= row.ini_valid.presence || "-" %></td>
+                <td class="whitespace-nowrap tl-mono text-xs"><%= row.fim_valid_label %></td>
+                <td><span class="<%= row.atual? ? "tl-badge tl-badge--success" : "tl-badge tl-badge--muted" %>"><%= row.registro_atual.presence || "-" %></span></td>
+                <td class="whitespace-nowrap tl-mono text-xs"><%= row.cnae_preponderante.presence || "-" %></td>
+                <td class="whitespace-nowrap tl-mono text-xs"><%= row.aliquota_gilrat.presence || "-" %></td>
+                <td class="whitespace-nowrap tl-mono text-xs font-bold text-white"><%= row.aliquota_fap.presence || "-" %></td>
+                <td class="whitespace-nowrap tl-mono text-xs"><%= row.aliquota_rat_ajustada.presence || "-" %></td>
+                <td class="whitespace-nowrap tl-mono text-xs"><%= row.data_recepcao.presence || "-" %></td>
+                <td class="whitespace-nowrap tl-mono text-xs"><%= row.nr_recibo.presence || "-" %></td>
+                <td class="min-w-64">
+                  <p class="tl-mono text-xs"><%= row.source_path.presence || "-" %></p>
+                  <p class="tl-muted mt-1 text-xs"><%= row.xml_path.presence || "-" %></p>
+                </td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+    </section>
+  <% end %>
+
+  <% if @snapshot.rows.empty? %>
+    <section class="tl-panel">
+      <div class="tl-empty">
+        <h3 class="tl-section-title">Nenhum estabelecimento ou obra no filtro atual</h3>
+        <p class="tl-copy mx-auto mt-2 max-w-md">Ajuste a busca para voltar ao historico consolidado.</p>
+      </div>
+    </section>
+  <% end %>
+</div>

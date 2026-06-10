@@ -3,6 +3,8 @@ module ApplicationHelper
 		[
 			["Painel", root_path],
 			["Rubricas CTE", rubricas_cte_root_path],
+			["Lotacao Tributaria", esocial_lotacoes_path],
+			["Estabelecimentos e Obras", esocial_estabelecimentos_obras_path],
 			["Base Legal", legal_basis_path],
 			["Parametros", tax_parameters_path],
 			["Premissas", assumptions_path]
@@ -17,6 +19,13 @@ module ApplicationHelper
 				items: [
 					{ label: "Rubricas CTE", path: rubricas_cte_root_path },
 					{ label: "Base Legal", path: legal_basis_path }
+				]
+			},
+			{
+				label: "Tabelas do Cliente",
+				items: [
+					{ label: "Lotacao Tributaria", path: esocial_lotacoes_path },
+					{ label: "Estabelecimentos e Obras", path: esocial_estabelecimentos_obras_path }
 				]
 			},
 			{

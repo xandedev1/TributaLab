@@ -29,6 +29,11 @@ Rails.application.routes.draw do
     get "chain_walk", to: "chain_walk#index", as: :chain_walk
   end
 
+  namespace :esocial do
+    get "lotacoes", to: "lotacoes#index", as: :lotacoes
+    get "estabelecimentos_obras", to: "estabelecimentos_obras#index", as: :estabelecimentos_obras
+  end
+
   resources :case_files, only: [:index, :new, :create, :show]
   resources :simulations, only: [:index, :new, :create, :show]
   resources :tax_parameters, only: [:index]

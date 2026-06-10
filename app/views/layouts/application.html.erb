@@ -93,6 +93,8 @@
             <nav class="flex gap-2 overflow-x-auto pb-1" aria-label="Navegacao principal mobile">
               <%= link_to "Painel", root_path, class: "whitespace-nowrap #{shell_nav_active?(root_path) ? "tl-chip tl-chip--info" : "tl-chip"}" %>
               <%= link_to "Rubricas CTE", rubricas_cte_root_path, class: "whitespace-nowrap #{request.path.start_with?(rubricas_cte_root_path, rubricas_cte_chain_walk_path) ? "tl-chip tl-chip--info" : "tl-chip"}" %>
+              <%= link_to "Lotacoes", esocial_lotacoes_path, class: "whitespace-nowrap #{shell_nav_active?(esocial_lotacoes_path) ? "tl-chip tl-chip--info" : "tl-chip"}" %>
+              <%= link_to "Estab/Obras", esocial_estabelecimentos_obras_path, class: "whitespace-nowrap #{shell_nav_active?(esocial_estabelecimentos_obras_path) ? "tl-chip tl-chip--info" : "tl-chip"}" %>
               <%= link_to "Base Legal", legal_basis_path, class: "whitespace-nowrap #{shell_nav_active?(legal_basis_path) ? "tl-chip tl-chip--info" : "tl-chip"}" %>
               <%= link_to "Configuracoes", tax_parameters_path, class: "whitespace-nowrap #{request.path.start_with?(tax_parameters_path, assumptions_path) ? "tl-chip tl-chip--info" : "tl-chip"}" %>
             </nav>

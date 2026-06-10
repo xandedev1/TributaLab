@@ -1,0 +1,168 @@
+<% content_for :title, "Lotacao Tributaria - Prev Lab" %>
+
+<div class="mx-auto flex w-full max-w-[96rem] flex-col gap-6">
+  <header class="tl-command-bar">
+    <div class="grid gap-5 lg:grid-cols-[1fr_auto] lg:items-end">
+      <div>
+        <p class="tl-kicker">eSocial / S-1020</p>
+        <h1 class="tl-page-title tl-page-title--compact">Lotacao Tributaria</h1>
+        <p class="tl-page-subtitle mt-3 max-w-3xl">Quadro de codigos, vigencia, tipo de lotacao, FPAS, terceiros e suspensoes por processo.</p>
+      </div>
+      <div class="flex flex-wrap gap-2 lg:justify-end">
+        <span class="tl-chip <%= @snapshot.data_from_csv? ? "tl-chip--success" : "tl-chip--warning" %>"><%= @snapshot.source_label %></span>
+        <span class="tl-chip tl-chip--info"><%= @snapshot.events_count %> eventos S-1020</span>
+        <span class="tl-chip"><%= @snapshot.source_detail %></span>
+      </div>
+    </div>
+  </header>
+
+  <% if @snapshot.load_error.present? %>
+    <section class="tl-panel p-4">
+      <p class="tl-copy text-sm text-amber-200">Falha ao ler CSV: <%= @snapshot.load_error %></p>
+    </section>
+  <% end %>
+
+  <section class="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+    <% @snapshot.metrics.each do |metric| %>
+      <article class="tl-card tl-card-hover p-4">
+        <p class="tl-metric-label"><%= metric.label %></p>
+        <p class="tl-metric-value"><%= metric.value %></p>
+        <p class="tl-copy mt-2 text-xs"><%= metric.detail %></p>
+      </article>
+    <% end %>
+  </section>
+
+  <section class="grid gap-5 xl:grid-cols-[1.08fr_0.92fr]">
+    <section class="tl-panel overflow-hidden">
+      <div class="tl-panel-header flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+        <div>
+          <h2 class="tl-section-title">Mapa FPAS / EPS</h2>
+          <p class="tl-panel-subtitle">Agrupamento dos codigos de lotacao pelo enquadramento declarado no S-1020.</p>
+        </div>
+        <span class="tl-chip tl-chip--ghost"><%= @snapshot.fpas_groups.size %> grupos</span>
+      </div>
+
+      <div class="grid gap-4 p-5 md:grid-cols-2">
+        <% @snapshot.fpas_groups.each do |group| %>
+          <article class="tl-tile p-4">
+            <div class="flex items-start justify-between gap-3">
+              <div>
+                <p class="tl-kicker">FPAS</p>
+                <p class="tl-metric-value"><%= group.fpas %></p>
+              </div>
+              <span class="tl-chip tl-chip--info"><%= group.rows.size %> codigos</span>
+            </div>
+
+            <div class="mt-4 grid gap-2">
+              <% group.rows.each do |row| %>
+                <div class="flex items-center justify-between gap-3 rounded-md border border-white/10 bg-white/[0.025] px-3 py-2">
+                  <div class="min-w-0">
+                    <p class="tl-mono text-sm font-bold text-white"><%= row.codigo_lotacao %></p>
+                    <p class="tl-muted mt-1 truncate text-xs">Tipo <%= row.tp_lotacao.presence || "-" %> / <%= row.ini_valid %> -> <%= row.fim_valid_label %></p>
+                  </div>
+                  <span class="tl-chip"><%= row.cod_tercs.presence || "sem terceiros" %></span>
+                </div>
+              <% end %>
+            </div>
+
+            <% if group.suspensos.any? %>
+              <div class="mt-3 flex flex-wrap gap-2">
+                <% group.suspensos.each do |codigo| %>
+                  <span class="tl-chip tl-chip--warning">susp <%= codigo %></span>
+                <% end %>
+              </div>
+            <% end %>
+          </article>
+        <% end %>
+      </div>
+    </section>
+
+    <section class="tl-panel overflow-hidden">
+      <div class="tl-panel-header">
+        <h2 class="tl-section-title">Trilha de evidencia</h2>
+        <p class="tl-panel-subtitle">Fonte, recibo e arquivo XML associados ao quadro consolidado.</p>
+      </div>
+      <div class="divide-y divide-white/10">
+        <% @snapshot.rows.first(6).each do |row| %>
+          <article class="tl-record">
+            <div class="flex flex-wrap items-center justify-between gap-2">
+              <p class="tl-mono text-sm font-bold text-white"><%= row.codigo_lotacao %></p>
+              <span class="<%= row.atual? ? "tl-badge tl-badge--success" : "tl-badge tl-badge--muted" %>"><%= row.registro_atual.presence || "-" %></span>
+            </div>
+            <p class="tl-copy mt-2 text-xs"><%= row.enquadramento_eps_fpas.presence || "sem enquadramento informado" %></p>
+            <div class="mt-3 grid gap-2 text-xs text-slate-300 sm:grid-cols-2">
+              <p><span class="tl-muted">Recibo:</span> <span class="tl-mono"><%= row.nr_recibo.presence || "-" %></span></p>
+              <p><span class="tl-muted">XML:</span> <span class="tl-mono"><%= row.xml_path.presence || "-" %></span></p>
+            </div>
+          </article>
+        <% end %>
+      </div>
+    </section>
+  </section>
+
+  <section class="tl-panel p-5">
+    <%= form_with url: esocial_lotacoes_path, method: :get, data: { turbo: false }, class: "grid gap-4 lg:grid-cols-[1fr_auto] lg:items-end" do %>
+      <div>
+        <%= label_tag :q, "Filtrar lotacao", class: "tl-label" %>
+        <%= text_field_tag :q, @snapshot.query, class: "tl-input", placeholder: "Codigo, FPAS, terceiros ou processo" %>
+      </div>
+      <div class="flex gap-2">
+        <%= submit_tag "Filtrar", class: button_classes(:primary) %>
+        <%= link_to "Limpar", esocial_lotacoes_path, class: button_classes %>
+      </div>
+    <% end %>
+  </section>
+
+  <section class="tl-panel overflow-hidden">
+    <div class="tl-panel-header flex flex-col gap-2 lg:flex-row lg:items-center lg:justify-between">
+      <div>
+        <h2 class="tl-section-title">Quadro de lotacoes</h2>
+        <p class="tl-panel-subtitle">Um registro consolidado por codigo, priorizando a vigencia atual.</p>
+      </div>
+      <span class="tl-chip tl-chip--ghost"><%= @snapshot.rows.size %> linhas</span>
+    </div>
+
+    <div class="tl-table-wrap">
+      <table class="tl-table">
+        <thead>
+          <tr>
+            <th>Codigo</th>
+            <th>Vigencia</th>
+            <th>Status</th>
+            <th>Tipo</th>
+            <th>FPAS / EPS</th>
+            <th>Terceiros</th>
+            <th>Suspensos</th>
+            <th>Processos</th>
+            <th>Fonte</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% @snapshot.rows.each do |row| %>
+            <tr>
+              <td class="whitespace-nowrap tl-mono text-xs font-bold text-white"><%= row.codigo_lotacao %></td>
+              <td class="whitespace-nowrap tl-mono text-xs"><%= row.ini_valid.presence || "-" %> -> <%= row.fim_valid_label %></td>
+              <td><span class="<%= row.atual? ? "tl-badge tl-badge--success" : "tl-badge tl-badge--muted" %>"><%= row.registro_atual.presence || "-" %></span></td>
+              <td class="whitespace-nowrap"><span class="tl-chip"><%= row.tp_lotacao.presence || "-" %></span></td>
+              <td class="min-w-80"><p class="font-semibold text-white"><%= row.enquadramento_eps_fpas.presence || "-" %></p></td>
+              <td class="whitespace-nowrap tl-mono text-xs"><%= row.cod_tercs.presence || "-" %></td>
+              <td class="whitespace-nowrap tl-mono text-xs"><%= row.cod_tercs_suspensos.presence || "-" %></td>
+              <td class="min-w-56"><%= row.processo_count.positive? ? pluralize(row.processo_count, "processo") : "-" %></td>
+              <td class="min-w-64">
+                <p class="tl-mono text-xs"><%= row.source_path.presence || "-" %></p>
+                <p class="tl-muted mt-1 text-xs"><%= row.xml_path.presence || "-" %></p>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+
+    <% if @snapshot.rows.empty? %>
+      <div class="tl-empty">
+        <h3 class="tl-section-title">Nenhuma lotacao no filtro atual</h3>
+        <p class="tl-copy mx-auto mt-2 max-w-md">Ajuste a busca para voltar ao quadro consolidado.</p>
+      </div>
+    <% end %>
+  </section>
+</div>
