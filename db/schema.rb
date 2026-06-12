@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_06_02_091000) do
+ActiveRecord::Schema[8.1].define(version: 2026_06_12_120000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -58,6 +58,70 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_02_091000) do
     t.index ["validation_status"], name: "index_credit_categories_on_validation_status"
   end
 
+  create_table "esocial_access_logs", force: :cascade do |t|
+    t.datetime "completed_at"
+    t.datetime "created_at", null: false
+    t.string "endpoint"
+    t.text "error_message"
+    t.bigint "esocial_sync_run_id", null: false
+    t.string "event_code", null: false
+    t.string "operation_name", null: false
+    t.integer "query_count", default: 0, null: false
+    t.text "request_fingerprint"
+    t.datetime "requested_at"
+    t.text "response_summary"
+    t.string "service_name", null: false
+    t.string "status", default: "planned", null: false
+    t.string "table_name", null: false
+    t.datetime "updated_at", null: false
+    t.date "usage_date", null: false
+    t.index ["esocial_sync_run_id"], name: "index_esocial_access_logs_on_esocial_sync_run_id"
+    t.index ["event_code", "usage_date"], name: "index_esocial_access_logs_on_event_code_and_usage_date"
+    t.index ["usage_date", "status"], name: "index_esocial_access_logs_on_usage_date_and_status"
+  end
+
+  create_table "esocial_certificates", force: :cascade do |t|
+    t.boolean "active", default: true, null: false
+    t.datetime "created_at", null: false
+    t.datetime "expires_at"
+    t.string "holder_cnpj"
+    t.string "holder_cpf"
+    t.string "holder_name"
+    t.text "issuer"
+    t.string "label", null: false
+    t.jsonb "metadata", default: {}, null: false
+    t.datetime "not_before"
+    t.text "parse_error"
+    t.string "parse_status", default: "ok", null: false
+    t.text "password_ciphertext"
+    t.string "serial_number"
+    t.string "sha256", null: false
+    t.string "source", default: "manual_upload", null: false
+    t.string "status", default: "valid", null: false
+    t.text "storage_path", null: false
+    t.text "subject"
+    t.datetime "updated_at", null: false
+    t.index ["active", "expires_at"], name: "index_esocial_certificates_on_active_and_expires_at"
+    t.index ["holder_cnpj"], name: "index_esocial_certificates_on_holder_cnpj"
+    t.index ["sha256"], name: "index_esocial_certificates_on_sha256", unique: true
+  end
+
+  create_table "esocial_company_authorizations", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.bigint "esocial_certificate_id", null: false
+    t.datetime "last_checked_at"
+    t.text "notes"
+    t.text "response_summary"
+    t.string "status", default: "declared", null: false
+    t.string "target_company_cnpj", null: false
+    t.string "target_company_name"
+    t.datetime "updated_at", null: false
+    t.string "verification_method", default: "manual", null: false
+    t.index ["esocial_certificate_id", "target_company_cnpj"], name: "idx_esocial_authorizations_cert_company"
+    t.index ["esocial_certificate_id"], name: "index_esocial_company_authorizations_on_esocial_certificate_id"
+    t.index ["target_company_cnpj", "status"], name: "idx_esocial_authorizations_company_status"
+  end
+
   create_table "esocial_natures", force: :cascade do |t|
     t.string "cod_inc_cp"
     t.string "cod_inc_fgts"
@@ -81,6 +145,25 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_02_091000) do
     t.index ["nature_code"], name: "index_esocial_natures_on_nature_code"
     t.index ["normalized_name"], name: "index_esocial_natures_on_normalized_name"
     t.index ["source_file_hash", "source_row"], name: "index_esocial_natures_on_source_file_hash_and_source_row", unique: true
+  end
+
+  create_table "esocial_sync_runs", force: :cascade do |t|
+    t.string "company_cnpj", default: "64.030.638/0001-58", null: false
+    t.string "company_name", default: "CTE - CENTRO DE TECNOLOGIA DE EDIFICACOES E HOLDING LTDA", null: false
+    t.datetime "created_at", null: false
+    t.integer "daily_limit", default: 10, null: false
+    t.string "environment", default: "production", null: false
+    t.datetime "finished_at"
+    t.text "notes"
+    t.integer "planned_queries", default: 0, null: false
+    t.datetime "started_at"
+    t.string "status", default: "planned", null: false
+    t.string "sync_scope", default: "registration_tables", null: false
+    t.jsonb "target_events", default: [], null: false
+    t.datetime "updated_at", null: false
+    t.integer "used_queries", default: 0, null: false
+    t.index ["company_cnpj", "created_at"], name: "index_esocial_sync_runs_on_company_cnpj_and_created_at"
+    t.index ["status", "created_at"], name: "index_esocial_sync_runs_on_status_and_created_at"
   end
 
   create_table "legal_bases", force: :cascade do |t|
@@ -538,6 +621,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_02_091000) do
   add_foreign_key "assumptions", "operations"
   add_foreign_key "assumptions", "tax_modules"
   add_foreign_key "credit_categories", "tax_modules"
+  add_foreign_key "esocial_access_logs", "esocial_sync_runs"
+  add_foreign_key "esocial_company_authorizations", "esocial_certificates"
   add_foreign_key "operations", "tax_modules"
   add_foreign_key "rubric_events", "rubric_companies"
   add_foreign_key "rubric_nature_assignment_versions", "rubric_nature_assignments"

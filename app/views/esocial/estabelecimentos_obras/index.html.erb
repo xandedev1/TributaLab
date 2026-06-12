@@ -6,11 +6,11 @@
       <div>
         <p class="tl-kicker">eSocial / S-1005</p>
         <h1 class="tl-page-title tl-page-title--compact">Estabelecimentos e Obras</h1>
-        <p class="tl-page-subtitle mt-3 max-w-3xl">Historico de validade por estabelecimento ou obra, com CNAE preponderante, GILRAT/RAT, FAP, RAT ajustado e data de recepcao.</p>
+        <p class="tl-page-subtitle mt-3 max-w-3xl">Estabelecimento, CNAE, RAT, FAP e RAT ajustado encontrados nos arquivos oficiais da CTE.</p>
       </div>
       <div class="flex flex-wrap gap-2 lg:justify-end">
         <span class="tl-chip <%= @snapshot.data_from_csv? ? "tl-chip--success" : "tl-chip--warning" %>"><%= @snapshot.source_label %></span>
-        <span class="tl-chip tl-chip--info"><%= @snapshot.events_count %> eventos S-1005</span>
+        <span class="tl-chip tl-chip--info"><%= @snapshot.events_count %> <%= @snapshot.events_count_label %></span>
         <span class="tl-chip"><%= @snapshot.source_detail %></span>
         <%= link_to "Lotacoes", esocial_lotacoes_path, class: button_classes(:info) %>
       </div>
@@ -20,6 +20,18 @@
   <% if @snapshot.load_error.present? %>
     <section class="tl-panel p-4">
       <p class="tl-copy text-sm text-amber-200">Falha ao ler CSV: <%= @snapshot.load_error %></p>
+    </section>
+  <% end %>
+
+  <% unless @snapshot.data_from_csv? %>
+    <section class="tl-panel p-5">
+      <div class="grid gap-3 lg:grid-cols-[1fr_auto] lg:items-center">
+        <div>
+          <h2 class="tl-section-title">Nenhuma fonte real carregada</h2>
+          <p class="tl-panel-subtitle">A consulta oficial tentou rodar hoje, mas o eSocial retornou limite/ServiceActivationException antes de entregar XML. Esta tela so vai mostrar estabelecimento/obra quando houver CSV ou XML real.</p>
+        </div>
+        <span class="tl-chip tl-chip--warning">aguardando cota</span>
+      </div>
     </section>
   <% end %>
 
@@ -79,8 +91,8 @@
     <section class="tl-panel overflow-hidden">
       <div class="tl-panel-header flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h2 class="tl-section-title">Linha do tempo S-1005</h2>
-          <p class="tl-panel-subtitle">Sequencia anual de validade e alteracoes do enquadramento.</p>
+          <h2 class="tl-section-title">Linha do tempo</h2>
+          <p class="tl-panel-subtitle">Evidencias mensais do enquadramento encontradas nos arquivos oficiais.</p>
         </div>
         <span class="tl-chip tl-chip--ghost"><%= @snapshot.rows.size %> periodos</span>
       </div>
@@ -121,7 +133,7 @@
       <div class="tl-panel-header flex flex-col gap-2 lg:flex-row lg:items-center lg:justify-between">
         <div>
           <h2 class="tl-section-title">Inscricao <%= group.tp_insc.presence || "-" %> / <%= group.nr_insc.presence || "-" %></h2>
-          <p class="tl-panel-subtitle">Historico completo retornado pelo S-1005 para esta inscricao.</p>
+          <p class="tl-panel-subtitle">Historico completo encontrado para esta inscricao.</p>
         </div>
         <span class="tl-chip tl-chip--ghost"><%= group.rows.size %> vigencias</span>
       </div>
@@ -169,8 +181,8 @@
   <% if @snapshot.rows.empty? %>
     <section class="tl-panel">
       <div class="tl-empty">
-        <h3 class="tl-section-title">Nenhum estabelecimento ou obra no filtro atual</h3>
-        <p class="tl-copy mx-auto mt-2 max-w-md">Ajuste a busca para voltar ao historico consolidado.</p>
+        <h3 class="tl-section-title">Nenhum estabelecimento ou obra carregado</h3>
+        <p class="tl-copy mx-auto mt-2 max-w-md">Carregue XML/ZIP S-1005 ou aguarde uma nova janela de consulta oficial para preencher esta tabela.</p>
       </div>
     </section>
   <% end %>

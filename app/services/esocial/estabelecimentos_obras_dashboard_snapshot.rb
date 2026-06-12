@@ -2,6 +2,8 @@ require "csv"
 
 module Esocial
 	class EstabelecimentosObrasDashboardSnapshot
+		OFFICIAL_CURRENT_CSV_PATH = Rails.root.join("tmp", "estabelecimentos_s1005_oficial", "estabelecimentos_s1005_quadro.csv")
+		OFFICIAL_EVENTS_CSV_PATH = Rails.root.join("tmp", "estabelecimentos_s1005_oficial", "estabelecimentos_s1005_eventos.csv")
 		CURRENT_CSV_PATH = Rails.root.join("tmp", "estabelecimentos_s1005", "estabelecimentos_s1005_quadro.csv")
 		EVENTS_CSV_PATH = Rails.root.join("tmp", "estabelecimentos_s1005", "estabelecimentos_s1005_eventos.csv")
 
@@ -74,15 +76,15 @@ module Esocial
 
 		def all_rows
 			@all_rows ||= begin
-				loaded = csv_rows(EVENTS_CSV_PATH)
-				loaded = csv_rows(CURRENT_CSV_PATH) if loaded.empty?
-				loaded.any? ? loaded : demo_rows
+				loaded = events_csv_path ? csv_rows(events_csv_path) : []
+				loaded = csv_rows(current_csv_path) if loaded.empty? && current_csv_path
+				loaded
 			end
 		end
 
 		def current_rows
 			@current_rows ||= begin
-				loaded = csv_rows(CURRENT_CSV_PATH)
+				loaded = current_csv_path ? csv_rows(current_csv_path) : []
 				loaded = all_rows.select(&:atual?) if loaded.empty?
 				loaded.any? ? loaded : [ all_rows.max_by { |row| row.ini_valid.to_s } ].compact
 			end
@@ -90,7 +92,7 @@ module Esocial
 
 		def metrics
 			@metrics ||= [
-				Metric.new(label: "Periodos", value: all_rows.size, detail: "eventos S-1005 no historico"),
+				Metric.new(label: "Evidencias", value: all_rows.size, detail: source_event_detail),
 				Metric.new(label: "Estab/obras", value: estabelecimento_groups.size, detail: "inscricoes distintas"),
 				Metric.new(label: "CNAE atual", value: current_cnaes.join(", ").presence || "-", detail: "cnae preponderante vigente"),
 				Metric.new(label: "FAP atual", value: current_faps.join(", ").presence || "-", detail: "fator vigente em #{vigente_em_label}")
@@ -104,21 +106,27 @@ module Esocial
 		end
 
 		def source_label
-			data_from_csv? ? "CSV extraido" : "demonstrativo"
+			return "eSocial oficial" if events_csv_path == OFFICIAL_EVENTS_CSV_PATH
+			return "S-5011 oficial" if derived_from_s5011?
+			return "S-1005 XML" if direct_s1005_xml?
+			return "CSV extraido" if data_from_csv?
+			return "CSV vazio" if any_source_file_exists?
+
+			"sem fonte real"
 		end
 
 		def source_detail
-			if EVENTS_CSV_PATH.exist?
-				relative_path(EVENTS_CSV_PATH)
-			elsif CURRENT_CSV_PATH.exist?
-				relative_path(CURRENT_CSV_PATH)
+			if events_csv_path
+				relative_path(events_csv_path)
+			elsif current_csv_path
+				relative_path(current_csv_path)
 			else
-				"modelo visual S-1005"
+				"tmp/estabelecimentos_s1005/estabelecimentos_s1005_eventos.csv ausente"
 			end
 		end
 
 		def data_from_csv?
-			(EVENTS_CSV_PATH.exist? && csv_rows(EVENTS_CSV_PATH).any?) || (CURRENT_CSV_PATH.exist? && csv_rows(CURRENT_CSV_PATH).any?)
+			(events_csv_path && csv_rows(events_csv_path).any?) || (current_csv_path && csv_rows(current_csv_path).any?)
 		end
 
 		def vigente_em_label
@@ -126,9 +134,17 @@ module Esocial
 		end
 
 		def events_count
-			return count_csv_rows(EVENTS_CSV_PATH) if EVENTS_CSV_PATH.exist?
+			return count_csv_rows(events_csv_path) if events_csv_path
 
 			all_rows.size
+		end
+
+		def source_event_detail
+			derived_from_s5011? ? "linhas extraidas de ideEstab/infoEstab no S-5011" : "eventos S-1005 no historico"
+		end
+
+		def events_count_label
+			derived_from_s5011? ? "evidencias S-5011" : "eventos S-1005"
 		end
 
 		private
@@ -143,6 +159,18 @@ module Esocial
 			end
 		end
 
+		def events_csv_path
+			@events_csv_path ||= [ OFFICIAL_EVENTS_CSV_PATH, EVENTS_CSV_PATH ].find { |path| path.exist? && csv_rows(path).any? }
+		end
+
+		def current_csv_path
+			@current_csv_path ||= [ OFFICIAL_CURRENT_CSV_PATH, CURRENT_CSV_PATH ].find { |path| path.exist? && csv_rows(path).any? }
+		end
+
+		def any_source_file_exists?
+			[ OFFICIAL_EVENTS_CSV_PATH, EVENTS_CSV_PATH, OFFICIAL_CURRENT_CSV_PATH, CURRENT_CSV_PATH ].any?(&:exist?)
+		end
+
 		def csv_rows(path)
 			@csv_cache ||= {}
 			return @csv_cache[path] if @csv_cache.key?(path)
@@ -154,33 +182,6 @@ module Esocial
 		rescue StandardError => error
 			@load_error = error.message
 			@csv_cache[path] = []
-		end
-
-		def demo_rows
-			[
-				build_row(base_demo.merge("ini_valid" => "2018-01", "fim_valid" => "2018-12", "aliquota_fap" => "1.0000", "aliquota_rat_ajustada" => "3.0000", "data_recepcao" => "2018-01-08T09:20:00", "registro_atual" => "nao")),
-				build_row(base_demo.merge("ini_valid" => "2019-01", "fim_valid" => "2019-12", "aliquota_fap" => "0.9821", "aliquota_rat_ajustada" => "2.9463", "data_recepcao" => "2019-01-07T10:11:00", "registro_atual" => "nao")),
-				build_row(base_demo.merge("ini_valid" => "2020-01", "fim_valid" => "2020-12", "aliquota_fap" => "0.9120", "aliquota_rat_ajustada" => "2.7360", "data_recepcao" => "2020-01-06T11:04:00", "registro_atual" => "nao")),
-				build_row(base_demo.merge("ini_valid" => "2021-01", "fim_valid" => "2021-12", "aliquota_fap" => "0.8455", "aliquota_rat_ajustada" => "2.5365", "data_recepcao" => "2021-01-05T08:47:00", "registro_atual" => "nao")),
-				build_row(base_demo.merge("ini_valid" => "2022-01", "fim_valid" => "2022-12", "aliquota_fap" => "0.8012", "aliquota_rat_ajustada" => "2.4036", "data_recepcao" => "2022-01-06T14:32:00", "registro_atual" => "nao")),
-				build_row(base_demo.merge("ini_valid" => "2023-01", "fim_valid" => "", "aliquota_fap" => "0.7345", "aliquota_rat_ajustada" => "2.2035", "data_recepcao" => "2023-01-06T10:30:00", "registro_atual" => "sim"))
-			]
-		end
-
-		def base_demo
-			{
-				"empresa_tp_insc" => "1",
-				"empresa_nr_insc" => "CNPJ raiz CTE",
-				"estabelecimento_tp_insc" => "1",
-				"estabelecimento_nr_insc" => "CNPJ estabelecimento CTE",
-				"vigente_em" => Date.today.strftime("%Y-%m"),
-				"acao_evento" => "alteracao",
-				"cnae_preponderante" => "4930202",
-				"aliquota_gilrat" => "3",
-				"nr_recibo" => "modelo",
-				"source_path" => "modelo S-1005",
-				"xml_path" => "evtTabEstab"
-			}
 		end
 
 		def build_row(attributes)
@@ -221,6 +222,14 @@ module Esocial
 			CSV.foreach(path, headers: true, col_sep: ";", encoding: "bom|utf-8").count
 		rescue StandardError
 			all_rows.size
+		end
+
+		def derived_from_s5011?
+			all_rows.any? && all_rows.all? { |row| row.acao_evento == "totalizador S-5011" }
+		end
+
+		def direct_s1005_xml?
+			all_rows.any? && all_rows.all? { |row| %w[inclusao alteracao exclusao].include?(row.acao_evento) }
 		end
 
 		def relative_path(path)

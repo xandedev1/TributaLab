@@ -93,6 +93,8 @@
             <nav class="flex gap-2 overflow-x-auto pb-1" aria-label="Navegacao principal mobile">
               <%= link_to "Painel", root_path, class: "whitespace-nowrap #{shell_nav_active?(root_path) ? "tl-chip tl-chip--info" : "tl-chip"}" %>
               <%= link_to "Rubricas CTE", rubricas_cte_root_path, class: "whitespace-nowrap #{request.path.start_with?(rubricas_cte_root_path, rubricas_cte_chain_walk_path) ? "tl-chip tl-chip--info" : "tl-chip"}" %>
+              <%= link_to "eSocial", esocial_certificado_path, class: "whitespace-nowrap #{shell_nav_active?(esocial_certificado_path) ? "tl-chip tl-chip--info" : "tl-chip"}" %>
+              <%= link_to "Sync eSocial", esocial_sync_path, class: "whitespace-nowrap #{shell_nav_active?(esocial_sync_path) ? "tl-chip tl-chip--info" : "tl-chip"}" %>
               <%= link_to "Lotacoes", esocial_lotacoes_path, class: "whitespace-nowrap #{shell_nav_active?(esocial_lotacoes_path) ? "tl-chip tl-chip--info" : "tl-chip"}" %>
               <%= link_to "Estab/Obras", esocial_estabelecimentos_obras_path, class: "whitespace-nowrap #{shell_nav_active?(esocial_estabelecimentos_obras_path) ? "tl-chip tl-chip--info" : "tl-chip"}" %>
               <%= link_to "Base Legal", legal_basis_path, class: "whitespace-nowrap #{shell_nav_active?(legal_basis_path) ? "tl-chip tl-chip--info" : "tl-chip"}" %>
@@ -102,6 +104,13 @@
         </header>
 
         <main id="main-content" class="min-h-screen px-4 py-6 sm:px-6 lg:px-8 lg:py-8">
+          <% flash.each do |type, message| %>
+          <% badge_class = type.to_s == "alert" ? "tl-badge tl-badge--danger" : "tl-badge tl-badge--success" %>
+          <div class="mx-auto mb-4 w-full max-w-[96rem] rounded-md border border-white/10 bg-white/[0.04] p-4">
+            <span class="<%= badge_class %>"><%= type %></span>
+            <span class="tl-copy ml-3 text-sm"><%= message %></span>
+          </div>
+          <% end %>
           <%= yield %>
         </main>
       </div>

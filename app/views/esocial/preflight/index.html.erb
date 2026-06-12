@@ -1,0 +1,194 @@
+<% content_for :title, "eSocial - Certificado" %>
+<% certificate = @snapshot.primary_certificate %>
+
+<div class="mx-auto flex w-full max-w-4xl flex-col gap-5">
+  <header class="tl-command-bar">
+    <div class="grid gap-4 lg:grid-cols-[1fr_auto] lg:items-end">
+      <div>
+        <p class="tl-kicker">eSocial</p>
+        <h1 class="tl-page-title tl-page-title--compact">Certificado</h1>
+        <p class="tl-page-subtitle mt-3 max-w-2xl">A1 salvo com senha criptografada, teste oficial e empresas de procuracao quando o certificado for pessoal.</p>
+      </div>
+      <div class="flex flex-wrap gap-2 lg:justify-end">
+        <% if certificate %>
+          <span class="tl-chip"><%= certificate.certificate_kind_label %></span>
+          <span class="tl-chip <%= certificate.valid_now? ? "tl-chip--success" : "tl-chip--warning" %>"><%= @snapshot.certificate_state_label %></span>
+          <span class="tl-chip <%= certificate.last_connection_test_success? ? "tl-chip--success" : "tl-chip--warning" %>"><%= certificate.last_connection_test_status_label %></span>
+        <% else %>
+          <span class="tl-chip tl-chip--warning">Nenhum certificado</span>
+        <% end %>
+      </div>
+    </div>
+  </header>
+
+  <section class="tl-panel overflow-hidden">
+    <div class="tl-panel-header">
+      <h2 class="tl-section-title">Salvar certificado</h2>
+      <p class="tl-panel-subtitle">Escolha o tipo, envie o PFX/P12 e informe a senha uma vez.</p>
+    </div>
+    <div class="p-5">
+      <%= form_with model: @certificate, url: esocial_certificates_path, multipart: true, data: { turbo: false }, class: "grid gap-4 lg:grid-cols-[180px_1fr_220px_auto] lg:items-end" do |form| %>
+        <div>
+          <%= form.label :certificate_kind, "Tipo", class: "tl-label" %>
+          <%= form.select :certificate_kind, [["Empresa", "company"], ["Pessoal/procurador", "personal"]], {}, class: "tl-input" %>
+        </div>
+        <div>
+          <%= form.label :file, "Arquivo .pfx ou .p12", class: "tl-label" %>
+          <%= form.file_field :file, accept: ".pfx,.p12", class: "tl-input" %>
+        </div>
+        <div>
+          <%= form.label :password, "Senha", class: "tl-label" %>
+          <%= form.password_field :password, class: "tl-input", autocomplete: "new-password" %>
+        </div>
+        <%= form.submit certificate ? "Substituir" : "Salvar", class: button_classes(:primary) %>
+      <% end %>
+    </div>
+  </section>
+
+  <% if certificate %>
+    <% test_badge_status = certificate.last_connection_test_success? ? "ok" : (certificate.last_connection_test_unverified_server? ? "attention" : (certificate.last_connection_test_present? ? "failed" : "pending")) %>
+    <section class="tl-panel overflow-hidden">
+      <div class="tl-panel-header flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+        <div>
+          <h2 class="tl-section-title">Certificado em uso</h2>
+          <p class="tl-panel-subtitle">O botao de teste abaixo usa exatamente este certificado.</p>
+        </div>
+        <%= button_to "Excluir", esocial_certificate_path(certificate), method: :delete, class: button_classes(:danger), form: { data: { turbo_confirm: "Excluir este certificado e a senha salva?" } } %>
+      </div>
+
+      <div class="grid gap-5 p-5 lg:grid-cols-[1fr_0.95fr]">
+        <div class="grid gap-4">
+          <article class="tl-tile p-4">
+            <p class="tl-metric-label">Titular</p>
+            <p class="tl-copy mt-2 text-base font-semibold text-white"><%= certificate.holder_name.presence || certificate.label %></p>
+            <p class="tl-mono mt-2 break-all text-sm text-white"><%= certificate.holder_document %></p>
+            <div class="mt-3 flex flex-wrap gap-2">
+              <span class="tl-chip"><%= certificate.certificate_kind_label %></span>
+              <span class="<%= status_badge_classes(certificate.status) %>"><%= status_label(certificate.status) %></span>
+            </div>
+          </article>
+
+          <div class="grid gap-3 sm:grid-cols-2">
+            <article class="tl-tile p-4">
+              <p class="tl-metric-label">Validade</p>
+              <p class="tl-mono mt-2 text-sm text-white"><%= certificate.expires_at&.strftime("%d/%m/%Y") || "-" %></p>
+              <p class="tl-muted mt-1 text-xs"><%= certificate.expires_in_days ? "#{certificate.expires_in_days} dias" : "sem data" %></p>
+            </article>
+            <article class="tl-tile p-4">
+              <p class="tl-metric-label">Serie</p>
+              <p class="tl-mono mt-2 break-all text-sm text-white"><%= certificate.serial_number.presence || "sem serie" %></p>
+              <p class="tl-muted mt-1 text-xs">SHA <%= certificate.short_sha256 %></p>
+            </article>
+          </div>
+
+          <article class="tl-tile p-4">
+            <p class="tl-metric-label">Emissor</p>
+            <p class="tl-copy mt-2 break-words text-sm text-white"><%= certificate.issuer.presence || "emissor nao identificado" %></p>
+            <p class="tl-muted mt-2 break-all text-xs"><%= certificate.storage_filename %></p>
+          </article>
+        </div>
+
+        <article class="tl-tile p-4">
+          <div class="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+            <div>
+              <p class="tl-metric-label">Teste oficial</p>
+              <h3 class="tl-section-title mt-1"><%= certificate.last_connection_test_status_label %></h3>
+            </div>
+            <span class="<%= status_badge_classes(test_badge_status) %>"><%= certificate.last_connection_test_status_label %></span>
+          </div>
+
+          <p class="tl-copy mt-4 text-sm">Conexao TLS real ao host oficial do eSocial com este PFX. Nao baixa XML, nao faz consulta SOAP e nao consome a cota do Download Cirurgico.</p>
+          <p class="tl-mono mt-3 break-all text-xs"><%= certificate.last_connection_test_endpoint %></p>
+
+          <div class="mt-4 grid gap-3">
+            <div>
+              <p class="tl-metric-label">Resultado</p>
+              <p class="tl-copy mt-1 text-sm text-white"><%= certificate.last_connection_test_message %></p>
+            </div>
+            <% if certificate.last_connection_test_response_preview.present? %>
+              <div>
+                <p class="tl-metric-label">Resposta do eSocial</p>
+                <p class="tl-mono mt-1 break-words text-xs text-white"><%= certificate.last_connection_test_response_preview %></p>
+              </div>
+            <% end %>
+            <div class="grid gap-3 sm:grid-cols-3">
+              <div>
+                <p class="tl-metric-label">Horario</p>
+                <p class="tl-mono mt-1 text-xs text-white"><%= certificate.last_connection_tested_at&.strftime("%d/%m/%Y %H:%M") || "-" %></p>
+              </div>
+              <div>
+                <p class="tl-metric-label">Tipo</p>
+                <p class="tl-copy mt-1 text-xs text-white"><%= certificate.last_connection_test_kind_label %></p>
+              </div>
+              <div>
+                <p class="tl-metric-label">Servidor</p>
+                <p class="tl-copy mt-1 text-xs text-white"><%= certificate.last_connection_test_tls_label %></p>
+              </div>
+            </div>
+            <% if certificate.last_connection_test_http_status.present? %>
+              <div>
+                <p class="tl-metric-label">HTTP anterior</p>
+                <p class="tl-mono mt-1 text-xs text-white"><%= certificate.last_connection_test_http_status %></p>
+              </div>
+            <% end %>
+          </div>
+
+          <div class="mt-5">
+            <%= button_to "Testar este certificado", test_connection_esocial_certificate_path(certificate), method: :post, class: button_classes(:primary), data: { turbo: false } %>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <% if certificate.personal_certificate? %>
+      <section class="tl-panel overflow-hidden">
+        <div class="tl-panel-header">
+          <h2 class="tl-section-title">Empresas com procuracao</h2>
+          <p class="tl-panel-subtitle">O PFX pessoal nao traz essa lista dentro do arquivo. Cadastre aqui as empresas que serao consultadas por procuracao.</p>
+        </div>
+        <div class="grid gap-5 p-5 lg:grid-cols-[0.9fr_1.1fr]">
+          <%= form_with model: @authorization, url: esocial_company_authorizations_path, data: { turbo: false }, class: "grid gap-4" do |form| %>
+            <%= form.hidden_field :esocial_certificate_id, value: certificate.id %>
+            <div>
+              <%= form.label :target_company_cnpj, "CNPJ da empresa", class: "tl-label" %>
+              <%= form.text_field :target_company_cnpj, class: "tl-input", placeholder: "00.000.000/0000-00" %>
+            </div>
+            <div>
+              <%= form.label :target_company_name, "Nome da empresa", class: "tl-label" %>
+              <%= form.text_field :target_company_name, class: "tl-input" %>
+            </div>
+            <%= form.submit "Adicionar empresa", class: button_classes(:secondary) %>
+          <% end %>
+
+          <div class="grid gap-3">
+            <% if certificate.esocial_company_authorizations.any? %>
+              <% certificate.esocial_company_authorizations.order(updated_at: :desc).each do |authorization| %>
+                <article class="tl-tile p-4">
+                  <div class="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+                    <div>
+                      <p class="tl-copy text-sm font-semibold text-white"><%= authorization.target_company_name.presence || "Empresa sem nome" %></p>
+                      <p class="tl-mono mt-1 text-xs"><%= authorization.target_company_cnpj %></p>
+                      <span class="tl-chip mt-3"><%= status_label(authorization.status) %></span>
+                    </div>
+                    <%= button_to "Excluir", esocial_company_authorization_path(authorization), method: :delete, class: button_classes(:danger), form: { data: { turbo_confirm: "Remover esta empresa?" } } %>
+                  </div>
+                </article>
+              <% end %>
+            <% else %>
+              <div class="tl-empty py-8">
+                <h3 class="tl-section-title">Nenhuma empresa adicionada</h3>
+              </div>
+            <% end %>
+          </div>
+        </div>
+      </section>
+    <% end %>
+  <% else %>
+    <section class="tl-panel overflow-hidden">
+      <div class="tl-empty">
+        <h2 class="tl-section-title">Nenhum certificado salvo</h2>
+        <p class="tl-copy mx-auto mt-2 max-w-md">Depois de salvar o PFX, o certificado aparece aqui com titular, emissor, validade, excluir e testar.</p>
+      </div>
+    </section>
+  <% end %>
+</div>

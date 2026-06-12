@@ -30,6 +30,14 @@ Rails.application.routes.draw do
   end
 
   namespace :esocial do
+    get "certificado", to: "preflight#index", as: :certificado
+    get "preflight", to: redirect("/esocial/certificado"), as: :preflight
+    resources :certificates, only: [:create, :destroy] do
+      post "test_connection", on: :member
+    end
+    resources :company_authorizations, only: [:create, :destroy]
+    get "sync", to: "sync#index", as: :sync
+    post "sync/runs", to: "sync_runs#create", as: :sync_runs
     get "lotacoes", to: "lotacoes#index", as: :lotacoes
     get "estabelecimentos_obras", to: "estabelecimentos_obras#index", as: :estabelecimentos_obras
   end

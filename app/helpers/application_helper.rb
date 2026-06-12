@@ -3,6 +3,7 @@ module ApplicationHelper
 		[
 			["Painel", root_path],
 			["Rubricas CTE", rubricas_cte_root_path],
+			["eSocial", esocial_certificado_path],
 			["Lotacao Tributaria", esocial_lotacoes_path],
 			["Estabelecimentos e Obras", esocial_estabelecimentos_obras_path],
 			["Base Legal", legal_basis_path],
@@ -24,6 +25,8 @@ module ApplicationHelper
 			{
 				label: "Tabelas do Cliente",
 				items: [
+					{ label: "eSocial", path: esocial_certificado_path },
+					{ label: "Sync eSocial", path: esocial_sync_path },
 					{ label: "Lotacao Tributaria", path: esocial_lotacoes_path },
 					{ label: "Estabelecimentos e Obras", path: esocial_estabelecimentos_obras_path }
 				]
@@ -102,11 +105,11 @@ module ApplicationHelper
 
 	def status_badge_classes(status)
 		case status.to_s
-		when "active", "validated", "completed", "selected", "reviewed", "sugestao alta"
+		when "active", "validated", "completed", "selected", "reviewed", "ready", "valid", "ok", "direct", "verified", "sugestao alta"
 			"tl-badge tl-badge--success"
-		when "pending", "pending_validation", "ambiguous", "ambigua", "revisar"
+		when "pending", "pending_validation", "planned", "running", "ambiguous", "ambigua", "revisar", "attention", "declared", "not_yet_valid"
 			"tl-badge tl-badge--warning"
-		when "divergent", "rejected", "divergente"
+		when "divergent", "rejected", "blocked", "failed", "divergente", "expired", "invalid", "missing", "error"
 			"tl-badge tl-badge--danger"
 		when "paused", "archived", "sem natureza"
 			"tl-badge tl-badge--muted"

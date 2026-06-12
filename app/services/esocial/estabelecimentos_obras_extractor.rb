@@ -191,6 +191,7 @@ module Esocial
 			acao_evento = action_node&.name.to_s
 			ini_valid = text(ide_estab_node, "iniValid")
 			fim_valid = text(ide_estab_node, "fimValid")
+			aliquota_gilrat = text(dados_estab_node, "aliqGilrat").presence || text(descendant(document, "infoEstabelecimento"), "aliqRat")
 
 			@rows << Row.new(
 				empresa_tp_insc: text(ide_empregador_node, "tpInsc"),
@@ -203,7 +204,7 @@ module Esocial
 				registro_atual: current_record?(acao_evento, ini_valid, fim_valid) ? "sim" : "nao",
 				acao_evento: acao_evento,
 				cnae_preponderante: text(dados_estab_node, "cnaePrep"),
-				aliquota_gilrat: text(dados_estab_node, "aliqGilrat"),
+				aliquota_gilrat: aliquota_gilrat.to_s,
 				aliquota_fap: text(dados_estab_node, "fap"),
 				aliquota_rat_ajustada: text(dados_estab_node, "aliqRatAjust"),
 				data_recepcao: first_text(document, %w[dhRecepcao dhProcessamento dtRecepcao dtRecibido]),

@@ -2,6 +2,10 @@ require "csv"
 
 module Esocial
 	class LotacoesDashboardSnapshot
+		OFFICIAL_CSV_PATH = Rails.root.join("tmp", "lotacoes_s1020_oficial", "lotacoes_s1020_quadro.csv")
+		OFFICIAL_EVENTS_CSV_PATH = Rails.root.join("tmp", "lotacoes_s1020_oficial", "lotacoes_s1020_eventos.csv")
+		CTE_ZIP_CSV_PATH = Rails.root.join("tmp", "lotacoes_s1020_cte_zips", "lotacoes_s1020_quadro.csv")
+		CTE_ZIP_EVENTS_CSV_PATH = Rails.root.join("tmp", "lotacoes_s1020_cte_zips", "lotacoes_s1020_eventos.csv")
 		CSV_PATH = Rails.root.join("tmp", "lotacoes_s1020", "lotacoes_s1020_quadro.csv")
 		EVENTS_CSV_PATH = Rails.root.join("tmp", "lotacoes_s1020", "lotacoes_s1020_eventos.csv")
 
@@ -20,6 +24,8 @@ module Esocial
 			:cod_tercs,
 			:cod_tercs_suspensos,
 			:processos_judiciais,
+			:lotacao_tp_insc,
+			:lotacao_nr_insc,
 			:nr_recibo,
 			:source_path,
 			:xml_path,
@@ -55,17 +61,19 @@ module Esocial
 
 		def all_rows
 			@all_rows ||= begin
-				loaded = csv_rows
-				loaded.any? ? loaded : demo_rows
+				loaded = selected_events_path ? csv_rows(selected_events_path) : []
+				loaded = csv_rows(selected_current_path) if loaded.empty? && selected_current_path
+				loaded
 			end
 		end
 
 		def metrics
 			@metrics ||= [
-				Metric.new(label: "Codigos", value: all_rows.size, detail: "lotacoes no quadro"),
+				Metric.new(label: "Codigos", value: distinct_values(all_rows, :codigo_lotacao).size, detail: "lotacoes no historico"),
 				Metric.new(label: "Vigentes", value: all_rows.count(&:atual?), detail: "validas em #{vigente_em_label}"),
+				Metric.new(label: "Eventos", value: all_rows.size, detail: "linhas do CSV carregado"),
 				Metric.new(label: "FPAS", value: distinct_values(all_rows, :fpas).size, detail: distinct_values(all_rows, :fpas).join(", ").presence || "sem FPAS"),
-				Metric.new(label: "Suspensoes", value: rows_with_suspension.size, detail: "terceiros/processos no S-1020")
+				Metric.new(label: "Excluidos", value: all_rows.count { |row| row.acao_evento == "exclusao" }, detail: "eventos de exclusao")
 			]
 		end
 
@@ -81,21 +89,30 @@ module Esocial
 		end
 
 		def events_count
-			return count_csv_rows(EVENTS_CSV_PATH) if EVENTS_CSV_PATH.exist?
+			return count_csv_rows(selected_events_path) if selected_events_path
 
 			all_rows.size
 		end
 
 		def source_label
-			csv_available? ? "CSV extraido" : "demonstrativo"
+			return "eSocial oficial" if selected_events_path == OFFICIAL_EVENTS_CSV_PATH
+			return "XML CTE ZIP" if selected_events_path == CTE_ZIP_EVENTS_CSV_PATH
+			return "CSV capturado" if selected_events_path == EVENTS_CSV_PATH
+			return "CSV extraido" if data_from_csv?
+			return "CSV vazio" if any_source_file_exists?
+
+			"sem fonte real"
 		end
 
 		def source_detail
-			csv_available? ? relative_path(CSV_PATH) : "modelo visual S-1020"
+			return relative_path(selected_events_path) if selected_events_path
+			return relative_path(selected_current_path) if selected_current_path
+
+			"tmp/lotacoes_s1020_cte_zips/lotacoes_s1020_eventos.csv ausente"
 		end
 
 		def data_from_csv?
-			csv_available? && csv_rows.any?
+			all_rows.any?
 		end
 
 		def vigente_em_label
@@ -113,77 +130,30 @@ module Esocial
 			end
 		end
 
-		def csv_available?
-			CSV_PATH.exist?
+		def selected_events_path
+			@selected_events_path ||= [ OFFICIAL_EVENTS_CSV_PATH, CTE_ZIP_EVENTS_CSV_PATH, EVENTS_CSV_PATH ].find { |path| path.exist? && csv_rows(path).any? }
 		end
 
-		def csv_rows
-			@csv_rows ||= begin
-				return [] unless csv_available?
+		def selected_current_path
+			@selected_current_path ||= [ OFFICIAL_CSV_PATH, CTE_ZIP_CSV_PATH, CSV_PATH ].find { |path| path.exist? && csv_rows(path).any? }
+		end
 
-				CSV.foreach(CSV_PATH, headers: true, col_sep: ";", encoding: "bom|utf-8").map do |csv_row|
-					build_row(csv_row.to_h)
-				end
-			rescue StandardError => error
-				@load_error = error.message
-				[]
+		def any_source_file_exists?
+			[ OFFICIAL_EVENTS_CSV_PATH, CTE_ZIP_EVENTS_CSV_PATH, EVENTS_CSV_PATH, OFFICIAL_CSV_PATH, CTE_ZIP_CSV_PATH, CSV_PATH ].any?(&:exist?)
+		end
+
+		def csv_rows(path = CSV_PATH)
+			@csv_rows ||= {}
+			return @csv_rows[path] if @csv_rows.key?(path)
+
+			return @csv_rows[path] = [] unless path.exist?
+
+			@csv_rows[path] = CSV.foreach(path, headers: true, col_sep: ";", encoding: "bom|utf-8").map do |csv_row|
+				build_row(csv_row.to_h)
 			end
-		end
-
-		def demo_rows
-			[
-				build_row(
-					"codigo_lotacao" => "0001",
-					"ini_valid" => "2025-01",
-					"fim_valid" => "",
-					"vigente_em" => Date.today.strftime("%Y-%m"),
-					"registro_atual" => "sim",
-					"acao_evento" => "alteracao",
-					"tp_lotacao" => "01",
-					"enquadramento_eps_fpas" => "FPAS=507 | COD_TERCS=0000 | COD_TERCS_SUSP=0003",
-					"fpas" => "507",
-					"cod_tercs" => "0000",
-					"cod_tercs_suspensos" => "0003",
-					"processos_judiciais" => "cod_terc=0003,nr_proc_jud=0000000-00.0000.0.00.0000,cod_susp=92",
-					"nr_recibo" => "modelo",
-					"source_path" => "modelo S-1020",
-					"xml_path" => "evtTabLotacao"
-				),
-				build_row(
-					"codigo_lotacao" => "0002",
-					"ini_valid" => "2025-01",
-					"fim_valid" => "",
-					"vigente_em" => Date.today.strftime("%Y-%m"),
-					"registro_atual" => "sim",
-					"acao_evento" => "inclusao",
-					"tp_lotacao" => "01",
-					"enquadramento_eps_fpas" => "FPAS=515 | COD_TERCS=0115",
-					"fpas" => "515",
-					"cod_tercs" => "0115",
-					"cod_tercs_suspensos" => "",
-					"processos_judiciais" => "",
-					"nr_recibo" => "modelo",
-					"source_path" => "modelo S-1020",
-					"xml_path" => "evtTabLotacao"
-				),
-				build_row(
-					"codigo_lotacao" => "0099",
-					"ini_valid" => "2024-07",
-					"fim_valid" => "2025-12",
-					"vigente_em" => Date.today.strftime("%Y-%m"),
-					"registro_atual" => "sim",
-					"acao_evento" => "alteracao",
-					"tp_lotacao" => "04",
-					"enquadramento_eps_fpas" => "FPAS=507 | COD_TERCS=0079",
-					"fpas" => "507",
-					"cod_tercs" => "0079",
-					"cod_tercs_suspensos" => "",
-					"processos_judiciais" => "",
-					"nr_recibo" => "modelo",
-					"source_path" => "modelo S-1020",
-					"xml_path" => "evtTabLotacao"
-				)
-			]
+		rescue StandardError => error
+			@load_error = error.message
+			@csv_rows[path] = []
 		end
 
 		def build_row(attributes)
@@ -200,6 +170,8 @@ module Esocial
 				cod_tercs: attributes["cod_tercs"].to_s,
 				cod_tercs_suspensos: attributes["cod_tercs_suspensos"].to_s,
 				processos_judiciais: attributes["processos_judiciais"].to_s,
+				lotacao_tp_insc: attributes["lotacao_tp_insc"].to_s,
+				lotacao_nr_insc: attributes["lotacao_nr_insc"].to_s,
 				nr_recibo: attributes["nr_recibo"].to_s,
 				source_path: attributes["source_path"].to_s,
 				xml_path: attributes["xml_path"].to_s

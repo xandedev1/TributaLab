@@ -6,7 +6,7 @@
       <div>
         <p class="tl-kicker">eSocial / S-1020</p>
         <h1 class="tl-page-title tl-page-title--compact">Lotacao Tributaria</h1>
-        <p class="tl-page-subtitle mt-3 max-w-3xl">Quadro de codigos, vigencia, tipo de lotacao, FPAS, terceiros e suspensoes por processo.</p>
+        <p class="tl-page-subtitle mt-3 max-w-3xl">Historico de codigos, vigencia, tipo de lotacao, FPAS, terceiros e suspensoes por processo.</p>
       </div>
       <div class="flex flex-wrap gap-2 lg:justify-end">
         <span class="tl-chip <%= @snapshot.data_from_csv? ? "tl-chip--success" : "tl-chip--warning" %>"><%= @snapshot.source_label %></span>
@@ -22,7 +22,19 @@
     </section>
   <% end %>
 
-  <section class="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+  <% unless @snapshot.data_from_csv? %>
+    <section class="tl-panel p-5">
+      <div class="grid gap-3 lg:grid-cols-[1fr_auto] lg:items-center">
+        <div>
+          <h2 class="tl-section-title">Nenhuma fonte real S-1020 carregada</h2>
+          <p class="tl-panel-subtitle">Esta pagina ainda nao confirma todos os codigos de lotacao do eSocial. Para validar codigos como <span class="tl-mono">000100000...</span>, e necessario salvar/exportar os XMLs ou ZIPs S-1020 e rodar o extrator.</p>
+        </div>
+        <span class="tl-chip tl-chip--warning">nao auditado</span>
+      </div>
+    </section>
+  <% end %>
+
+  <section class="grid gap-4 md:grid-cols-2 xl:grid-cols-5">
     <% @snapshot.metrics.each do |metric| %>
       <article class="tl-card tl-card-hover p-4">
         <p class="tl-metric-label"><%= metric.label %></p>
@@ -50,7 +62,7 @@
                 <p class="tl-kicker">FPAS</p>
                 <p class="tl-metric-value"><%= group.fpas %></p>
               </div>
-              <span class="tl-chip tl-chip--info"><%= group.rows.size %> codigos</span>
+              <span class="tl-chip tl-chip--info"><%= group.rows.size %> linhas</span>
             </div>
 
             <div class="mt-4 grid gap-2">
@@ -80,7 +92,7 @@
     <section class="tl-panel overflow-hidden">
       <div class="tl-panel-header">
         <h2 class="tl-section-title">Trilha de evidencia</h2>
-        <p class="tl-panel-subtitle">Fonte, recibo e arquivo XML associados ao quadro consolidado.</p>
+        <p class="tl-panel-subtitle">Fonte, recibo e origem associados ao historico carregado.</p>
       </div>
       <div class="divide-y divide-white/10">
         <% @snapshot.rows.first(6).each do |row| %>
@@ -92,7 +104,7 @@
             <p class="tl-copy mt-2 text-xs"><%= row.enquadramento_eps_fpas.presence || "sem enquadramento informado" %></p>
             <div class="mt-3 grid gap-2 text-xs text-slate-300 sm:grid-cols-2">
               <p><span class="tl-muted">Recibo:</span> <span class="tl-mono"><%= row.nr_recibo.presence || "-" %></span></p>
-              <p><span class="tl-muted">XML:</span> <span class="tl-mono"><%= row.xml_path.presence || "-" %></span></p>
+              <p><span class="tl-muted">Origem:</span> <span class="tl-mono"><%= row.xml_path.presence || "-" %></span></p>
             </div>
           </article>
         <% end %>
@@ -116,8 +128,8 @@
   <section class="tl-panel overflow-hidden">
     <div class="tl-panel-header flex flex-col gap-2 lg:flex-row lg:items-center lg:justify-between">
       <div>
-        <h2 class="tl-section-title">Quadro de lotacoes</h2>
-        <p class="tl-panel-subtitle">Um registro consolidado por codigo, priorizando a vigencia atual.</p>
+        <h2 class="tl-section-title">Historico de lotacoes</h2>
+        <p class="tl-panel-subtitle">Linhas carregadas do portal/CSV, incluindo vigentes, historicas e excluidas.</p>
       </div>
       <span class="tl-chip tl-chip--ghost"><%= @snapshot.rows.size %> linhas</span>
     </div>
@@ -129,7 +141,9 @@
             <th>Codigo</th>
             <th>Vigencia</th>
             <th>Status</th>
+            <th>Evento</th>
             <th>Tipo</th>
+            <th>Inscricao</th>
             <th>FPAS / EPS</th>
             <th>Terceiros</th>
             <th>Suspensos</th>
@@ -143,7 +157,9 @@
               <td class="whitespace-nowrap tl-mono text-xs font-bold text-white"><%= row.codigo_lotacao %></td>
               <td class="whitespace-nowrap tl-mono text-xs"><%= row.ini_valid.presence || "-" %> -> <%= row.fim_valid_label %></td>
               <td><span class="<%= row.atual? ? "tl-badge tl-badge--success" : "tl-badge tl-badge--muted" %>"><%= row.registro_atual.presence || "-" %></span></td>
+              <td><span class="<%= row.acao_evento == "exclusao" ? "tl-badge tl-badge--danger" : "tl-badge tl-badge--info" %>"><%= row.acao_evento.presence || "-" %></span></td>
               <td class="whitespace-nowrap"><span class="tl-chip"><%= row.tp_lotacao.presence || "-" %></span></td>
+              <td class="whitespace-nowrap tl-mono text-xs"><%= [row.lotacao_tp_insc, row.lotacao_nr_insc].reject(&:blank?).join(" ").presence || "-" %></td>
               <td class="min-w-80"><p class="font-semibold text-white"><%= row.enquadramento_eps_fpas.presence || "-" %></p></td>
               <td class="whitespace-nowrap tl-mono text-xs"><%= row.cod_tercs.presence || "-" %></td>
               <td class="whitespace-nowrap tl-mono text-xs"><%= row.cod_tercs_suspensos.presence || "-" %></td>
