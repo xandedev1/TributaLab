@@ -12,6 +12,8 @@ module Esocial
 		Metric = Struct.new(:label, :value, :detail, keyword_init: true)
 		FpasGroup = Struct.new(:fpas, :rows, :cod_tercs, :suspensos, keyword_init: true)
 		Row = Struct.new(
+			:empresa_tp_insc,
+			:empresa_nr_insc,
 			:codigo_lotacao,
 			:ini_valid,
 			:fim_valid,
@@ -26,7 +28,10 @@ module Esocial
 			:processos_judiciais,
 			:lotacao_tp_insc,
 			:lotacao_nr_insc,
+			:aliq_rat,
+			:fap,
 			:nr_recibo,
+			:event_id,
 			:source_path,
 			:xml_path,
 			keyword_init: true
@@ -158,6 +163,8 @@ module Esocial
 
 		def build_row(attributes)
 			Row.new(
+				empresa_tp_insc: attributes["empresa_tp_insc"].to_s,
+				empresa_nr_insc: attributes["empresa_nr_insc"].to_s,
 				codigo_lotacao: attributes["codigo_lotacao"].to_s,
 				ini_valid: attributes["ini_valid"].to_s,
 				fim_valid: attributes["fim_valid"].to_s,
@@ -172,7 +179,10 @@ module Esocial
 				processos_judiciais: attributes["processos_judiciais"].to_s,
 				lotacao_tp_insc: attributes["lotacao_tp_insc"].to_s,
 				lotacao_nr_insc: attributes["lotacao_nr_insc"].to_s,
+				aliq_rat: attributes["aliq_rat"].presence || attributes["aliqRat"].presence || attributes["aliquota_gilrat"].to_s,
+				fap: attributes["fap"].to_s,
 				nr_recibo: attributes["nr_recibo"].to_s,
+				event_id: attributes["event_id"].to_s,
 				source_path: attributes["source_path"].to_s,
 				xml_path: attributes["xml_path"].to_s
 			)

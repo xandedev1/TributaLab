@@ -95,8 +95,7 @@
               <%= link_to "Rubricas CTE", rubricas_cte_root_path, class: "whitespace-nowrap #{request.path.start_with?(rubricas_cte_root_path, rubricas_cte_chain_walk_path) ? "tl-chip tl-chip--info" : "tl-chip"}" %>
               <%= link_to "eSocial", esocial_certificado_path, class: "whitespace-nowrap #{shell_nav_active?(esocial_certificado_path) ? "tl-chip tl-chip--info" : "tl-chip"}" %>
               <%= link_to "Sync eSocial", esocial_sync_path, class: "whitespace-nowrap #{shell_nav_active?(esocial_sync_path) ? "tl-chip tl-chip--info" : "tl-chip"}" %>
-              <%= link_to "Lotacoes", esocial_lotacoes_path, class: "whitespace-nowrap #{shell_nav_active?(esocial_lotacoes_path) ? "tl-chip tl-chip--info" : "tl-chip"}" %>
-              <%= link_to "Estab/Obras", esocial_estabelecimentos_obras_path, class: "whitespace-nowrap #{shell_nav_active?(esocial_estabelecimentos_obras_path) ? "tl-chip tl-chip--info" : "tl-chip"}" %>
+              <%= link_to "Tabelas Empresa", esocial_company_tables_path, class: "whitespace-nowrap #{shell_nav_active?(esocial_company_tables_path) ? "tl-chip tl-chip--info" : "tl-chip"}" %>
               <%= link_to "Base Legal", legal_basis_path, class: "whitespace-nowrap #{shell_nav_active?(legal_basis_path) ? "tl-chip tl-chip--info" : "tl-chip"}" %>
               <%= link_to "Configuracoes", tax_parameters_path, class: "whitespace-nowrap #{request.path.start_with?(tax_parameters_path, assumptions_path) ? "tl-chip tl-chip--info" : "tl-chip"}" %>
             </nav>

@@ -38,6 +38,9 @@ Rails.application.routes.draw do
     resources :company_authorizations, only: [:create, :destroy]
     get "sync", to: "sync#index", as: :sync
     post "sync/runs", to: "sync_runs#create", as: :sync_runs
+    get "tabelas_empresa", to: "company_tables#index", as: :company_tables
+    get "tabelas_empresa/s1005.xlsx", to: "company_tables#s1005_xlsx", as: :company_tables_s1005_xlsx
+    get "tabelas_empresa/s1020.xlsx", to: "company_tables#s1020_xlsx", as: :company_tables_s1020_xlsx
     get "lotacoes", to: "lotacoes#index", as: :lotacoes
     get "estabelecimentos_obras", to: "estabelecimentos_obras#index", as: :estabelecimentos_obras
   end

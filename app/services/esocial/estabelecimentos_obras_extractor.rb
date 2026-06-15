@@ -191,7 +191,8 @@ module Esocial
 			acao_evento = action_node&.name.to_s
 			ini_valid = text(ide_estab_node, "iniValid")
 			fim_valid = text(ide_estab_node, "fimValid")
-			aliquota_gilrat = text(dados_estab_node, "aliqGilrat").presence || text(descendant(document, "infoEstabelecimento"), "aliqRat")
+			aliq_gilrat_node = descendant(dados_estab_node, "aliqGilrat")
+			aliquota_gilrat = text(aliq_gilrat_node, "aliqRat").presence || text(dados_estab_node, "aliqRat").presence || text(descendant(document, "infoEstabelecimento"), "aliqRat")
 
 			@rows << Row.new(
 				empresa_tp_insc: text(ide_empregador_node, "tpInsc"),

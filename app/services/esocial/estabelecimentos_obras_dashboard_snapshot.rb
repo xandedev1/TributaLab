@@ -1,4 +1,5 @@
 require "csv"
+require "rexml/document"
 
 module Esocial
 	class EstabelecimentosObrasDashboardSnapshot
@@ -38,12 +39,23 @@ module Esocial
 			:aliquota_rat_ajustada,
 			:data_recepcao,
 			:nr_recibo,
+			:event_id,
 			:source_path,
 			:xml_path,
 			keyword_init: true
 		) do
+			MISSING_XML_VALUE = "nao consta no XML".freeze
+
 			def atual?
 				registro_atual == "sim"
+			end
+
+			def aliquota_fap_label
+				aliquota_fap.presence || MISSING_XML_VALUE
+			end
+
+			def aliquota_gilrat_label
+				aliquota_gilrat.presence || MISSING_XML_VALUE
 			end
 
 			def fim_valid_label
@@ -76,17 +88,18 @@ module Esocial
 
 		def all_rows
 			@all_rows ||= begin
-				loaded = events_csv_path ? csv_rows(events_csv_path) : []
-				loaded = csv_rows(current_csv_path) if loaded.empty? && current_csv_path
-				loaded
+				loaded = event_csv_paths.flat_map { |path| csv_rows(path) }
+				loaded = current_csv_paths.flat_map { |path| csv_rows(path) } if loaded.empty?
+				deduplicate_rows(loaded)
 			end
 		end
 
 		def current_rows
 			@current_rows ||= begin
-				loaded = current_csv_path ? csv_rows(current_csv_path) : []
+				loaded = current_csv_paths.flat_map { |path| csv_rows(path) }
 				loaded = all_rows.select(&:atual?) if loaded.empty?
-				loaded.any? ? loaded : [ all_rows.max_by { |row| row.ini_valid.to_s } ].compact
+				loaded = loaded.any? ? loaded : [ all_rows.max_by { |row| row.ini_valid.to_s } ].compact
+				deduplicate_rows(loaded)
 			end
 		end
 
@@ -106,7 +119,8 @@ module Esocial
 		end
 
 		def source_label
-			return "eSocial oficial" if events_csv_path == OFFICIAL_EVENTS_CSV_PATH
+			return "eSocial oficial + XML local" if event_csv_paths.include?(OFFICIAL_EVENTS_CSV_PATH) && event_csv_paths.size > 1
+			return "eSocial oficial" if event_csv_paths == [ OFFICIAL_EVENTS_CSV_PATH ]
 			return "S-5011 oficial" if derived_from_s5011?
 			return "S-1005 XML" if direct_s1005_xml?
 			return "CSV extraido" if data_from_csv?
@@ -116,17 +130,17 @@ module Esocial
 		end
 
 		def source_detail
-			if events_csv_path
-				relative_path(events_csv_path)
-			elsif current_csv_path
-				relative_path(current_csv_path)
+			if event_csv_paths.any?
+				event_csv_paths.map { |path| relative_path(path) }.join(" + ")
+			elsif current_csv_paths.any?
+				current_csv_paths.map { |path| relative_path(path) }.join(" + ")
 			else
 				"tmp/estabelecimentos_s1005/estabelecimentos_s1005_eventos.csv ausente"
 			end
 		end
 
 		def data_from_csv?
-			(events_csv_path && csv_rows(events_csv_path).any?) || (current_csv_path && csv_rows(current_csv_path).any?)
+			event_csv_paths.any? || current_csv_paths.any?
 		end
 
 		def vigente_em_label
@@ -134,7 +148,7 @@ module Esocial
 		end
 
 		def events_count
-			return count_csv_rows(events_csv_path) if events_csv_path
+			return event_csv_paths.sum { |path| count_csv_rows(path) } if event_csv_paths.any?
 
 			all_rows.size
 		end
@@ -159,16 +173,33 @@ module Esocial
 			end
 		end
 
-		def events_csv_path
-			@events_csv_path ||= [ OFFICIAL_EVENTS_CSV_PATH, EVENTS_CSV_PATH ].find { |path| path.exist? && csv_rows(path).any? }
+		def event_csv_paths
+			@event_csv_paths ||= s1005_csv_paths("estabelecimentos_s1005_eventos.csv")
 		end
 
-		def current_csv_path
-			@current_csv_path ||= [ OFFICIAL_CURRENT_CSV_PATH, CURRENT_CSV_PATH ].find { |path| path.exist? && csv_rows(path).any? }
+		def current_csv_paths
+			@current_csv_paths ||= s1005_csv_paths("estabelecimentos_s1005_quadro.csv")
 		end
 
 		def any_source_file_exists?
-			[ OFFICIAL_EVENTS_CSV_PATH, EVENTS_CSV_PATH, OFFICIAL_CURRENT_CSV_PATH, CURRENT_CSV_PATH ].any?(&:exist?)
+			s1005_csv_paths("estabelecimentos_s1005_eventos.csv", require_rows: false).any? ||
+				s1005_csv_paths("estabelecimentos_s1005_quadro.csv", require_rows: false).any?
+		end
+
+		def s1005_csv_paths(filename, require_rows: true)
+			paths = Rails.root.glob("tmp/estabelecimentos_s1005*/#{filename}").sort_by do |path|
+				[ path.to_s.include?("_oficial") ? 0 : 1, path.to_s ]
+			end
+			return paths.select(&:exist?) unless require_rows
+
+			paths.select { |path| path.exist? && csv_rows(path).any? }
+		end
+
+		def deduplicate_rows(rows)
+			rows.each_with_object({}) do |row, unique_rows|
+				key = row.event_id.presence || [ row.estabelecimento_chave, row.ini_valid, row.fim_valid, row.nr_recibo ].join("|")
+				unique_rows[key] = row
+			end.values
 		end
 
 		def csv_rows(path)
@@ -196,11 +227,12 @@ module Esocial
 				registro_atual: attributes["registro_atual"].to_s,
 				acao_evento: attributes["acao_evento"].to_s,
 				cnae_preponderante: attributes["cnae_preponderante"].to_s,
-				aliquota_gilrat: attributes["aliquota_gilrat"].to_s,
+				aliquota_gilrat: attributes["aliquota_gilrat"].presence || retorno_aliq_rat(attributes["event_id"]).to_s,
 				aliquota_fap: attributes["aliquota_fap"].to_s,
 				aliquota_rat_ajustada: attributes["aliquota_rat_ajustada"].to_s,
 				data_recepcao: attributes["data_recepcao"].to_s,
 				nr_recibo: attributes["nr_recibo"].to_s,
+				event_id: attributes["event_id"].to_s,
 				source_path: attributes["source_path"].to_s,
 				xml_path: attributes["xml_path"].to_s
 			)
@@ -224,6 +256,28 @@ module Esocial
 			all_rows.size
 		end
 
+		def retorno_aliq_rat(event_id)
+			return "" if event_id.blank?
+
+			retorno_aliq_rat_by_event_id[event_id.to_s].to_s
+		end
+
+		def retorno_aliq_rat_by_event_id
+			@retorno_aliq_rat_by_event_id ||= begin
+				Rails.root.glob("storage/esocial_official/cte/**/download_recibos_*.xml").each_with_object({}) do |path, values|
+					document = REXML::Document.new(File.binread(path))
+					descendants(document, "arquivo").each do |arquivo_node|
+						event_node = descendant(arquivo_node, "evt")
+						event_id = event_node&.attributes&.[]("Id").to_s.presence || descendant(arquivo_node, "evtTabEstab")&.attributes&.[]("Id").to_s
+						aliq_rat = text(descendant(arquivo_node, "infoEstabelecimento"), "aliqRat")
+						values[event_id] = aliq_rat if event_id.present? && aliq_rat.present?
+					end
+				rescue StandardError
+					next
+				end
+			end
+		end
+
 		def derived_from_s5011?
 			all_rows.any? && all_rows.all? { |row| row.acao_evento == "totalizador S-5011" }
 		end
@@ -236,6 +290,38 @@ module Esocial
 			path.relative_path_from(Rails.root).to_s
 		rescue ArgumentError
 			path.to_s
+		end
+
+		def descendant(node, name)
+			return nil unless node
+
+			node.each_element do |element|
+				return element if local_name(element) == name
+
+				found = descendant(element, name)
+				return found if found
+			end
+
+			nil
+		end
+
+		def descendants(node, name, matches = [])
+			return matches unless node
+
+			node.each_element do |element|
+				matches << element if local_name(element) == name
+				descendants(element, name, matches)
+			end
+
+			matches
+		end
+
+		def text(node, name)
+			descendant(node, name)&.text.to_s.strip
+		end
+
+		def local_name(element)
+			element.name.to_s.split(":").last
 		end
 	end
 end

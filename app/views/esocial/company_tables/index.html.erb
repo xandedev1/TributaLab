@@ -1,0 +1,113 @@
+<% content_for :title, "Tabelas Empresa - Prev Lab" %>
+
+<div class="mx-auto flex w-full max-w-[96rem] flex-col gap-6">
+  <header class="tl-command-bar">
+    <div class="grid gap-5 lg:grid-cols-[1fr_auto] lg:items-end">
+      <div>
+        <p class="tl-kicker">eSocial / banco de dados</p>
+        <h1 class="tl-page-title tl-page-title--compact">Tabelas Empresa</h1>
+        <p class="tl-page-subtitle mt-3 max-w-3xl">Visualizacao do banco de dados da empresa extraido dos XMLs oficiais locais.</p>
+      </div>
+      <div class="flex flex-wrap gap-2 lg:justify-end">
+        <%= link_to "XLSX S-1005", esocial_company_tables_s1005_xlsx_path, class: button_classes(:danger) %>
+        <%= link_to "XLSX S-1020", esocial_company_tables_s1020_xlsx_path, class: button_classes(:danger) %>
+      </div>
+    </div>
+  </header>
+
+  <section class="grid gap-5">
+    <article class="tl-panel overflow-hidden">
+      <div class="tl-panel-header flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
+        <div>
+          <p class="tl-kicker">S-1005</p>
+          <h2 class="tl-section-title">Banco de dados S-1005</h2>
+          <p class="tl-panel-subtitle">Id, tpInsc, nrInsc, cnaePrep, fap, aliqRat, iniValid, fimValid.</p>
+        </div>
+        <%= link_to "Baixar XLSX", esocial_company_tables_s1005_xlsx_path, class: button_classes(:danger) %>
+      </div>
+
+      <div class="px-5 pb-5">
+        <div class="tl-table-wrap">
+          <table class="tl-table">
+            <thead>
+              <tr>
+                <th>Id</th>
+                <th>tpInsc</th>
+                <th>nrInsc</th>
+                <th>cnaePrep</th>
+                <th>fap</th>
+                <th>aliqRat</th>
+                <th>iniValid</th>
+                <th>fimValid</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% @estabelecimentos_snapshot.rows.each do |row| %>
+                <tr>
+                  <td class="max-w-72 truncate tl-mono text-xs font-bold text-white" title="<%= row.event_id %>"><%= row.event_id.presence || "-" %></td>
+                  <td class="whitespace-nowrap tl-mono text-xs"><%= row.estabelecimento_tp_insc.presence || "-" %></td>
+                  <td class="whitespace-nowrap tl-mono text-xs"><%= row.estabelecimento_nr_insc.presence || "-" %></td>
+                  <td class="whitespace-nowrap tl-mono text-xs"><%= row.cnae_preponderante.presence || "-" %></td>
+                  <td class="whitespace-nowrap tl-mono text-xs font-bold text-white"><%= row.aliquota_fap_label %></td>
+                  <td class="whitespace-nowrap tl-mono text-xs"><%= row.aliquota_gilrat_label %></td>
+                  <td class="whitespace-nowrap tl-mono text-xs"><%= row.ini_valid.presence || "-" %></td>
+                  <td class="whitespace-nowrap tl-mono text-xs"><%= row.fim_valid.presence || "-" %></td>
+                </tr>
+              <% end %>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </article>
+
+    <article class="tl-panel overflow-hidden">
+      <div class="tl-panel-header flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
+        <div>
+          <p class="tl-kicker">S-1020</p>
+          <h2 class="tl-section-title">Banco de dados S-1020</h2>
+          <p class="tl-panel-subtitle">Id, tpInsc, nrInsc, tpLotacao, codLotacao, fpas, codTercs, aliqRat, fap, iniValid, fimValid.</p>
+        </div>
+        <%= link_to "Baixar XLSX", esocial_company_tables_s1020_xlsx_path, class: button_classes(:danger) %>
+      </div>
+
+      <div class="px-5 pb-5">
+        <div class="tl-table-wrap">
+          <table class="tl-table">
+            <thead>
+              <tr>
+                <th>Id</th>
+                <th>tpInsc</th>
+                <th>nrInsc</th>
+                <th>tpLotacao</th>
+                <th>codLotacao</th>
+                <th>fpas</th>
+                <th>codTercs</th>
+                <th>aliqRat</th>
+                <th>fap</th>
+                <th>iniValid</th>
+                <th>fimValid</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% @lotacoes_snapshot.rows.each do |row| %>
+                <tr>
+                  <td class="max-w-72 truncate tl-mono text-xs font-bold text-white" title="<%= row.event_id %>"><%= row.event_id.presence || "-" %></td>
+                  <td class="whitespace-nowrap tl-mono text-xs"><%= row.empresa_tp_insc.presence || row.lotacao_tp_insc.presence || "-" %></td>
+                  <td class="whitespace-nowrap tl-mono text-xs"><%= row.empresa_nr_insc.presence || row.lotacao_nr_insc.presence || "-" %></td>
+                  <td class="whitespace-nowrap tl-mono text-xs"><%= row.tp_lotacao.presence || "-" %></td>
+                  <td class="whitespace-nowrap tl-mono text-xs font-bold text-white"><%= row.codigo_lotacao.presence || "-" %></td>
+                  <td class="whitespace-nowrap tl-mono text-xs font-bold text-white"><%= row.fpas.presence || "-" %></td>
+                  <td class="whitespace-nowrap tl-mono text-xs"><%= row.cod_tercs.presence || "-" %></td>
+                  <td class="whitespace-nowrap tl-mono text-xs"><%= row.aliq_rat.presence || "-" %></td>
+                  <td class="whitespace-nowrap tl-mono text-xs"><%= row.fap.presence || "-" %></td>
+                  <td class="whitespace-nowrap tl-mono text-xs"><%= row.ini_valid.presence || "-" %></td>
+                  <td class="whitespace-nowrap tl-mono text-xs"><%= row.fim_valid.presence || "-" %></td>
+                </tr>
+              <% end %>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </article>
+  </section>
+</div>
