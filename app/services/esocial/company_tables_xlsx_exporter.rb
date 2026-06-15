@@ -67,7 +67,7 @@ module Esocial
 						row.aliquota_fap_label,
 						row.aliquota_gilrat_label,
 						row.ini_valid,
-						row.fim_valid
+						row.fim_valid_label
 					]
 				end
 			).call
@@ -88,7 +88,7 @@ module Esocial
 						row.aliq_rat,
 						row.fap,
 						row.ini_valid,
-						row.fim_valid
+						row.fim_valid_label
 					]
 				end
 			).call

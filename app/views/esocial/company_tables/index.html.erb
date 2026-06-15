@@ -23,7 +23,9 @@
           <h2 class="tl-section-title">Banco de dados S-1005</h2>
           <p class="tl-panel-subtitle">Id, tpInsc, nrInsc, cnaePrep, fap, aliqRat, iniValid, fimValid.</p>
         </div>
-        <%= link_to "Baixar XLSX", esocial_company_tables_s1005_xlsx_path, class: button_classes(:danger) %>
+        <div class="flex flex-wrap gap-2 lg:justify-end">
+          <%= link_to "Baixar XLSX", esocial_company_tables_s1005_xlsx_path, class: button_classes(:danger) %>
+        </div>
       </div>
 
       <div class="px-5 pb-5">
@@ -39,6 +41,7 @@
                 <th>aliqRat</th>
                 <th>iniValid</th>
                 <th>fimValid</th>
+                <th>XML</th>
               </tr>
             </thead>
             <tbody>
@@ -51,7 +54,8 @@
                   <td class="whitespace-nowrap tl-mono text-xs font-bold text-white"><%= row.aliquota_fap_label %></td>
                   <td class="whitespace-nowrap tl-mono text-xs"><%= row.aliquota_gilrat_label %></td>
                   <td class="whitespace-nowrap tl-mono text-xs"><%= row.ini_valid.presence || "-" %></td>
-                  <td class="whitespace-nowrap tl-mono text-xs"><%= row.fim_valid.presence || "-" %></td>
+                  <td class="whitespace-nowrap tl-mono text-xs"><%= row.fim_valid_label %></td>
+                  <td class="whitespace-nowrap"><%= link_to "XML", esocial_company_tables_s1005_xml_path(event_id: row.event_id), class: "#{button_classes(:danger)} text-xs" %></td>
                 </tr>
               <% end %>
             </tbody>
@@ -67,7 +71,9 @@
           <h2 class="tl-section-title">Banco de dados S-1020</h2>
           <p class="tl-panel-subtitle">Id, tpInsc, nrInsc, tpLotacao, codLotacao, fpas, codTercs, aliqRat, fap, iniValid, fimValid.</p>
         </div>
-        <%= link_to "Baixar XLSX", esocial_company_tables_s1020_xlsx_path, class: button_classes(:danger) %>
+        <div class="flex flex-wrap gap-2 lg:justify-end">
+          <%= link_to "Baixar XLSX", esocial_company_tables_s1020_xlsx_path, class: button_classes(:danger) %>
+        </div>
       </div>
 
       <div class="px-5 pb-5">
@@ -86,6 +92,7 @@
                 <th>fap</th>
                 <th>iniValid</th>
                 <th>fimValid</th>
+                <th>XML</th>
               </tr>
             </thead>
             <tbody>
@@ -101,7 +108,8 @@
                   <td class="whitespace-nowrap tl-mono text-xs"><%= row.aliq_rat.presence || "-" %></td>
                   <td class="whitespace-nowrap tl-mono text-xs"><%= row.fap.presence || "-" %></td>
                   <td class="whitespace-nowrap tl-mono text-xs"><%= row.ini_valid.presence || "-" %></td>
-                  <td class="whitespace-nowrap tl-mono text-xs"><%= row.fim_valid.presence || "-" %></td>
+                  <td class="whitespace-nowrap tl-mono text-xs"><%= row.fim_valid_label %></td>
+                  <td class="whitespace-nowrap"><%= link_to "XML", esocial_company_tables_s1020_xml_path(event_id: row.event_id), class: "#{button_classes(:danger)} text-xs" %></td>
                 </tr>
               <% end %>
             </tbody>

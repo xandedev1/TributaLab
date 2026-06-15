@@ -44,7 +44,7 @@ module Esocial
 			:xml_path,
 			keyword_init: true
 		) do
-			MISSING_XML_VALUE = "nao consta no XML".freeze
+			MISSING_XML_VALUE = "nao informado no S-1005".freeze
 
 			def atual?
 				registro_atual == "sim"
@@ -174,31 +174,21 @@ module Esocial
 		end
 
 		def event_csv_paths
-			@event_csv_paths ||= s1005_csv_paths("estabelecimentos_s1005_eventos.csv")
+			@event_csv_paths ||= [ OFFICIAL_EVENTS_CSV_PATH, EVENTS_CSV_PATH ].select { |path| path.exist? && csv_rows(path).any? }
 		end
 
 		def current_csv_paths
-			@current_csv_paths ||= s1005_csv_paths("estabelecimentos_s1005_quadro.csv")
+			@current_csv_paths ||= [ OFFICIAL_CURRENT_CSV_PATH, CURRENT_CSV_PATH ].select { |path| path.exist? && csv_rows(path).any? }
 		end
 
 		def any_source_file_exists?
-			s1005_csv_paths("estabelecimentos_s1005_eventos.csv", require_rows: false).any? ||
-				s1005_csv_paths("estabelecimentos_s1005_quadro.csv", require_rows: false).any?
-		end
-
-		def s1005_csv_paths(filename, require_rows: true)
-			paths = Rails.root.glob("tmp/estabelecimentos_s1005*/#{filename}").sort_by do |path|
-				[ path.to_s.include?("_oficial") ? 0 : 1, path.to_s ]
-			end
-			return paths.select(&:exist?) unless require_rows
-
-			paths.select { |path| path.exist? && csv_rows(path).any? }
+			[ OFFICIAL_EVENTS_CSV_PATH, EVENTS_CSV_PATH, OFFICIAL_CURRENT_CSV_PATH, CURRENT_CSV_PATH ].any?(&:exist?)
 		end
 
 		def deduplicate_rows(rows)
 			rows.each_with_object({}) do |row, unique_rows|
 				key = row.event_id.presence || [ row.estabelecimento_chave, row.ini_valid, row.fim_valid, row.nr_recibo ].join("|")
-				unique_rows[key] = row
+				unique_rows[key] ||= row
 			end.values
 		end
 
