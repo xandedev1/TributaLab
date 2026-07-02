@@ -42,6 +42,8 @@ module Esocial
 			:event_id,
 			:source_path,
 			:xml_path,
+			:xml_content,
+			:xml_filename,
 			keyword_init: true
 		) do
 			MISSING_XML_VALUE = "nao informado no S-1005".freeze
@@ -88,7 +90,8 @@ module Esocial
 
 		def all_rows
 			@all_rows ||= begin
-				loaded = event_csv_paths.flat_map { |path| csv_rows(path) }
+				loaded = db_rows
+				loaded = event_csv_paths.flat_map { |path| csv_rows(path) } if loaded.empty?
 				loaded = current_csv_paths.flat_map { |path| csv_rows(path) } if loaded.empty?
 				deduplicate_rows(loaded)
 			end
@@ -119,6 +122,7 @@ module Esocial
 		end
 
 		def source_label
+			return "Banco Supabase" if db_rows.any?
 			return "eSocial oficial + XML local" if event_csv_paths.include?(OFFICIAL_EVENTS_CSV_PATH) && event_csv_paths.size > 1
 			return "eSocial oficial" if event_csv_paths == [ OFFICIAL_EVENTS_CSV_PATH ]
 			return "S-5011 oficial" if derived_from_s5011?
@@ -130,7 +134,9 @@ module Esocial
 		end
 
 		def source_detail
-			if event_csv_paths.any?
+			if db_rows.any?
+				"esocial_company_table_rows/S-1005"
+			elsif event_csv_paths.any?
 				event_csv_paths.map { |path| relative_path(path) }.join(" + ")
 			elsif current_csv_paths.any?
 				current_csv_paths.map { |path| relative_path(path) }.join(" + ")
@@ -140,7 +146,7 @@ module Esocial
 		end
 
 		def data_from_csv?
-			event_csv_paths.any? || current_csv_paths.any?
+			db_rows.any? || event_csv_paths.any? || current_csv_paths.any?
 		end
 
 		def vigente_em_label
@@ -170,6 +176,16 @@ module Esocial
 			tokens = query.downcase.split
 			base.select do |row|
 				tokens.all? { |token| row.searchable_text.include?(token) }
+			end
+		end
+
+		def db_rows
+			@db_rows ||= begin
+				return [] unless CompanyTableRow.available?
+
+				CompanyTableRow.where(event_type: "s1005").order(:event_id).map do |record|
+					build_row(record.snapshot_attributes)
+				end
 			end
 		end
 
@@ -224,7 +240,9 @@ module Esocial
 				nr_recibo: attributes["nr_recibo"].to_s,
 				event_id: attributes["event_id"].to_s,
 				source_path: attributes["source_path"].to_s,
-				xml_path: attributes["xml_path"].to_s
+				xml_path: attributes["xml_path"].to_s,
+				xml_content: attributes["xml_content"].to_s,
+				xml_filename: attributes["xml_filename"].to_s
 			)
 		end
 

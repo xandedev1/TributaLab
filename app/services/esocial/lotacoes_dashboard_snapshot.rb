@@ -34,6 +34,8 @@ module Esocial
 			:event_id,
 			:source_path,
 			:xml_path,
+			:xml_content,
+			:xml_filename,
 			keyword_init: true
 		) do
 			def atual?
@@ -66,7 +68,8 @@ module Esocial
 
 		def all_rows
 			@all_rows ||= begin
-				loaded = selected_events_path ? csv_rows(selected_events_path) : []
+				loaded = db_rows
+				loaded = selected_events_path ? csv_rows(selected_events_path) : [] if loaded.empty?
 				loaded = csv_rows(selected_current_path) if loaded.empty? && selected_current_path
 				loaded
 			end
@@ -100,6 +103,7 @@ module Esocial
 		end
 
 		def source_label
+			return "Banco Supabase" if db_rows.any?
 			return "eSocial oficial" if selected_events_path == OFFICIAL_EVENTS_CSV_PATH
 			return "XML CTE ZIP" if selected_events_path == CTE_ZIP_EVENTS_CSV_PATH
 			return "CSV capturado" if selected_events_path == EVENTS_CSV_PATH
@@ -110,6 +114,7 @@ module Esocial
 		end
 
 		def source_detail
+			return "esocial_company_table_rows/S-1020" if db_rows.any?
 			return relative_path(selected_events_path) if selected_events_path
 			return relative_path(selected_current_path) if selected_current_path
 
@@ -117,7 +122,7 @@ module Esocial
 		end
 
 		def data_from_csv?
-			all_rows.any?
+			db_rows.any? || all_rows.any?
 		end
 
 		def vigente_em_label
@@ -132,6 +137,16 @@ module Esocial
 			tokens = query.downcase.split
 			all_rows.select do |row|
 				tokens.all? { |token| row.searchable_text.include?(token) }
+			end
+		end
+
+		def db_rows
+			@db_rows ||= begin
+				return [] unless CompanyTableRow.available?
+
+				CompanyTableRow.where(event_type: "s1020").order(:event_id).map do |record|
+					build_row(record.snapshot_attributes)
+				end
 			end
 		end
 
@@ -184,7 +199,9 @@ module Esocial
 				nr_recibo: attributes["nr_recibo"].to_s,
 				event_id: attributes["event_id"].to_s,
 				source_path: attributes["source_path"].to_s,
-				xml_path: attributes["xml_path"].to_s
+				xml_path: attributes["xml_path"].to_s,
+				xml_content: attributes["xml_content"].to_s,
+				xml_filename: attributes["xml_filename"].to_s
 			)
 		end
 

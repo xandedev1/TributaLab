@@ -44,9 +44,15 @@ module Esocial
 			row = rows.find { |candidate| candidate.event_id.to_s == params[:event_id].to_s }
 			path = row && Pathname.new(row.source_path.to_s)
 
-			return render plain: "XML original nao encontrado para a linha selecionada.", status: :not_found unless path&.file? && path.extname.casecmp(".xml").zero?
+			if path&.file? && path.extname.casecmp(".xml").zero?
+				return send_file(path, filename: xml_filename(row.event_id, event_type), type: XML_MIME_TYPE, disposition: "attachment")
+			end
 
-			send_file(path, filename: xml_filename(row.event_id, event_type), type: XML_MIME_TYPE, disposition: "attachment")
+			if row&.xml_content.present?
+				return send_data(row.xml_content, filename: row.xml_filename.presence || xml_filename(row.event_id, event_type), type: XML_MIME_TYPE, disposition: "attachment")
+			end
+
+			render plain: "XML original nao encontrado para a linha selecionada.", status: :not_found
 		end
 
 		def xml_filename(event_id, event_type)

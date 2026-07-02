@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_06_12_120000) do
+ActiveRecord::Schema[8.1].define(version: 2026_06_15_183500) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -120,6 +120,19 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_12_120000) do
     t.index ["esocial_certificate_id", "target_company_cnpj"], name: "idx_esocial_authorizations_cert_company"
     t.index ["esocial_certificate_id"], name: "index_esocial_company_authorizations_on_esocial_certificate_id"
     t.index ["target_company_cnpj", "status"], name: "idx_esocial_authorizations_company_status"
+  end
+
+  create_table "esocial_company_table_rows", force: :cascade do |t|
+    t.jsonb "attributes_payload", default: {}, null: false
+    t.datetime "created_at", null: false
+    t.string "event_id", null: false
+    t.string "event_type", null: false
+    t.string "source_path"
+    t.datetime "updated_at", null: false
+    t.text "xml_content"
+    t.string "xml_filename"
+    t.index ["event_type", "event_id"], name: "index_esocial_company_table_rows_on_event_type_and_event_id", unique: true
+    t.index ["event_type"], name: "index_esocial_company_table_rows_on_event_type"
   end
 
   create_table "esocial_natures", force: :cascade do |t|
