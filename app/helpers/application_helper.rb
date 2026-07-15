@@ -24,6 +24,13 @@ module ApplicationHelper
 				]
 			},
 			{
+				label: "Apuracao INSS",
+				items: [
+					{ label: "Dashboard", path: inss_dashboard_path },
+					{ label: "Importar folhas", path: new_inss_import_path }
+				]
+			},
+			{
 				label: "Tabelas Empresa",
 				items: [
 					{ label: "eSocial", path: esocial_certificado_path },
@@ -99,6 +106,10 @@ module ApplicationHelper
 
 	def panel_classes
 		"tl-card"
+	end
+
+	def inss_money(value)
+		number_to_currency(value.to_f, unit: "R$ ", separator: ",", delimiter: ".")
 	end
 
 	def status_label(status)

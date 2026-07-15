@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_06_15_183500) do
+ActiveRecord::Schema[8.1].define(version: 2026_07_06_120000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -177,6 +177,64 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_15_183500) do
     t.integer "used_queries", default: 0, null: false
     t.index ["company_cnpj", "created_at"], name: "index_esocial_sync_runs_on_company_cnpj_and_created_at"
     t.index ["status", "created_at"], name: "index_esocial_sync_runs_on_status_and_created_at"
+  end
+
+  create_table "inss_payroll_employees", force: :cascade do |t|
+    t.date "admissao"
+    t.string "cargo"
+    t.string "competencia"
+    t.string "contrato_codigo"
+    t.string "contrato_nome"
+    t.datetime "created_at", null: false
+    t.string "empresa"
+    t.bigint "inss_payroll_import_id", null: false
+    t.decimal "liquido", precision: 15, scale: 2
+    t.string "matricula"
+    t.string "nome"
+    t.string "orgao_codigo"
+    t.string "orgao_nome"
+    t.date "rescisao"
+    t.decimal "salario", precision: 15, scale: 2
+    t.string "situacao_funcional"
+    t.decimal "total_descontos", precision: 15, scale: 2
+    t.decimal "total_proventos", precision: 15, scale: 2
+    t.datetime "updated_at", null: false
+    t.index ["competencia"], name: "index_inss_payroll_employees_on_competencia"
+    t.index ["contrato_codigo"], name: "index_inss_payroll_employees_on_contrato_codigo"
+    t.index ["inss_payroll_import_id"], name: "index_inss_payroll_employees_on_inss_payroll_import_id"
+    t.index ["matricula"], name: "index_inss_payroll_employees_on_matricula"
+    t.index ["situacao_funcional"], name: "index_inss_payroll_employees_on_situacao_funcional"
+  end
+
+  create_table "inss_payroll_entries", force: :cascade do |t|
+    t.string "bloco", null: false
+    t.string "codigo", null: false
+    t.datetime "created_at", null: false
+    t.string "historico"
+    t.bigint "inss_payroll_employee_id", null: false
+    t.decimal "referencia", precision: 15, scale: 2, default: "0.0", null: false
+    t.datetime "updated_at", null: false
+    t.decimal "valor", precision: 15, scale: 2, default: "0.0", null: false
+    t.index ["bloco", "codigo"], name: "index_inss_payroll_entries_on_bloco_and_codigo"
+    t.index ["bloco"], name: "index_inss_payroll_entries_on_bloco"
+    t.index ["codigo"], name: "index_inss_payroll_entries_on_codigo"
+    t.index ["inss_payroll_employee_id"], name: "index_inss_payroll_entries_on_inss_payroll_employee_id"
+  end
+
+  create_table "inss_payroll_imports", force: :cascade do |t|
+    t.string "competencia"
+    t.string "content_hash", null: false
+    t.datetime "created_at", null: false
+    t.integer "employees_count", default: 0, null: false
+    t.string "empresa"
+    t.integer "entries_count", default: 0, null: false
+    t.text "error_message"
+    t.string "filename", null: false
+    t.datetime "imported_at"
+    t.string "status", default: "pending", null: false
+    t.datetime "updated_at", null: false
+    t.index ["competencia"], name: "index_inss_payroll_imports_on_competencia"
+    t.index ["content_hash"], name: "index_inss_payroll_imports_on_content_hash", unique: true
   end
 
   create_table "legal_bases", force: :cascade do |t|
@@ -636,6 +694,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_15_183500) do
   add_foreign_key "credit_categories", "tax_modules"
   add_foreign_key "esocial_access_logs", "esocial_sync_runs"
   add_foreign_key "esocial_company_authorizations", "esocial_certificates"
+  add_foreign_key "inss_payroll_employees", "inss_payroll_imports"
+  add_foreign_key "inss_payroll_entries", "inss_payroll_employees"
   add_foreign_key "operations", "tax_modules"
   add_foreign_key "rubric_events", "rubric_companies"
   add_foreign_key "rubric_nature_assignment_versions", "rubric_nature_assignments"

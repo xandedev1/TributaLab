@@ -1,0 +1,70 @@
+<% content_for :title, "#{@employee.nome} - Apuracao INSS" %>
+
+<div class="mx-auto flex w-full max-w-[80rem] flex-col gap-6">
+  <header class="tl-command-bar">
+    <div class="grid gap-5 lg:grid-cols-[1fr_auto] lg:items-end">
+      <div>
+        <p class="tl-kicker">Apuracao INSS / Funcionario</p>
+        <h1 class="tl-page-title tl-page-title--compact"><%= @employee.nome %></h1>
+        <p class="tl-page-subtitle mt-3 max-w-3xl">
+          <%= @employee.matricula %> - <%= @employee.cargo %> -
+          <span class="<%= status_badge_classes(@employee.situacao_funcional) %>"><%= @employee.situacao_funcional %></span>
+        </p>
+      </div>
+      <div class="flex flex-wrap gap-2">
+        <%= link_to "Voltar ao dashboard", inss_dashboard_path, class: button_classes %>
+      </div>
+    </div>
+  </header>
+
+  <section class="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+    <article class="tl-card p-4">
+      <p class="tl-metric-label">Competencia</p>
+      <p class="tl-metric-value tl-metric-value--small"><%= @employee.competencia %></p>
+    </article>
+    <article class="tl-card p-4">
+      <p class="tl-metric-label">Salario</p>
+      <p class="tl-metric-value tl-metric-value--small"><%= inss_money(@employee.salario) %></p>
+    </article>
+    <article class="tl-card p-4">
+      <p class="tl-metric-label">Total Proventos</p>
+      <p class="tl-metric-value tl-metric-value--small"><%= inss_money(@employee.total_proventos) %></p>
+    </article>
+    <article class="tl-card p-4">
+      <p class="tl-metric-label">Liquido</p>
+      <p class="tl-metric-value tl-metric-value--small"><%= inss_money(@employee.liquido) %></p>
+    </article>
+  </section>
+
+  <% Inss::PayrollEntry::BLOCOS.each do |key, label| %>
+    <% rows = @entries_by_bloco[key] %>
+    <% next if rows.blank? %>
+    <section class="tl-panel overflow-hidden">
+      <div class="tl-panel-header">
+        <h2 class="tl-section-title"><%= label %></h2>
+      </div>
+      <div class="tl-table-wrap">
+        <table class="tl-table">
+          <thead>
+            <tr>
+              <th>Codigo</th>
+              <th>Historico</th>
+              <th class="text-right">Referencia</th>
+              <th class="text-right">Valor</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% rows.each do |entry| %>
+              <tr>
+                <td class="tabular-nums"><%= entry.codigo %></td>
+                <td><%= entry.historico %></td>
+                <td class="text-right tabular-nums"><%= number_with_delimiter(entry.referencia.to_f, delimiter: ".", separator: ",") %></td>
+                <td class="text-right font-semibold tabular-nums text-white"><%= inss_money(entry.valor) %></td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+    </section>
+  <% end %>
+</div>

@@ -93,6 +93,7 @@
             <nav class="flex gap-2 overflow-x-auto pb-1" aria-label="Navegacao principal mobile">
               <%= link_to "Painel", root_path, class: "whitespace-nowrap #{shell_nav_active?(root_path) ? "tl-chip tl-chip--info" : "tl-chip"}" %>
               <%= link_to "Rubricas CTE", rubricas_cte_root_path, class: "whitespace-nowrap #{request.path.start_with?(rubricas_cte_root_path, rubricas_cte_chain_walk_path) ? "tl-chip tl-chip--info" : "tl-chip"}" %>
+              <%= link_to "Apuracao INSS", inss_dashboard_path, class: "whitespace-nowrap #{request.path.start_with?("/inss") ? "tl-chip tl-chip--info" : "tl-chip"}" %>
               <%= link_to "eSocial", esocial_certificado_path, class: "whitespace-nowrap #{shell_nav_active?(esocial_certificado_path) ? "tl-chip tl-chip--info" : "tl-chip"}" %>
               <%= link_to "Sync eSocial", esocial_sync_path, class: "whitespace-nowrap #{shell_nav_active?(esocial_sync_path) ? "tl-chip tl-chip--info" : "tl-chip"}" %>
               <%= link_to "Tabelas Empresa", esocial_company_tables_path, class: "whitespace-nowrap #{shell_nav_active?(esocial_company_tables_path) ? "tl-chip tl-chip--info" : "tl-chip"}" %>

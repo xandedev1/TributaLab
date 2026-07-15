@@ -20,6 +20,8 @@ gem "tailwindcss-rails"
 gem "jbuilder"
 gem "csv"
 gem "rubyzip", "~> 3.3"
+# Read text/positions from payroll PDFs (RESUMO MOVIMENTO MENSAL) [https://github.com/yob/pdf-reader]
+gem "pdf-reader", "~> 2.12"
 
 # Use Active Model has_secure_password [https://guides.rubyonrails.org/active_model_basics.html#securepassword]
 # gem "bcrypt", "~> 3.1.7"

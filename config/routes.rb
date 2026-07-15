@@ -47,6 +47,13 @@ Rails.application.routes.draw do
     get "estabelecimentos_obras", to: "estabelecimentos_obras#index", as: :estabelecimentos_obras
   end
 
+  namespace :inss do
+    root "dashboard#index"
+    get "dashboard", to: "dashboard#index", as: :dashboard
+    resources :imports, only: [:index, :new, :create, :destroy]
+    resources :employees, only: [:show]
+  end
+
   resources :case_files, only: [:index, :new, :create, :show]
   resources :simulations, only: [:index, :new, :create, :show]
   resources :tax_parameters, only: [:index]

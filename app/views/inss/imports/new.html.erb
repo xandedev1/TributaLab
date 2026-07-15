@@ -1,0 +1,69 @@
+<% content_for :title, "Importar folhas - Apuracao INSS" %>
+
+<div class="mx-auto flex w-full max-w-[80rem] flex-col gap-6">
+  <header class="tl-command-bar">
+    <div class="grid gap-5 lg:grid-cols-[1fr_auto] lg:items-end">
+      <div>
+        <p class="tl-kicker">Apuracao INSS / Importacao</p>
+        <h1 class="tl-page-title tl-page-title--compact">Importar folhas (PDF)</h1>
+        <p class="tl-page-subtitle mt-3 max-w-3xl">Selecione um ou varios PDFs do RESUMO MOVIMENTO MENSAL. Arquivos ja importados (mesmo conteudo) sao ignorados automaticamente.</p>
+      </div>
+      <div class="flex flex-wrap gap-2">
+        <%= link_to "Ver dashboard", inss_dashboard_path, class: button_classes %>
+      </div>
+    </div>
+  </header>
+
+  <section class="tl-panel p-5">
+    <%= form_with url: inss_imports_path, method: :post, multipart: true, data: { turbo: false }, class: "grid gap-4" do %>
+      <div>
+        <%= label_tag :files, "Arquivos PDF", class: "tl-label" %>
+        <input type="file" name="files[]" id="files" accept="application/pdf" multiple class="tl-input" />
+      </div>
+      <div class="flex gap-2">
+        <%= submit_tag "Importar", class: button_classes(:primary) %>
+      </div>
+    <% end %>
+  </section>
+
+  <section class="tl-panel overflow-hidden">
+    <div class="tl-panel-header">
+      <h2 class="tl-section-title">Ultimas importacoes</h2>
+    </div>
+    <div class="tl-table-wrap">
+      <table class="tl-table">
+        <thead>
+          <tr>
+            <th>Arquivo</th>
+            <th>Competencia</th>
+            <th>Empresa</th>
+            <th>Status</th>
+            <th class="text-right">Funcionarios</th>
+            <th class="text-right">Lancamentos</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          <% @imports.each do |import| %>
+            <tr>
+              <td><%= import.filename %></td>
+              <td class="tabular-nums"><%= import.competencia %></td>
+              <td><%= import.empresa %></td>
+              <td>
+                <span class="<%= status_badge_classes(import.status) %>"><%= import.status %></span>
+                <% if import.error_message.present? %>
+                  <span class="tl-copy block text-xs"><%= import.error_message %></span>
+                <% end %>
+              </td>
+              <td class="text-right tabular-nums"><%= import.employees_count %></td>
+              <td class="text-right tabular-nums"><%= import.entries_count %></td>
+              <td class="text-right">
+                <%= button_to "Remover", inss_import_path(import), method: :delete, data: { turbo_confirm: "Remover esta importacao e seus dados?" }, class: button_classes(:danger) %>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  </section>
+</div>
