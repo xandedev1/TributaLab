@@ -19,7 +19,7 @@ gem "tailwindcss-rails"
 # Build JSON APIs with ease [https://github.com/rails/jbuilder]
 gem "jbuilder"
 gem "csv"
-gem "rubyzip", "~> 3.3"
+gem "rubyzip", "~> 3.4"
 # Read text/positions from payroll PDFs (RESUMO MOVIMENTO MENSAL) [https://github.com/yob/pdf-reader]
 gem "pdf-reader", "~> 2.12"
 
