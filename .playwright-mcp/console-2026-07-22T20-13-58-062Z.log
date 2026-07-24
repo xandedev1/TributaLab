@@ -1,0 +1,10 @@
+[   10987ms] [ERROR] Failed to load resource: the server responded with a status of 404 () @ https://www.esocial.gov.br/portal/Content/webfonts/fa-solid-900.woff2:0
+[   35136ms] TypeError: Cannot read properties of undefined (reading 'nTr')
+    at ut (https://www.esocial.gov.br/portal/bundles/jquery?v=G5kkFvMQpux0qFC2o-4OE1xICMwVgutnYpg8nmMqfAs1:1:109600)
+    at yr (https://www.esocial.gov.br/portal/bundles/jquery?v=G5kkFvMQpux0qFC2o-4OE1xICMwVgutnYpg8nmMqfAs1:1:121161)
+    at b (https://www.esocial.gov.br/portal/bundles/jquery?v=G5kkFvMQpux0qFC2o-4OE1xICMwVgutnYpg8nmMqfAs1:1:172072)
+    at HTMLAnchorElement.<anonymous> (https://www.esocial.gov.br/portal/bundles/jquery?v=G5kkFvMQpux0qFC2o-4OE1xICMwVgutnYpg8nmMqfAs1:1:132990)
+    at HTMLAnchorElement.dispatch (https://www.esocial.gov.br/portal/bundles/jquery?v=G5kkFvMQpux0qFC2o-4OE1xICMwVgutnYpg8nmMqfAs1:1:49608)
+    at v.handle (https://www.esocial.gov.br/portal/bundles/jquery?v=G5kkFvMQpux0qFC2o-4OE1xICMwVgutnYpg8nmMqfAs1:1:46316)
+[  851554ms] [ERROR] Failed to load resource: the server responded with a status of 404 () @ https://www.esocial.gov.br/content/jqueryui/images/ui-bg_glass_75_ffffff_1x400.png:0
+[  972397ms] [ERROR] Failed to load resource: the server responded with a status of 404 () @ https://www.esocial.gov.br/portal/Content/webfonts/fa-regular-400.woff2:0
