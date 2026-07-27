@@ -1,0 +1,37 @@
+<aside class="fa-sidebar">
+  <%= image_tag "tributalab-logo.png", alt: "TributaLab", class: "fa-sidebar__logo" %>
+  <p class="fa-sidebar__edition">AUDITOR FISCAL <span>2025</span></p>
+
+  <nav class="fa-nav" aria-label="Módulos do auditor">
+    <%= link_to fiscal_auditor_root_path, class: "fa-nav__item #{"fa-nav__item--active" if active == :billing}" do %>
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 19V9M10 19V5M16 19v-7M22 19V2"/></svg>
+      Faturamento
+    <% end %>
+    <%= link_to fiscal_auditor_receivables_path, class: "fa-nav__item #{"fa-nav__item--active" if active == :receivables}" do %>
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6h18M5 6v14h14V6M8 10h8M8 14h5"/><path d="M8 3v3M16 3v3"/></svg>
+      Contas a receber
+    <% end %>
+    <%= link_to fiscal_auditor_reconciliation_path, class: "fa-nav__item #{"fa-nav__item--active" if active == :reconciliation}" do %>
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 7h11l-3-3M17 17H6l3 3M18 7l-3 3M6 17l3-3"/></svg>
+      Cruzamento
+    <% end %>
+    <%= link_to fiscal_auditor_expenses_path, class: "fa-nav__item #{"fa-nav__item--active" if active == :expenses}" do %>
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4h16v16H4zM8 15l3-3 2 2 4-5"/></svg>
+      Dashboard de despesas
+    <% end %>
+    <%= link_to fiscal_auditor_expense_explorer_path, class: "fa-nav__item #{"fa-nav__item--active" if active == :expense_explorer}" do %>
+      <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4M8 11h6M11 8v6"/></svg>
+      Explorador de despesas
+    <% end %>
+  </nav>
+
+  <div class="fa-sidebar__status">
+    <span class="fa-status-dot <%= "fa-status-dot--waiting" unless active == :billing %>"></span>
+    <div><strong><%= status %></strong><small><%= detail %></small></div>
+  </div>
+
+  <%= button_to fiscal_auditor_logout_path, method: :delete, class: "fa-logout", title: "Encerrar sessão" do %>
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 17l5-5-5-5M15 12H3M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/></svg>
+    Sair
+  <% end %>
+</aside>

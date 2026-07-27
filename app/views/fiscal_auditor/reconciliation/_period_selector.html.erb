@@ -1,0 +1,35 @@
+<% grouped_periods = available_periods.group_by { |period| period.first(4) } %>
+<% selected_labels = selected_periods.map { |period| period.length == 4 ? period : month_name.call(period) } %>
+
+<div class="fa-period-select" data-period-selector>
+  <button type="button" class="fa-period-select__trigger" aria-haspopup="true" aria-expanded="false" data-action="click->fiscal-dashboard#togglePeriodSelector">
+    <span>
+      <small><%= label %></small>
+      <strong data-period-summary><%= selected_labels.any? ? selected_labels.join(", ") : "Todos os anos e meses" %></strong>
+    </span>
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+  </button>
+
+  <div class="fa-period-select__menu">
+    <header>
+      <span>Períodos disponíveis</span>
+      <button type="button" data-action="click->fiscal-dashboard#clearPeriodSelector">Selecionar todos</button>
+    </header>
+    <% grouped_periods.each do |year, months| %>
+      <section class="fa-period-group">
+        <label class="fa-period-group__year">
+          <%= check_box_tag "#{name}[]", year, selected_periods.include?(year), id: "#{name}_#{year}", data: { action: "change->fiscal-dashboard#periodChanged", period_year: year, period_label: year } %>
+          <span><%= year %> inteiro</span>
+        </label>
+        <div class="fa-period-group__months">
+          <% months.each do |month| %>
+            <label>
+              <%= check_box_tag "#{name}[]", month, selected_periods.include?(month), id: "#{name}_#{month}", data: { action: "change->fiscal-dashboard#periodChanged", period_month: month, period_label: month_name.call(month) } %>
+              <span><%= month_name.call(month).split("/").first %></span>
+            </label>
+          <% end %>
+        </div>
+      </section>
+    <% end %>
+  </div>
+</div>

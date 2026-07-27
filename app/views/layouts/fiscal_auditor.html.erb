@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <title><%= content_for(:title) || "Auditor Fiscal | TributaLab" %></title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="theme-color" content="#173a3b">
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+    <%= yield :head %>
+    <%= favicon_link_tag "tributalab-mark.png" %>
+    <%= stylesheet_link_tag "fiscal_auditor", "data-turbo-track": "reload" %>
+    <%= javascript_importmap_tags %>
+  </head>
+
+  <body class="fa-body" data-controller="fiscal-loader">
+    <div class="fa-loader" data-fiscal-loader-target="overlay" aria-hidden="true" hidden>
+      <div class="fa-loader__content" role="status" aria-live="polite">
+        <div class="fa-loader__ring">
+          <svg viewBox="0 0 112 112" aria-hidden="true">
+            <circle class="fa-loader__track" cx="56" cy="56" r="48"/>
+            <circle class="fa-loader__progress" cx="56" cy="56" r="48" data-fiscal-loader-target="circle"/>
+          </svg>
+          <strong data-fiscal-loader-target="percentage">0%</strong>
+        </div>
+        <p data-fiscal-loader-target="label">Preparando leitura fiscal</p>
+      </div>
+    </div>
+    <% flash.each do |type, message| %>
+      <div class="fa-toast fa-toast--<%= type == "alert" ? "alert" : "notice" %>" role="status"><%= message %></div>
+    <% end %>
+    <%= yield %>
+  </body>
+</html>

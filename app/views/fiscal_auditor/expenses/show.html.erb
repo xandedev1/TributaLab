@@ -1,0 +1,61 @@
+<% content_for :title, "Dashboard de despesas | Auditor Fiscal" %>
+<% month_abbreviations = %w[jan fev mar abr mai jun jul ago set out nov dez] %>
+<% month_name = ->(month) { date = Date.strptime(month, "%Y-%m"); "#{month_abbreviations.fetch(date.month - 1)}/#{date.year}" } %>
+<% money = ->(value) { number_to_currency(value, unit: "R$ ", separator: ",", delimiter: ".") } %>
+<% compact_money = ->(value) { value.abs >= 1_000_000 ? "R$ #{number_with_precision(value / 1_000_000, precision: 1, separator: ",")} mi" : money.call(value) } %>
+
+<div class="fa-shell" data-controller="fiscal-dashboard" data-action="click@window->fiscal-dashboard#closePeriodSelectors">
+  <%= render "fiscal_auditor/shared/sidebar", active: :expenses, status: "Pagamentos consolidados", detail: "#{@dashboard.source_count} arquivo XLSB processado" %>
+
+  <main class="fa-main">
+    <header class="fa-topbar">
+      <div><p class="fa-kicker">Resultado financeiro</p><h1>Dashboard de despesas</h1></div>
+      <div class="fa-topbar__meta"><span class="fa-pill"><span class="fa-status-dot"></span> Caixa por data de pagamento</span><span class="fa-avatar">XA</span><span><strong>Xande</strong><small>Auditor responsável</small></span></div>
+    </header>
+
+    <% if @dashboard.available? %>
+      <section class="fa-filterbar">
+        <%= form_with url: fiscal_auditor_expenses_path, method: :get, class: "fa-filters" do %>
+          <%= render "fiscal_auditor/reconciliation/period_selector", name: "periods", label: "Período de caixa", available_periods: @dashboard.available_periods, selected_periods: @dashboard.periods, month_name: month_name %>
+          <button class="fa-button fa-button--filter" type="submit"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6h18M7 12h10M10 18h4"/></svg>Aplicar período</button>
+          <% if @dashboard.periods.any? %><%= link_to "Limpar", fiscal_auditor_expenses_path, class: "fa-clear" %><% end %>
+        <% end %>
+        <div class="fa-filterbar__count"><strong><%= number_with_delimiter(@dashboard.records.size, delimiter: ".") %></strong><span>pagamentos na leitura</span></div>
+      </section>
+
+      <section class="fa-kpis fa-kpis--expenses" aria-label="Indicadores de despesas">
+        <article class="fa-kpi fa-kpi--net"><div class="fa-kpi__icon"><svg viewBox="0 0 24 24"><path d="M3 6h18v12H3zM7 10h4M17 14h.01"/></svg></div><p>Recebido real</p><strong><%= money.call(@dashboard.totals[:received]) %></strong><small>Entradas com data de recebimento no período</small></article>
+        <article class="fa-kpi fa-kpi--billed"><div class="fa-kpi__icon"><svg viewBox="0 0 24 24"><path d="M4 4h16v16H4zM8 12h8M12 8v8"/></svg></div><p>Despesas de competência</p><strong><%= money.call(@dashboard.totals[:competence]) %></strong><small>Custo operacional pertencente ao período</small></article>
+        <article class="fa-kpi fa-kpi--retained"><div class="fa-kpi__icon"><svg viewBox="0 0 24 24"><path d="M12 3v18M5 8h14M7 16h10"/></svg></div><p>Despesas de não competência</p><strong><%= money.call(@dashboard.totals[:non_competence]) %></strong><small>Dívidas antigas, repasses, acordos e financiamentos</small></article>
+        <article class="fa-kpi fa-kpi--quality"><div class="fa-kpi__icon"><svg viewBox="0 0 24 24"><path d="m5 9 7-5 7 5v10H5zM9 19v-6h6v6"/></svg></div><p>Total pago no período</p><strong><%= money.call(@dashboard.totals[:paid]) %></strong><small>Competência e não competência somadas</small></article>
+      </section>
+
+      <section class="fa-grid fa-grid--expenses-summary">
+        <article class="fa-panel fa-expense-result <%= "fa-expense-result--negative" if @dashboard.competence_balance.negative? %>"><p class="fa-kicker">Leitura operacional</p><h2>Recebido menos despesas de competência</h2><strong><%= money.call(@dashboard.competence_balance) %></strong><small>Mostra o resultado do período sem dívidas e repasses de outras competências.</small></article>
+        <article class="fa-panel fa-expense-result <%= "fa-expense-result--negative" if @dashboard.cash_balance.negative? %>"><p class="fa-kicker">Leitura de caixa</p><h2>Recebido menos todos os pagamentos</h2><strong><%= money.call(@dashboard.cash_balance) %></strong><small>Explica a variação efetiva do caixa depois de todas as saídas pagas.</small></article>
+      </section>
+
+      <section class="fa-grid fa-grid--charts">
+        <article class="fa-panel fa-flow">
+          <header class="fa-panel__header"><div><p class="fa-kicker">Movimento mensal</p><h2>Entradas × saídas</h2></div><div class="fa-legend"><span class="fa-legend--paid">Recebido</span><span class="fa-legend--billed">Competência</span><span class="fa-legend--retained">Não competência</span></div></header>
+          <% max_flow = @dashboard.monthly_flow.values.flat_map { |flow| flow.values_at(:received, :competence, :non_competence) }.max.to_d %>
+          <div class="fa-chart" aria-label="Recebimentos e despesas por mês">
+            <% @dashboard.monthly_flow.each do |month, flow| %><div class="fa-chart__column"><div class="fa-chart__bars" title="<%= month_name.call(month) %>: <%= money.call(flow[:received]) %> recebidos; <%= money.call(flow[:competence]) %> de competência; <%= money.call(flow[:non_competence]) %> de não competência"><span class="fa-chart__bar fa-chart__bar--paid" style="height: <%= max_flow.zero? ? 0 : (flow[:received] / max_flow * 100).round(1) %>%"></span><span class="fa-chart__bar fa-chart__bar--billed" style="height: <%= max_flow.zero? ? 0 : (flow[:competence] / max_flow * 100).round(1) %>%"></span><span class="fa-chart__bar fa-chart__bar--retained" style="height: <%= max_flow.zero? ? 0 : (flow[:non_competence] / max_flow * 100).round(1) %>%"></span></div><small><%= month_name.call(month).split("/").first %></small></div><% end %>
+          </div>
+        </article>
+
+        <article class="fa-panel fa-tax-panel">
+          <header class="fa-panel__header"><div><p class="fa-kicker">Classificação contábil</p><h2>Categorias pagas</h2></div><%= link_to "Abrir explorador", fiscal_auditor_expense_explorer_path(periods: @dashboard.periods), class: "fa-panel__link" %></header>
+          <% max_category = @dashboard.category_breakdown.first&.dig(:amount).to_d %>
+          <div class="fa-tax-list">
+            <% @dashboard.category_breakdown.each_with_index do |category, index| %>
+              <%= link_to fiscal_auditor_expense_explorer_path(periods: @dashboard.periods, identification: category[:name]), class: "fa-tax fa-tax--expense" do %><span class="fa-tax__rank"><%= format("%02d", index + 1) %></span><span><strong><%= category[:name] %></strong><small><%= category[:competence] ? "Competência" : "Não competência" %></small></span><div class="fa-tax__track"><span class="<%= "fa-tax__bar--competence" if category[:competence] %>" style="width: <%= max_category.zero? ? 0 : (category[:amount] / max_category * 100).round(1) %>%"></span></div><span><%= compact_money.call(category[:amount]) %></span><% end %>
+            <% end %>
+          </div>
+        </article>
+      </section>
+    <% else %>
+      <section class="fa-empty fa-empty--module"><div class="fa-empty__icon">DP</div><p class="fa-kicker">Fonte não localizada</p><h2>A base de contas a pagar ainda não está disponível.</h2><p>Adicione a planilha XLSB em <code>storage/private/fiscal_auditor/payables</code>.</p></section>
+    <% end %>
+  </main>
+</div>

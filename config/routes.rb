@@ -14,6 +14,17 @@ Rails.application.routes.draw do
 
   get "legal_basis", to: "legal_basis#index", as: :legal_basis
 
+  namespace :fiscal_auditor, path: "auditor-fiscal" do
+    root "dashboard#show"
+    get "contas-a-receber", to: "receivables#show", as: :receivables
+    get "cruzamento", to: "reconciliation#show", as: :reconciliation
+    get "despesas", to: "expenses#show", as: :expenses
+    get "explorador-de-despesas", to: "expense_explorer#show", as: :expense_explorer
+    get "login", to: "sessions#new", as: :login
+    post "login", to: "sessions#create"
+    delete "logout", to: "sessions#destroy", as: :logout
+  end
+
   namespace :rubric_recovery do
     get "radar", to: "radar#show", as: :radar
     get "adequacy", to: "adequacy#index", as: :adequacy

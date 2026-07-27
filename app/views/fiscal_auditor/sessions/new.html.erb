@@ -1,0 +1,54 @@
+<% content_for :title, "Acesso | Auditor Fiscal" %>
+
+<main class="fa-login">
+  <section class="fa-login__story" aria-label="TributaLab Auditor Fiscal">
+    <div class="fa-login__brand">
+      <%= image_tag "tributalab-logo.png", alt: "TributaLab", class: "fa-login__logo" %>
+      <span class="fa-kicker fa-kicker--light">Núcleo de inteligência fiscal</span>
+    </div>
+
+    <div class="fa-login__headline">
+      <p class="fa-login__index">01 / Retenções</p>
+      <h1>Visão fiscal<br>sem ruído.</h1>
+      <p>Faturamento, retenções e competências reunidos em uma leitura executiva e rastreável.</p>
+    </div>
+
+    <div class="fa-login__signal" aria-hidden="true">
+      <span></span><span></span><span></span><span></span><span></span><span></span>
+    </div>
+  </section>
+
+  <section class="fa-login__access">
+    <div class="fa-login__form-wrap">
+      <div class="fa-login__mark">AF</div>
+      <p class="fa-kicker">Ambiente protegido</p>
+      <h2>Acessar auditoria</h2>
+      <p class="fa-muted">Informe suas credenciais para abrir o painel consolidado.</p>
+
+      <%= form_with url: fiscal_auditor_login_path, class: "fa-form" do |form| %>
+        <label class="fa-field">
+          <span>Usuário</span>
+          <span class="fa-input-wrap">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 21a8 8 0 0 0-16 0M12 13a5 5 0 1 0 0-10 5 5 0 0 0 0 10Z"/></svg>
+            <%= form.text_field :username, required: true, autocomplete: "username", autofocus: true, placeholder: "Seu usuário" %>
+          </span>
+        </label>
+
+        <label class="fa-field">
+          <span>Senha</span>
+          <span class="fa-input-wrap">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="10" width="16" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>
+            <%= form.password_field :password, required: true, autocomplete: "current-password", placeholder: "Sua senha" %>
+          </span>
+        </label>
+
+        <%= form.submit "Entrar no painel", class: "fa-button fa-button--primary" %>
+      <% end %>
+
+      <p class="fa-login__security">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z"/><path d="m9 12 2 2 4-4"/></svg>
+        Sessão protegida e acesso monitorado
+      </p>
+    </div>
+  </section>
+</main>

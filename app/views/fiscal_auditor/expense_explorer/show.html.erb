@@ -1,0 +1,44 @@
+<% content_for :title, "Explorador de despesas | Auditor Fiscal" %>
+<% month_abbreviations = %w[jan fev mar abr mai jun jul ago set out nov dez] %>
+<% month_name = ->(month) { date = Date.strptime(month, "%Y-%m"); "#{month_abbreviations.fetch(date.month - 1)}/#{date.year}" } %>
+<% money = ->(value) { number_to_currency(value, unit: "R$ ", separator: ",", delimiter: ".") } %>
+
+<div class="fa-shell" data-controller="fiscal-dashboard" data-action="click@window->fiscal-dashboard#closePeriodSelectors">
+  <%= render "fiscal_auditor/shared/sidebar", active: :expense_explorer, status: "Trilha de pagamentos", detail: "#{number_with_delimiter(@dashboard.records.size, delimiter: ".")} lançamentos filtrados" %>
+
+  <main class="fa-main">
+    <header class="fa-topbar"><div><p class="fa-kicker">Auditoria analítica</p><h1>Explorador de despesas</h1></div><div class="fa-topbar__meta"><span class="fa-pill"><span class="fa-status-dot"></span> Detalhe por favorecido</span><span class="fa-avatar">XA</span><span><strong>Xande</strong><small>Auditor responsável</small></span></div></header>
+
+    <% if @dashboard.available? %>
+      <section class="fa-filterbar fa-filterbar--expense-explorer">
+        <%= form_with url: fiscal_auditor_expense_explorer_path, method: :get, class: "fa-filters fa-filters--expense-explorer" do %>
+          <%= render "fiscal_auditor/reconciliation/period_selector", name: "periods", label: "Período de pagamento", available_periods: @dashboard.available_periods, selected_periods: @dashboard.periods, month_name: month_name %>
+          <label class="fa-select-filter"><span>Origem</span><%= select_tag :source_sheet, options_for_select([["Funcionários e fornecedores", ""], ["Funcionários", "FUNCIONARIOS"], ["Fornecedores", "FORNECEDORES"]], @dashboard.source_sheet), class: "fa-select-filter__control" %><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></label>
+          <label class="fa-select-filter"><span>Identificação</span><%= select_tag :identification, options_for_select([["Todas as categorias", ""]] + @dashboard.available_identifications.map { |name| [name, name] }, @dashboard.identification), class: "fa-select-filter__control" %><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></label>
+          <button class="fa-button fa-button--filter" type="submit"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6h18M7 12h10M10 18h4"/></svg>Filtrar despesas</button>
+          <% if @dashboard.periods.any? || @dashboard.source_sheet || @dashboard.identification %><%= link_to "Limpar", fiscal_auditor_expense_explorer_path, class: "fa-clear" %><% end %>
+        <% end %>
+        <div class="fa-filterbar__count"><strong><%= number_with_delimiter(@dashboard.records.size, delimiter: ".") %></strong><span>pagamentos encontrados</span></div>
+      </section>
+
+      <section class="fa-kpis fa-kpis--expense-explorer" aria-label="Totais da seleção">
+        <article class="fa-kpi fa-kpi--billed"><p>Despesas de competência</p><strong><%= money.call(@dashboard.totals[:competence]) %></strong><small>Na seleção atual</small></article>
+        <article class="fa-kpi fa-kpi--retained"><p>Despesas de não competência</p><strong><%= money.call(@dashboard.totals[:non_competence]) %></strong><small>Na seleção atual</small></article>
+        <article class="fa-kpi fa-kpi--quality"><p>Total pago</p><strong><%= money.call(@dashboard.totals[:paid]) %></strong><small><%= number_with_delimiter(@dashboard.records.size, delimiter: ".") %> lançamentos</small></article>
+      </section>
+
+      <section class="fa-panel fa-documents">
+        <header class="fa-panel__header"><div><p class="fa-kicker">Composição da seleção</p><h2><%= @dashboard.identification || "Todos os pagamentos" %></h2></div><label class="fa-search"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg><input type="search" placeholder="Buscar favorecido, cliente ou documento" data-fiscal-dashboard-target="search" data-action="input->fiscal-dashboard#search"></label></header>
+        <div class="fa-table-wrap fa-table-wrap--paginated"><table class="fa-table fa-table--expenses"><thead><tr><th>Pagamento</th><th>Origem</th><th>Favorecido</th><th>Descrição</th><th>Documento</th><th>Identificação</th><th>Classificação</th><th>Valor pago</th></tr></thead><tbody>
+          <% @dashboard.paginated_records.each do |record| %>
+            <tr data-fiscal-dashboard-target="row" data-search="<%= [record.party, record.client, record.document, record.description, record.identification].compact.join(" ").downcase %>"><td><strong><%= I18n.l(record.payment_date, format: "%d/%m/%Y") %></strong><small>Venc. <%= record.due_date ? I18n.l(record.due_date, format: "%d/%m/%Y") : "—" %></small></td><td><span class="fa-source"><%= record.source_sheet == "FUNCIONARIOS" ? "FU" : "FO" %></span></td><td><strong><%= record.party.presence || "Não identificado" %></strong><small><%= record.client.presence %></small></td><td><%= record.description.presence || "—" %></td><td><%= record.document.presence || "—" %></td><td><strong><%= record.identification %></strong></td><td><span class="fa-status fa-status--<%= record.competence_expense ? "matched" : "divergent" %>"><%= record.competence_expense ? "Competência" : "Não competência" %></span></td><td><strong><%= money.call(record.amount) %></strong></td></tr>
+          <% end %>
+        </tbody></table></div>
+        <% page_start = @dashboard.records.any? ? (@dashboard.page - 1) * FiscalAuditor::ExpensesDashboard::PAGE_SIZE + 1 : 0 %>
+        <footer class="fa-pagination"><span>Exibindo <strong><%= number_with_delimiter(page_start, delimiter: ".") %>–<%= number_with_delimiter([@dashboard.page * FiscalAuditor::ExpensesDashboard::PAGE_SIZE, @dashboard.records.size].min, delimiter: ".") %></strong> de <%= number_with_delimiter(@dashboard.records.size, delimiter: ".") %></span><div><% if @dashboard.page > 1 %><%= link_to "Anterior", request.query_parameters.merge(page: @dashboard.page - 1), rel: "prev" %><% end %><small>Página <%= @dashboard.page %> de <%= @dashboard.total_pages %></small><% if @dashboard.page < @dashboard.total_pages %><%= link_to "Próxima", request.query_parameters.merge(page: @dashboard.page + 1), rel: "next" %><% end %></div></footer>
+      </section>
+    <% else %>
+      <section class="fa-empty fa-empty--module"><div class="fa-empty__icon">ED</div><p class="fa-kicker">Fonte não localizada</p><h2>A base de contas a pagar ainda não está disponível.</h2><p>Adicione a planilha XLSB em <code>storage/private/fiscal_auditor/payables</code>.</p></section>
+    <% end %>
+  </main>
+</div>

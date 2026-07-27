@@ -1,0 +1,190 @@
+<% content_for :title, "Painel de Retenções | Auditor Fiscal" %>
+<% month_abbreviations = %w[jan fev mar abr mai jun jul ago set out nov dez] %>
+<% month_name = ->(month) { date = Date.strptime(month, "%Y-%m"); "#{month_abbreviations.fetch(date.month - 1)}/#{date.year}" } %>
+<% money = ->(value) { number_to_currency(value, unit: "R$ ", separator: ",", delimiter: ".") } %>
+<% compact_money = ->(value) { value >= 1_000_000 ? "R$ #{number_with_precision(value / 1_000_000, precision: 1, separator: ",")} mi" : money.call(value) } %>
+
+<div class="fa-shell" data-controller="fiscal-dashboard" data-action="click@window->fiscal-dashboard#closeCompetences">
+  <%= render "fiscal_auditor/shared/sidebar", active: :billing, status: "Base consolidada", detail: "#{@dashboard.source_count} arquivos processados" %>
+
+  <main class="fa-main" id="overview">
+    <header class="fa-topbar">
+      <div>
+        <p class="fa-kicker">Controladoria tributária</p>
+        <h1>Painel de retenções</h1>
+      </div>
+      <div class="fa-topbar__meta">
+        <span class="fa-pill"><span class="fa-status-dot"></span> Dados atualizados</span>
+        <span class="fa-avatar">XA</span>
+        <span><strong>Xande</strong><small>Auditor responsável</small></span>
+      </div>
+    </header>
+
+    <% if @dashboard.available? %>
+      <section class="fa-filterbar">
+        <%= form_with url: fiscal_auditor_root_path, method: :get, class: "fa-filters", data: { fiscal_dashboard_target: "filterForm" } do %>
+          <label class="fa-select-filter">
+            <span>Emissão · 2025</span>
+            <%= select_tag :emission_month,
+              options_for_select([["Ano inteiro", ""]] + @dashboard.available_emission_months.map { |month| [month_name.call(month), month] }, @dashboard.emission_month),
+              class: "fa-select-filter__control",
+              data: { fiscal_dashboard_target: "emissionSelect" } %>
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+          </label>
+
+          <span class="fa-filter__join" aria-hidden="true">
+            <svg viewBox="0 0 24 24"><path d="M5 12h14M15 8l4 4-4 4"/></svg>
+          </span>
+
+          <div class="fa-filter <%= "fa-filter--disabled" unless @dashboard.emission_month %>" data-fiscal-dashboard-target="competenceFilter">
+            <button type="button" class="fa-filter__trigger" aria-haspopup="true" aria-expanded="false" data-action="click->fiscal-dashboard#toggleCompetences" data-fiscal-dashboard-target="competenceButton">
+              <span>
+                <small>Competências da emissão</small>
+                <strong>
+                  <% if @dashboard.emission_month.nil? %>
+                    Selecione a emissão
+                  <% elsif @dashboard.competence_months.any? %>
+                    <%= @dashboard.competence_months.map(&month_name).join(", ") %>
+                  <% else %>
+                    Todas · <%= @dashboard.available_competence_months.size %> disponíveis
+                  <% end %>
+                </strong>
+              </span>
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+            </button>
+            <% if @dashboard.emission_month %>
+              <div class="fa-filter__menu">
+                <% @dashboard.available_competence_months.each do |month| %>
+                  <label><%= check_box_tag "competence_months[]", month, @dashboard.competence_months.include?(month) %><span><%= month_name.call(month) %></span></label>
+                <% end %>
+              </div>
+            <% end %>
+          </div>
+
+          <button class="fa-button fa-button--filter" type="submit">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6h18M7 12h10M10 18h4"/></svg>
+            Aplicar leitura
+          </button>
+          <% if @dashboard.emission_month || @dashboard.competence_months.any? %>
+            <%= link_to "Limpar", fiscal_auditor_root_path, class: "fa-clear" %>
+          <% end %>
+        <% end %>
+        <div class="fa-filterbar__count"><strong><%= number_with_delimiter(@dashboard.records.size, delimiter: ".") %></strong><span>documentos na leitura</span></div>
+      </section>
+
+      <%= turbo_frame_tag "fiscal-results", target: "_top" do %>
+        <section class="fa-kpis" aria-label="Indicadores principais">
+          <article class="fa-kpi fa-kpi--billed">
+            <div class="fa-kpi__icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 3v18h18M7 16l4-5 3 3 6-8"/></svg></div>
+            <p>Faturado</p><strong><%= money.call(@dashboard.totals[:billed]) %></strong>
+            <small><%= number_with_delimiter(@dashboard.records.size, delimiter: ".") %> documentos fiscais</small>
+          </article>
+          <article class="fa-kpi fa-kpi--retained">
+            <div class="fa-kpi__icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div>
+            <p>Total retido</p><strong><%= money.call(@dashboard.totals[:retained]) %></strong>
+            <small><%= number_with_precision(@dashboard.retention_rate, precision: 2, separator: ",") %>% do faturamento</small>
+          </article>
+          <article class="fa-kpi fa-kpi--net">
+            <div class="fa-kpi__icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m20 6-11 11-5-5"/></svg></div>
+            <p>Valor líquido</p><strong><%= money.call(@dashboard.totals[:net]) %></strong>
+            <small><%= number_with_precision(100 - @dashboard.retention_rate, precision: 2, separator: ",") %>% convertido em receita líquida</small>
+          </article>
+          <article class="fa-kpi fa-kpi--quality">
+            <div class="fa-kpi__icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z"/><path d="m9 12 2 2 4-4"/></svg></div>
+            <p>Conciliação</p><strong><%= @dashboard.discrepancy_count.zero? ? "100%" : number_with_delimiter(@dashboard.discrepancy_count) %></strong>
+            <small><%= @dashboard.discrepancy_count.zero? ? "Valores matematicamente conciliados" : "documentos com diferença acima de R$ 0,05" %></small>
+          </article>
+        </section>
+
+        <section class="fa-grid fa-grid--charts" id="retentions">
+          <article class="fa-panel fa-flow">
+            <header class="fa-panel__header">
+              <div><p class="fa-kicker">Série temporal</p><h2>Movimento por emissão</h2></div>
+              <div class="fa-legend"><span class="fa-legend--billed">Faturado</span><span class="fa-legend--retained">Retido</span></div>
+            </header>
+            <% max_flow = @dashboard.monthly_flow.values.map { |flow| flow[:billed] }.max.to_d %>
+            <div class="fa-chart" aria-label="Faturamento e retenções por mês">
+              <% @dashboard.monthly_flow.each do |month, flow| %>
+                <div class="fa-chart__column">
+                  <div class="fa-chart__bars" title="<%= month_name.call(month) %>: <%= money.call(flow[:billed]) %> faturados">
+                    <span class="fa-chart__bar fa-chart__bar--billed" style="height: <%= max_flow.zero? ? 0 : (flow[:billed] / max_flow * 100).round(1) %>%"></span>
+                    <span class="fa-chart__bar fa-chart__bar--retained" style="height: <%= max_flow.zero? ? 0 : (flow[:retained] / max_flow * 100).round(1) %>%"></span>
+                  </div>
+                  <small><%= month_name.call(month).split("/").first %></small>
+                </div>
+              <% end %>
+            </div>
+          </article>
+
+          <article class="fa-panel fa-tax-panel">
+            <header class="fa-panel__header"><div><p class="fa-kicker">Composição tributária</p><h2>Retenções por tributo</h2></div></header>
+            <% max_tax = @dashboard.tax_totals.values.max.to_d %>
+            <div class="fa-tax-list">
+              <% @dashboard.tax_totals.sort_by { |_, value| -value }.each_with_index do |(tax, value), index| %>
+                <div class="fa-tax">
+                  <span class="fa-tax__rank"><%= format("%02d", index + 1) %></span>
+                  <strong><%= tax %></strong>
+                  <div class="fa-tax__track"><span style="width: <%= max_tax.zero? ? 0 : (value / max_tax * 100).round(1) %>%"></span></div>
+                  <span><%= compact_money.call(value) %></span>
+                </div>
+              <% end %>
+            </div>
+          </article>
+        </section>
+
+        <section class="fa-grid fa-grid--clients" id="clients">
+          <article class="fa-panel">
+            <header class="fa-panel__header"><div><p class="fa-kicker">Concentração de receita</p><h2>Principais tomadores</h2></div><span class="fa-panel__tag">TOP 8</span></header>
+            <div class="fa-ranking">
+              <% max_client = @dashboard.top_clients.first&.dig(:billed).to_d %>
+              <% @dashboard.top_clients.each_with_index do |client, index| %>
+                <div class="fa-ranking__row">
+                  <span class="fa-ranking__number"><%= index + 1 %></span>
+                  <div class="fa-ranking__client"><strong><%= client[:client].presence || "Cliente sem identificação" %></strong><small><%= client[:cnpj] %> · <%= client[:documents] %> docs</small></div>
+                  <div class="fa-ranking__track"><span style="width: <%= max_client.zero? ? 0 : (client[:billed] / max_client * 100).round(1) %>%"></span></div>
+                  <strong class="fa-ranking__value"><%= compact_money.call(client[:billed]) %></strong>
+                </div>
+              <% end %>
+            </div>
+          </article>
+
+          <aside class="fa-panel fa-audit-note">
+            <p class="fa-kicker">Leitura automática</p>
+            <h2>Integridade da base</h2>
+            <div class="fa-audit-score"><strong><%= @dashboard.discrepancy_count.zero? ? "A" : "B" %></strong><span>Qualidade<br>da conciliação</span></div>
+            <dl>
+              <div><dt>Arquivos</dt><dd><%= @dashboard.source_count %>/12</dd></div>
+              <div><dt>Cancelados</dt><dd><%= number_with_delimiter(@dashboard.cancelled_count, delimiter: ".") %></dd></div>
+              <div><dt>Divergências</dt><dd><%= number_with_delimiter(@dashboard.discrepancy_count, delimiter: ".") %></dd></div>
+            </dl>
+          </aside>
+        </section>
+
+        <section class="fa-panel fa-documents" id="documents">
+          <header class="fa-panel__header">
+            <div><p class="fa-kicker">Trilha de evidências</p><h2>Documentos da seleção</h2></div>
+            <label class="fa-search"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg><input type="search" placeholder="Buscar tomador ou CNPJ" data-fiscal-dashboard-target="search" data-action="input->fiscal-dashboard#search"></label>
+          </header>
+          <div class="fa-table-wrap">
+            <table class="fa-table">
+              <thead><tr><th>Emissão</th><th>Competência</th><th>Tomador</th><th>Faturado</th><th>Retido</th><th>Líquido</th><th>Fonte</th></tr></thead>
+              <tbody>
+                <% @dashboard.recent_documents.each do |record| %>
+                  <tr data-fiscal-dashboard-target="row" data-search="<%= [record.client, record.cnpj].join(" ").downcase %>">
+                    <td><%= I18n.l(record.emission_date, format: "%d/%m/%Y") %></td>
+                    <td><span class="fa-competence"><%= I18n.l(record.competence, format: "%m/%Y") %></span></td>
+                    <td><strong><%= record.client.presence || "Não identificado" %></strong><small><%= record.cnpj %></small></td>
+                    <td><%= money.call(record.billed) %></td><td class="fa-table__retained"><%= money.call(record.retained) %></td><td><strong><%= money.call(record.net) %></strong></td>
+                    <td><span class="fa-source" title="<%= record.source %>"><%= record.source[/_(\d{2})_/, 1] || "XLSX" %></span></td>
+                  </tr>
+                <% end %>
+              </tbody>
+            </table>
+          </div>
+        </section>
+      <% end %>
+    <% else %>
+      <section class="fa-empty"><div class="fa-empty__icon">XLSX</div><p class="fa-kicker">Base não encontrada</p><h2>As planilhas privadas ainda não estão disponíveis.</h2><p>Adicione os arquivos mensais em <code>storage/private/fiscal_auditor/source</code> para ativar a análise.</p></section>
+    <% end %>
+  </main>
+</div>
