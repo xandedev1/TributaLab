@@ -1,0 +1,55 @@
+<% content_for :title, "Lotações tributárias | Auditor Fiscal" %>
+
+<div class="fa-shell">
+  <%= render "fiscal_auditor/shared/sidebar", active: :tax_lotations, status: "4 referências disponíveis", detail: "Leitura independente, sem cruzamentos" %>
+
+  <main class="fa-main">
+    <header class="fa-topbar">
+      <div>
+        <p class="fa-kicker">Referências tributárias</p>
+        <h1>Lotações tributárias</h1>
+      </div>
+      <div class="fa-topbar__meta">
+        <span class="fa-pill"><span class="fa-status-dot"></span> 4 tabelas de referência</span>
+        <span class="fa-avatar">XA</span>
+        <span><strong>Xande</strong><small>Auditor responsável</small></span>
+      </div>
+    </header>
+
+    <nav class="fa-reference-tabs" aria-label="Tabelas de lotações tributárias">
+      <% @reference.sources.each do |source| %>
+        <%= link_to source.label, fiscal_auditor_tax_lotations_path(table: source.key), class: "fa-reference-tabs__item #{'fa-reference-tabs__item--active' if source.key == @reference.source.key}" %>
+      <% end %>
+    </nav>
+
+    <section class="fa-reference-intro">
+      <div>
+        <p class="fa-kicker">Arquivo de referência</p>
+        <h2><%= @reference.title %></h2>
+        <p>Visualização integral e independente de <code><%= @reference.source.filename %></code>.</p>
+      </div>
+      <span class="fa-pill fa-pill--waiting">sem relações entre tabelas</span>
+    </section>
+
+    <section class="fa-reference-sections">
+      <% @reference.sections.each do |section| %>
+        <article class="fa-reference-section">
+          <% if section.heading.present? %><h2><%= section.heading %></h2><% end %>
+          <% section.paragraphs.each do |paragraph| %><p><%= paragraph %></p><% end %>
+          <% section.tables.each do |table| %>
+            <div class="fa-table-wrap">
+              <table class="fa-table fa-reference-table">
+                <thead><tr><% table.headers.each do |header| %><th><%= header %></th><% end %></tr></thead>
+                <tbody>
+                  <% table.rows.each do |row| %>
+                    <tr><% table.headers.each_with_index do |_, index| %><td><%= row[index] %></td><% end %></tr>
+                  <% end %>
+                </tbody>
+              </table>
+            </div>
+          <% end %>
+        </article>
+      <% end %>
+    </section>
+  </main>
+</div>

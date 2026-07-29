@@ -31,8 +31,8 @@ module FiscalAuditor
 
     HEADER_MATCHERS = {
       cnpj: /cnpj cliente/,
-      client_code: /\A(?:cod|cd) cliente\z/,
-      client: /cliente/,
+      client_code: /\A(?:(?:cod|cd) cliente|cleinte)\z/,
+      client: /\Acliente\z/,
       rps: /\Arps\z/,
       invoice_number: /\An (?:nf e|nfe)\z/,
       emission_date: /dt emissao|data emissao/,
@@ -80,17 +80,27 @@ module FiscalAuditor
     end
 
     def locate_headers(rows, shared_strings)
-      rows.each do |row|
+      rows.each_with_index do |row, row_index|
         values = row_values(row, shared_strings)
         headers = HEADER_MATCHERS.to_h do |name, matcher|
           [ name, values.index { |value| normalize(value).match?(matcher) } ]
         end.compact
         next unless REQUIRED_HEADERS.all? { |name| headers.key?(name) }
 
+        headers[:client_code] ||= infer_client_code_index(rows.drop(row_index + 1), headers, shared_strings)
         return [ row, headers ]
       end
 
       raise ArgumentError, "Required fiscal headers not found in #{path.basename}"
+    end
+
+    def infer_client_code_index(rows, headers, shared_strings)
+      candidates = (0...headers.fetch(:client)).to_a - [ headers.fetch(:cnpj) ]
+      sample = rows.first(100).map { |row| row_values(row, shared_strings) }
+
+      candidates.max_by do |index|
+        sample.count { |values| values[index].to_s.strip.match?(/\A\d+(?:\.0)?\z/) }
+      end
     end
 
     def build_record(row, headers, shared_strings)

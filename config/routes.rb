@@ -18,8 +18,14 @@ Rails.application.routes.draw do
     root "dashboard#show"
     get "contas-a-receber", to: "receivables#show", as: :receivables
     get "cruzamento", to: "reconciliation#show", as: :reconciliation
+    get "folha", to: "payroll#show", as: :payroll
+    get "folha/descontos-e-encargos", to: "payroll_charges#show", as: :payroll_charges
+    get "folha/detalhamento/:client_code/:period", to: "payroll_details#show", as: :payroll_detail
     get "despesas", to: "expenses#show", as: :expenses
     get "explorador-de-despesas", to: "expense_explorer#show", as: :expense_explorer
+    get "lotacoes-tributarias", to: "tax_lotations#index", as: :tax_lotations
+    get "memoria-de-calculo/:module_name/:metric", to: "calculation_details#show", as: :calculation_detail
+    get "visualizador-de-planilha", to: "spreadsheets#show", as: :spreadsheet
     get "login", to: "sessions#new", as: :login
     post "login", to: "sessions#create"
     delete "logout", to: "sessions#destroy", as: :logout

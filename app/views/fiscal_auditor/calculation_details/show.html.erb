@@ -1,0 +1,101 @@
+<% content_for :title, "#{@result.title} | Memória de cálculo" %>
+<% money = ->(value) { number_to_currency(value, unit: "R$ ", separator: ",", delimiter: ".") } %>
+<% formatted_value = ->(value, type) do
+  case type
+  when :money then money.call(value)
+  when :percent then "#{number_with_precision(value, precision: 2, separator: ",")}%"
+  else number_with_delimiter(value, delimiter: ".")
+  end
+end %>
+<% source_groups = ->(references) { references.group_by { |reference| reference[:file] } } %>
+<% spreadsheet_path = ->(source_kind, filename, row, sheet = nil) do
+  fiscal_auditor_spreadsheet_path(source_kind: source_kind, filename: filename, row: row, sheet: sheet, return_to: request.fullpath)
+end %>
+
+<div class="fa-shell" data-controller="fiscal-dashboard">
+  <%= render "fiscal_auditor/shared/sidebar", active: @active_module, status: "Memória auditável", detail: "#{number_with_delimiter(@result.total_rows, delimiter: ".")} linhas de origem" %>
+
+  <main class="fa-main">
+    <header class="fa-topbar">
+      <div><p class="fa-kicker">Rastreabilidade do indicador</p><h1>Memória de cálculo</h1></div>
+      <%= link_to @back_path, class: "fa-back-link" do %><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m15 18-6-6 6-6"/></svg>Voltar ao painel<% end %>
+    </header>
+
+    <section class="fa-calculation-hero">
+      <div><p class="fa-kicker">Indicador selecionado</p><h2><%= @result.title %></h2><p><%= @result.formula %></p></div>
+      <strong><%= formatted_value.call(@result.value, @result.value_type) %></strong>
+    </section>
+
+    <% if @result.components.any? %>
+      <section class="fa-calculation-components" aria-label="Componentes da fórmula">
+        <% @result.components.each do |component| %>
+          <article><span><%= component[:label] %></span><strong><%= formatted_value.call(component[:value], component[:type]) %></strong></article>
+        <% end %>
+      </section>
+    <% end %>
+
+    <section class="fa-panel fa-documents fa-calculation-table">
+      <header class="fa-panel__header"><div><p class="fa-kicker">Evidência documental</p><h2>Linhas que compõem o valor</h2></div><label class="fa-search"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg><input type="search" placeholder="Buscar nesta página" data-fiscal-dashboard-target="search" data-action="input->fiscal-dashboard#search"></label></header>
+
+      <% if @detail.module_name == "payroll" && @result.column_totals.any? %>
+        <% totals = @result.column_totals %>
+        <section class="fa-column-totals" aria-label="Somatório das linhas filtradas">
+          <header><div><p class="fa-kicker">Somatório automático</p><h3>Total das <%= number_with_delimiter(@result.total_rows, delimiter: ".") %> linhas filtradas</h3></div><small>Inclui todas as páginas</small></header>
+          <dl>
+            <div><dt>Vencimentos</dt><dd><%= money.call(totals[:earnings]) %></dd></div>
+            <div><dt>Descontos</dt><dd><%= money.call(totals[:discounts]) %></dd></div>
+            <div><dt>Folha líquida</dt><dd><%= totals[:payroll_net].nil? ? "—" : money.call(totals[:payroll_net]) %></dd></div>
+            <div><dt>Faturamento</dt><dd><%= totals[:billing_net].nil? ? "—" : money.call(totals[:billing_net]) %></dd></div>
+            <div class="<%= "fa-column-total--negative" if totals[:formula_value].negative? %>"><dt>Valor na fórmula</dt><dd><%= money.call(totals[:formula_value]) %></dd></div>
+          </dl>
+        </section>
+      <% end %>
+
+      <div class="fa-table-wrap fa-table-wrap--paginated">
+        <% case @detail.module_name %>
+        <% when "billing" %>
+          <table class="fa-table fa-table--calculation"><thead><tr><th>Documento</th><th>Emissão</th><th>Competência</th><th>Tomador</th><th>Faturado</th><th>Retido</th><th>Líquido</th><th>Fonte</th></tr></thead><tbody>
+            <% @result.rows.each do |record| %><tr data-fiscal-dashboard-target="row" data-search="<%= [record.invoice_number, record.client, record.cnpj, record.source].join(" ").downcase %>"><td><strong>NF <%= record.invoice_number %></strong><small>RPS <%= record.rps %></small></td><td><%= record.emission_date ? I18n.l(record.emission_date, format: "%d/%m/%Y") : "—" %></td><td><%= record.competence ? I18n.l(record.competence, format: "%m/%Y") : "—" %></td><td><strong><%= record.client.presence || "Não identificado" %></strong><small><%= record.cnpj %></small></td><td><%= money.call(record.billed) %></td><td><%= money.call(record.retained) %></td><td><%= money.call(record.net) %></td><td><%= link_to spreadsheet_path.call("billing", record.source, record.source_row), class: "fa-source-link" do %><strong><%= record.source %></strong><small>Linha <%= number_with_delimiter(record.source_row, delimiter: ".") %> · Abrir planilha</small><% end %></td></tr><% end %>
+          </tbody></table>
+        <% when "receivables" %>
+          <table class="fa-table fa-table--calculation"><thead><tr><th>Documento</th><th>Emissão</th><th>Competência</th><th>Cliente</th><th>Bruto</th><th>Contingência</th><th>Recebido</th><th>Saldo</th><th>Fonte</th></tr></thead><tbody>
+            <% @result.rows.each do |record| %><tr data-fiscal-dashboard-target="row" data-search="<%= [record.invoice_number, record.client, record.client_code, record.source].join(" ").downcase %>"><td><strong>NF <%= record.invoice_number %></strong><small>RPS <%= record.rps %></small></td><td><%= record.emission_date ? I18n.l(record.emission_date, format: "%d/%m/%Y") : "—" %></td><td><%= record.competence ? I18n.l(record.competence, format: "%m/%Y") : record.competence_text %></td><td><strong><%= record.client.presence || "Não identificado" %></strong><small>Cód. <%= record.client_code %></small></td><td><%= money.call(record.gross) %></td><td><%= money.call(record.contingency.abs) %></td><td><%= money.call(record.paid) %></td><td><%= money.call(record.outstanding) %></td><td><%= link_to spreadsheet_path.call("receivables", record.source, record.source_row, "APPA"), class: "fa-source-link" do %><strong><%= record.source %></strong><small>Linha <%= number_with_delimiter(record.source_row, delimiter: ".") %> · Abrir planilha</small><% end %></td></tr><% end %>
+          </tbody></table>
+        <% when "reconciliation" %>
+          <table class="fa-table fa-table--calculation"><thead><tr><th>Resultado</th><th>Documento</th><th>Cliente</th><th>Faturamento</th><th>Fonte do faturamento</th><th>Recebimento</th><th>Fonte do recebimento</th><th>Diferença</th></tr></thead><tbody>
+            <% status_labels = { matched: "Conciliada", divergent: "Divergência", missing_receivable: "Ausente em recebimentos", missing_billing: "Ausente em faturamento" } %>
+            <% @result.rows.each do |entry| %><tr data-fiscal-dashboard-target="row" data-search="<%= [entry[:invoice_number], entry[:client], entry[:client_code], status_labels[entry[:status]], entry[:billing_sources], entry[:receivable_sources]].join(" ").downcase %>"><td><span class="fa-status fa-status--<%= entry[:status] %>"><%= status_labels.fetch(entry[:status]) %></span></td><td><strong>NF <%= entry[:invoice_number] %></strong><small>Cód. <%= entry[:client_code] %></small></td><td><%= entry[:client].presence || "Não identificado" %></td><td><strong><%= money.call(entry[:billing_value]) %></strong><small><%= entry[:billing_emission_date] ? I18n.l(entry[:billing_emission_date], format: "%d/%m/%Y") : "Sem documento" %></small></td><td><% source_groups.call(entry[:billing_sources]).each do |file, references| %><details class="fa-source-detail"><summary><strong><%= file %></strong><small><%= references.size %> <%= references.one? ? "linha" : "linhas" %></small></summary><div><% references.each do |reference| %><%= link_to spreadsheet_path.call("billing", file, reference[:row]), class: "fa-source-reference" do %>Linha <%= number_with_delimiter(reference[:row], delimiter: ".") %> · <%= money.call(reference[:value]) %><% end %><% end %></div></details><% end %><%= "—" if entry[:billing_sources].empty? %></td><td><strong><%= money.call(entry[:receivable_value]) %></strong><small><%= entry[:receivable_emission_date] ? I18n.l(entry[:receivable_emission_date], format: "%d/%m/%Y") : "Sem baixa" %></small></td><td><% source_groups.call(entry[:receivable_sources]).each do |file, references| %><details class="fa-source-detail"><summary><strong><%= file %></strong><small><%= references.size %> <%= references.one? ? "linha" : "linhas" %></small></summary><div><% references.each do |reference| %><%= link_to spreadsheet_path.call("receivables", file, reference[:row], "APPA"), class: "fa-source-reference" do %>Linha <%= number_with_delimiter(reference[:row], delimiter: ".") %> · <%= money.call(reference[:value]) %><% end %><% end %></div></details><% end %><%= "—" if entry[:receivable_sources].empty? %></td><td class="fa-money-difference"><%= money.call(entry[:selected_difference]) %></td></tr><% end %>
+          </tbody></table>
+        <% when "expenses" %>
+          <table class="fa-table fa-table--calculation"><thead><tr><th>Movimento</th><th>Data</th><th>Favorecido / cliente</th><th>Documento</th><th>Descrição</th><th>Classificação</th><th>Valor na fórmula</th><th>Fonte</th></tr></thead><tbody>
+            <% @result.rows.each do |row| %><tr data-fiscal-dashboard-target="row" data-search="<%= [row[:party], row[:document], row[:description], row[:classification], row[:source]].join(" ").downcase %>"><td><span class="fa-status fa-status--<%= row[:source_kind] == :receipt ? "matched" : "divergent" %>"><%= row[:source_kind] == :receipt ? "Entrada" : "Pagamento" %></span></td><td><%= I18n.l(row[:date], format: "%d/%m/%Y") %></td><td><%= row[:party].presence || "Não identificado" %></td><td><%= row[:document].presence || "—" %></td><td><%= row[:description] %></td><td><%= row[:classification] %></td><td class="<%= "fa-money-difference" if row[:signed_value].negative? %>"><strong><%= money.call(row[:signed_value]) %></strong></td><td><%= link_to spreadsheet_path.call(row[:source_kind] == :receipt ? "receivables" : "payables", row[:source], row[:source_row], row[:source_sheet]), class: "fa-source-link" do %><strong><%= row[:source] %></strong><small>Linha <%= number_with_delimiter(row[:source_row], delimiter: ".") %> · Abrir planilha</small><% end %></td></tr><% end %>
+          </tbody></table>
+        <% when "payroll" %>
+          <% payroll_statuses = { covered: "Coberta", deficit: "Déficit", missing_billing: "Sem faturamento", negative_payroll: "Folha negativa" } %>
+          <table class="fa-table fa-table--calculation fa-table--payroll-memory"><thead><tr><th>Competência</th><th>Cliente</th><th>Evidência</th><th>Vencimentos</th><th>Descontos</th><th>Folha líquida</th><th>Faturamento</th><th>Valor na fórmula</th><th>Fonte</th></tr></thead><tbody>
+            <% @result.rows.each do |row| %>
+              <% if row[:row_kind] == :event %>
+                <% record = row[:record] %>
+                <tr data-fiscal-dashboard-target="row" data-search="<%= [record.client_code, record.client, record.event_code, record.event_description, record.source].join(" ").downcase %>"><td><%= I18n.l(record.competence, format: "%m/%Y") %></td><td><strong><%= record.client %></strong><small>Cód. <%= record.client_code %></small></td><td><strong><%= record.event_description %></strong><small>Evento <%= record.event_code %> · <%= record.event_type %></small></td><td><%= record.event_type == "Vencimento" ? money.call(record.amount) : "—" %></td><td><%= record.event_type == "Desconto" ? money.call(record.amount) : "—" %></td><td>—</td><td>—</td><td class="<%= "fa-money-difference" if row[:signed_value].negative? %>"><strong><%= money.call(row[:signed_value]) %></strong></td><td><%= link_to spreadsheet_path.call("payroll", record.source, record.source_row), class: "fa-source-link" do %><strong><%= record.source %></strong><small>Linha <%= number_with_delimiter(record.source_row, delimiter: ".") %> · Abrir planilha</small><% end %></td></tr>
+              <% else %>
+                <tr data-fiscal-dashboard-target="row" data-search="<%= [row[:month], row[:client_code], row[:client], payroll_statuses[row[:status]]].join(" ").downcase %>"><td><%= Date.strptime(row[:month], "%Y-%m").strftime("%m/%Y") %></td><td><strong><%= row[:client] %></strong><small>Cód. <%= row[:client_code] %></small></td><td><span class="fa-status fa-status--<%= row[:status] %>"><%= payroll_statuses.fetch(row[:status]) %></span></td><td><%= money.call(row[:earnings]) %></td><td><%= money.call(row[:discounts]) %></td><td><%= money.call(row[:payroll_net]) %></td><td><%= money.call(row[:billing_net]) %></td><td class="<%= "fa-money-difference" if row[:difference].negative? %>"><strong><%= money.call(row[:difference]) %></strong></td><td><small><%= row[:events] %> eventos · <%= row[:documents] %> documentos</small></td></tr>
+              <% end %>
+            <% end %>
+          </tbody>
+          <% if @result.column_totals.any? %>
+            <% totals = @result.column_totals %>
+            <tfoot class="fa-table-total"><tr><th colspan="3"><strong>Total das <%= number_with_delimiter(@result.total_rows, delimiter: ".") %> linhas filtradas</strong><small>Somatório de toda a seleção, não apenas desta página</small></th><td><strong><%= money.call(totals[:earnings]) %></strong></td><td><strong><%= money.call(totals[:discounts]) %></strong></td><td><strong><%= totals[:payroll_net].nil? ? "—" : money.call(totals[:payroll_net]) %></strong></td><td><strong><%= totals[:billing_net].nil? ? "—" : money.call(totals[:billing_net]) %></strong></td><td class="<%= "fa-money-difference" if totals[:formula_value].negative? %>"><strong><%= money.call(totals[:formula_value]) %></strong></td><td><small><%= number_with_delimiter(@result.total_rows, delimiter: ".") %> linhas</small></td></tr></tfoot>
+          <% end %>
+          </table>
+        <% end %>
+      </div>
+
+      <nav class="fa-pagination" aria-label="Paginação da memória de cálculo">
+        <% first = @result.total_rows.zero? ? 0 : ((@detail.page - 1) * FiscalAuditor::CalculationDetail::PAGE_SIZE) + 1 %>
+        <% last = [@detail.page * FiscalAuditor::CalculationDetail::PAGE_SIZE, @result.total_rows].min %>
+        <span>Exibindo <strong><%= number_with_delimiter(first, delimiter: ".") %>–<%= number_with_delimiter(last, delimiter: ".") %></strong> de <strong><%= number_with_delimiter(@result.total_rows, delimiter: ".") %></strong></span>
+        <div><% if @detail.page > 1 %><%= link_to "Anterior", request.query_parameters.merge(page: @detail.page - 1), rel: "prev" %><% end %><small>Página <%= @detail.page %> de <%= @detail.total_pages %></small><% if @detail.page < @detail.total_pages %><%= link_to "Próxima", request.query_parameters.merge(page: @detail.page + 1), rel: "next" %><% end %></div>
+      </nav>
+    </section>
+  </main>
+</div>

@@ -1,0 +1,58 @@
+- generic [active] [ref=f11e1]:
+  - generic [ref=f11e3]:
+    - link "Brasil" [ref=f11e5] [cursor=pointer]:
+      - /url: https://gov.br
+    - navigation:
+      - list [ref=f11e6]:
+        - listitem
+        - listitem [ref=f11e7]:
+          - link "Simplifique!" [ref=f11e8] [cursor=pointer]:
+            - /url: http://www.gov.br/economia/pt-br/canais_atendimento/ouvidoria/simplifique
+        - listitem [ref=f11e9]:
+          - link "Participe" [ref=f11e10] [cursor=pointer]:
+            - /url: https://www.gov.br/pt-br/participacao-social/
+        - listitem [ref=f11e11]:
+          - link "Acesso à informação" [ref=f11e12] [cursor=pointer]:
+            - /url: http://www.gov.br/acessoainformacao/
+        - listitem [ref=f11e13]:
+          - link "Legislação" [ref=f11e14] [cursor=pointer]:
+            - /url: http://www.planalto.gov.br/legislacao
+        - listitem [ref=f11e15]:
+          - link "Canais" [ref=f11e16] [cursor=pointer]:
+            - /url: https://gov.br/pt-br/canais-do-executivo-federal
+    - link [ref=f11e18] [cursor=pointer]:
+      - /url: "#"
+  - generic [ref=f11e19]:
+    - generic [ref=f11e20]:
+      - link "eSocial" [ref=f11e21] [cursor=pointer]:
+        - /url: /
+      - generic [ref=f11e22]:
+        - text: ACESSAR AS APLICAÇÕES
+        - combobox [ref=f11e23] [cursor=pointer]:
+          - option "Opções" [selected]
+        - link "Alterar" [ref=f11e25] [cursor=pointer]:
+          - /url: "#"
+        - generic [ref=f11e26]:
+          - paragraph:
+            - generic [ref=f11e27]: "Titular do Certificado: 05.969.071/0001.10 - APPA SERVICOS TEMPORARIOS E EFETIVOS LTDA:05969071000110"
+      - link "SAIR" [ref=f11e29] [cursor=pointer]:
+        - /url: "#"
+    - generic "Sessão encerrada" [ref=f11e31]:
+      - paragraph [ref=f11e32]: Sua sessão no sistema foi encerrada com sucesso. É necessário fechar todas as abas/janelas do navegador para acessar novamente
+    - contentinfo [ref=f11e33]:
+      - generic [ref=f11e34]:
+        - link "Ministério da Previdência Social" [ref=f11e35] [cursor=pointer]:
+          - /url: https://www.gov.br/previdencia/pt-br/
+          - text: Ministério da
+          - generic [ref=f11e36]: Previdência Social
+        - link "Ministério do Trabalho e Emprego" [ref=f11e37] [cursor=pointer]:
+          - /url: https://www.gov.br/trabalho-e-emprego/pt-br/
+          - text: Ministério do
+          - generic [ref=f11e38]: Trabalho e Emprego
+        - link "Secretaria Especial da Receita Federal do Brasil" [ref=f11e39] [cursor=pointer]:
+          - /url: https://www.gov.br/receitafederal/pt-br/
+          - text: Secretaria Especial da
+          - generic [ref=f11e40]: Receita Federal do Brasil
+  - generic [ref=f11e42] [cursor=pointer]:
+    - img "Conteúdo acessível em Libras usando o VLibras Widget com opções dos Avatares Ícaro, Hosana ou Guga." [ref=f11e43]
+    - img "Conteúdo acessível em Libras usando o VLibras Widget com opções dos Avatares Ícaro, Hosana ou Guga." [ref=f11e44]

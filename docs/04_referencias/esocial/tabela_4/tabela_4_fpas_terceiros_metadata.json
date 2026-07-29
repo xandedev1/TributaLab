@@ -1,0 +1,10 @@
+{
+  "table": 4,
+  "name": "Código e Alíquotas de FPAS/Terceiros",
+  "source_url": "https://frontend.esocial.gov.br/adm/Home/Index",
+  "source_file": "TABELA4_v1_Conteudo.csv",
+  "source_sha256": "1826bddf13ad4c5872d02e070730425cf4358fea71fdfee44506c488cc2afc2c",
+  "rows": 108,
+  "fpas_codes": 26,
+  "generated_at": "2026-07-28T17:02:03Z"
+}

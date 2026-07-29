@@ -1,0 +1,53 @@
+<% content_for :title, "#{@result.summary[:client]} | Detalhamento da folha" %>
+<% summary = @result.summary %>
+<% money = ->(value) { number_to_currency(value, unit: "R$ ", separator: ",", delimiter: ".") } %>
+<% status_labels = { covered: "Coberta", deficit: "Déficit", missing_billing: "Sem faturamento", negative_payroll: "Folha negativa" } %>
+<% month_abbreviations = %w[jan fev mar abr mai jun jul ago set out nov dez] %>
+<% period_date = Date.strptime(summary[:month], "%Y-%m") %>
+<% period_label = "#{month_abbreviations.fetch(period_date.month - 1)}/#{period_date.year}" %>
+<% spreadsheet_path = ->(source_kind, filename, row) { fiscal_auditor_spreadsheet_path(source_kind: source_kind, filename: filename, row: row, return_to: request.fullpath) } %>
+
+<div class="fa-shell" data-controller="fiscal-dashboard">
+  <%= render "fiscal_auditor/shared/sidebar", active: :payroll, status: "Detalhamento cliente-mês", detail: "#{@result.events.size} eventos · #{@result.invoices.size} notas" %>
+
+  <main class="fa-main">
+    <header class="fa-topbar">
+      <div><p class="fa-kicker">Cruzamento por competência</p><h1>Cliente × folha × faturamento</h1></div>
+      <%= link_to @return_path, class: "fa-back-link" do %><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m15 18-6-6 6-6"/></svg>Voltar ao cruzamento<% end %>
+    </header>
+
+    <section class="fa-cross-detail-hero">
+      <div><p class="fa-kicker"><%= period_label %> · Código <%= summary[:client_code] %></p><h2><%= summary[:client] %></h2><p>Eventos da folha e notas fiscais que formam esta linha do cruzamento.</p></div>
+      <span class="fa-status fa-status--<%= summary[:status] %>"><%= status_labels.fetch(summary[:status]) %></span>
+    </section>
+
+    <section class="fa-cross-detail-kpis" aria-label="Valores do cruzamento">
+      <article><span>Vencimentos</span><strong><%= money.call(summary[:earnings]) %></strong></article>
+      <article><span>Descontos</span><strong><%= money.call(summary[:discounts]) %></strong></article>
+      <article><span>Folha líquida</span><strong><%= money.call(summary[:payroll_net]) %></strong><small>Vencimentos − descontos</small></article>
+      <article><span>Faturamento líquido</span><strong><%= money.call(summary[:billing_net]) %></strong><small>Notas não canceladas</small></article>
+      <article class="<%= "fa-cross-detail-kpi--negative" if summary[:difference].negative? %>"><span>Diferença</span><strong><%= money.call(summary[:difference]) %></strong><small>Faturamento − folha</small></article>
+    </section>
+
+    <section class="fa-panel fa-documents fa-cross-detail-section">
+      <header class="fa-panel__header"><div><p class="fa-kicker">Evidência da folha</p><h2>Eventos que formam vencimentos e descontos</h2></div><span class="fa-panel__tag"><%= @result.events.size %> EVENTOS</span></header>
+      <div class="fa-table-wrap"><table class="fa-table fa-table--payroll-events"><thead><tr><th>Evento</th><th>Tipo</th><th>Vencimento</th><th>Desconto</th><th>Valor na fórmula</th><th>Fonte</th></tr></thead><tbody>
+        <% @result.events.each do |record| %>
+          <% signed_value = record.event_type == "Desconto" ? -record.amount : record.amount %>
+          <tr><td><strong><%= record.event_description %></strong><small>Cód. <%= record.event_code %></small></td><td><span class="fa-status fa-status--<%= record.event_type == "Vencimento" ? "covered" : "deficit" %>"><%= record.event_type %></span></td><td><%= record.event_type == "Vencimento" ? money.call(record.amount) : "—" %></td><td><%= record.event_type == "Desconto" ? money.call(record.amount) : "—" %></td><td class="<%= "fa-money-difference" if signed_value.negative? %>"><strong><%= money.call(signed_value) %></strong></td><td><%= link_to spreadsheet_path.call("payroll", record.source, record.source_row), class: "fa-source-link" do %><strong><%= record.source %></strong><small>Linha <%= number_with_delimiter(record.source_row, delimiter: ".") %> · Abrir planilha</small><% end %></td></tr>
+        <% end %>
+      </tbody></table></div>
+    </section>
+
+    <section class="fa-panel fa-documents fa-cross-detail-section">
+      <header class="fa-panel__header"><div><p class="fa-kicker">Evidência do faturamento</p><h2>Notas que formam o faturamento líquido</h2></div><span class="fa-panel__tag"><%= @result.invoices.size %> NOTAS</span></header>
+      <% if @result.invoices.any? %>
+        <div class="fa-table-wrap"><table class="fa-table fa-table--payroll-invoices"><thead><tr><th>Documento</th><th>Emissão</th><th>Competência</th><th>Faturado</th><th>Retido</th><th>Líquido</th><th>Fonte</th></tr></thead><tbody>
+          <% @result.invoices.each do |record| %><tr><td><strong>NF <%= record.invoice_number %></strong><small>RPS <%= record.rps %></small></td><td><%= record.emission_date ? I18n.l(record.emission_date, format: "%d/%m/%Y") : "—" %></td><td><%= record.competence ? I18n.l(record.competence, format: "%m/%Y") : "—" %></td><td><%= money.call(record.billed) %></td><td><%= money.call(record.retained) %></td><td><strong><%= money.call(record.net) %></strong></td><td><%= link_to spreadsheet_path.call("billing", record.source, record.source_row), class: "fa-source-link" do %><strong><%= record.source %></strong><small>Linha <%= number_with_delimiter(record.source_row, delimiter: ".") %> · Abrir planilha</small><% end %></td></tr><% end %>
+        </tbody></table></div>
+      <% else %>
+        <div class="fa-cross-detail-empty"><strong>Nenhuma nota encontrada nesta competência.</strong><p>Por isso, o faturamento líquido desta linha é zero e a situação está marcada como sem faturamento.</p></div>
+      <% end %>
+    </section>
+  </main>
+</div>

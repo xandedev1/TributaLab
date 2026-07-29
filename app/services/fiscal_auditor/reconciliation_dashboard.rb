@@ -231,7 +231,9 @@ module FiscalAuditor
         paid: receivables.sum(&:paid),
         contingency: receivables.sum(&:contingency),
         billing_present: billing.any?,
-        receivable_present: receivables.any?
+        receivable_present: receivables.any?,
+        billing_sources: source_references(billing, billing_value_type == "gross" ? :billed : :net),
+        receivable_sources: source_references(receivables, receivable_value_type == "gross" ? :gross : :paid)
       }
       billing_value = billing_value_type == "gross" ? values[:billing_gross] : values[:billing_net]
       receivable_value = receivable_value_type == "gross" ? values[:receivable_gross] : values[:paid]
@@ -253,6 +255,10 @@ module FiscalAuditor
       return :divergent if selected_difference.abs > TOLERANCE
 
       :matched
+    end
+
+    def source_references(records, value_field)
+      records.map { |record| { file: record.source, row: record.source_row, value: record.public_send(value_field) } }.uniq
     end
   end
 end

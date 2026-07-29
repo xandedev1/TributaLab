@@ -3,6 +3,7 @@
 <% month_name = ->(month) { date = Date.strptime(month, "%Y-%m"); "#{month_abbreviations.fetch(date.month - 1)}/#{date.year}" } %>
 <% money = ->(value) { number_to_currency(value, unit: "R$ ", separator: ",", delimiter: ".") } %>
 <% compact_money = ->(value) { value.abs >= 1_000_000 ? "R$ #{number_with_precision(value / 1_000_000, precision: 1, separator: ",")} mi" : money.call(value) } %>
+<% calculation_path = ->(metric, extra = {}) { fiscal_auditor_calculation_detail_path("receivables", metric, request.query_parameters.except("page").merge(extra.stringify_keys)) } %>
 
 <div class="fa-shell" data-controller="fiscal-dashboard" data-action="click@window->fiscal-dashboard#closeCompetences">
   <%= render "fiscal_auditor/shared/sidebar", active: :receivables, status: "Base consolidada", detail: "#{@dashboard.source_count} arquivo XLSB processado" %>
@@ -46,10 +47,10 @@
 
       <%= turbo_frame_tag "fiscal-results", target: "_top" do %>
         <section class="fa-kpis" aria-label="Indicadores de contas a receber">
-          <article class="fa-kpi fa-kpi--billed"><div class="fa-kpi__icon"><svg viewBox="0 0 24 24"><path d="M4 2h16v20l-4-3-4 3-4-3-4 3V2Z"/><path d="M8 7h8M8 11h8"/></svg></div><p>Bruto lançado</p><strong><%= money.call(@dashboard.totals[:gross]) %></strong><small><%= number_with_delimiter(@dashboard.records.size, delimiter: ".") %> notas emitidas</small></article>
-          <article class="fa-kpi fa-kpi--retained"><div class="fa-kpi__icon"><svg viewBox="0 0 24 24"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div><p>Contingenciado</p><strong><%= money.call(@dashboard.totals[:contingency].abs) %></strong><small><%= number_with_precision(@dashboard.contingency_rate, precision: 2, separator: ",") %>% do bruto lançado</small></article>
-          <article class="fa-kpi fa-kpi--net"><div class="fa-kpi__icon"><svg viewBox="0 0 24 24"><path d="m20 6-11 11-5-5"/></svg></div><p>Recebido real</p><strong><%= money.call(@dashboard.totals[:paid]) %></strong><small><%= number_with_delimiter(@dashboard.paid_count, delimiter: ".") %> notas com valor recebido</small></article>
-          <article class="fa-kpi fa-kpi--quality"><div class="fa-kpi__icon"><svg viewBox="0 0 24 24"><path d="M3 6h18v12H3z"/><path d="M7 10h4M17 14h.01"/></svg></div><p>Saldo sinalizado</p><strong><%= money.call(@dashboard.totals[:outstanding]) %></strong><small><%= number_with_delimiter(@dashboard.outstanding_count, delimiter: ".") %> notas com saldo numérico</small></article>
+          <article class="fa-kpi fa-kpi--billed"><%= link_to "Abrir memória do bruto lançado", calculation_path.call("gross"), class: "fa-detail-hit" %><div class="fa-kpi__icon"><svg viewBox="0 0 24 24"><path d="M4 2h16v20l-4-3-4 3-4-3-4 3V2Z"/><path d="M8 7h8M8 11h8"/></svg></div><p>Bruto lançado</p><strong><%= money.call(@dashboard.totals[:gross]) %></strong><small><%= number_with_delimiter(@dashboard.records.size, delimiter: ".") %> notas emitidas</small></article>
+          <article class="fa-kpi fa-kpi--retained"><%= link_to "Abrir memória do contingenciado", calculation_path.call("contingency"), class: "fa-detail-hit" %><div class="fa-kpi__icon"><svg viewBox="0 0 24 24"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div><p>Contingenciado</p><strong><%= money.call(@dashboard.totals[:contingency].abs) %></strong><small><%= number_with_precision(@dashboard.contingency_rate, precision: 2, separator: ",") %>% do bruto lançado</small></article>
+          <article class="fa-kpi fa-kpi--net"><%= link_to "Abrir memória do recebido real", calculation_path.call("paid"), class: "fa-detail-hit" %><div class="fa-kpi__icon"><svg viewBox="0 0 24 24"><path d="m20 6-11 11-5-5"/></svg></div><p>Recebido real</p><strong><%= money.call(@dashboard.totals[:paid]) %></strong><small><%= number_with_delimiter(@dashboard.paid_count, delimiter: ".") %> notas com valor recebido</small></article>
+          <article class="fa-kpi fa-kpi--quality"><%= link_to "Abrir memória do saldo sinalizado", calculation_path.call("outstanding"), class: "fa-detail-hit" %><div class="fa-kpi__icon"><svg viewBox="0 0 24 24"><path d="M3 6h18v12H3z"/><path d="M7 10h4M17 14h.01"/></svg></div><p>Saldo sinalizado</p><strong><%= money.call(@dashboard.totals[:outstanding]) %></strong><small><%= number_with_delimiter(@dashboard.outstanding_count, delimiter: ".") %> notas com saldo numérico</small></article>
         </section>
 
         <section class="fa-grid fa-grid--charts">
@@ -58,7 +59,7 @@
             <% max_flow = @dashboard.monthly_flow.values.map { |flow| flow[:gross] }.max.to_d %>
             <div class="fa-chart" aria-label="Valores lançados, recebidos e contingenciados por emissão">
               <% @dashboard.monthly_flow.each do |month, flow| %>
-                <div class="fa-chart__column"><div class="fa-chart__bars" title="<%= month_name.call(month) %>: <%= money.call(flow[:gross]) %> lançados; <%= money.call(flow[:paid]) %> recebidos"><span class="fa-chart__bar fa-chart__bar--billed" style="height: <%= max_flow.zero? ? 0 : (flow[:gross] / max_flow * 100).round(1) %>%"></span><span class="fa-chart__bar fa-chart__bar--paid" style="height: <%= max_flow.zero? ? 0 : (flow[:paid] / max_flow * 100).round(1) %>%"></span><span class="fa-chart__bar fa-chart__bar--retained" style="height: <%= max_flow.zero? ? 0 : (flow[:contingency] / max_flow * 100).round(1) %>%"></span></div><small><%= month_name.call(month).split("/").first %></small></div>
+                <div class="fa-chart__column"><div class="fa-chart__bars" title="<%= month_name.call(month) %>: <%= money.call(flow[:gross]) %> lançados; <%= money.call(flow[:paid]) %> recebidos"><%= link_to "", calculation_path.call("gross", emission_month: month), class: "fa-chart__bar fa-chart__bar--billed", style: "height: #{max_flow.zero? ? 0 : (flow[:gross] / max_flow * 100).round(1)}%", aria: { label: "Abrir bruto de #{month_name.call(month)}" } %><%= link_to "", calculation_path.call("paid", emission_month: month), class: "fa-chart__bar fa-chart__bar--paid", style: "height: #{max_flow.zero? ? 0 : (flow[:paid] / max_flow * 100).round(1)}%", aria: { label: "Abrir recebido de #{month_name.call(month)}" } %><%= link_to "", calculation_path.call("contingency", emission_month: month), class: "fa-chart__bar fa-chart__bar--retained", style: "height: #{max_flow.zero? ? 0 : (flow[:contingency] / max_flow * 100).round(1)}%", aria: { label: "Abrir contingência de #{month_name.call(month)}" } %></div><small><%= month_name.call(month).split("/").first %></small></div>
               <% end %>
             </div>
           </article>
@@ -68,7 +69,7 @@
             <% max_category = @dashboard.category_breakdown.first&.dig(:gross).to_d %>
             <div class="fa-tax-list">
               <% @dashboard.category_breakdown.each_with_index do |category, index| %>
-                <div class="fa-tax fa-tax--category"><span class="fa-tax__rank"><%= format("%02d", index + 1) %></span><strong><%= category[:category] %></strong><div class="fa-tax__track"><span style="width: <%= max_category.zero? ? 0 : (category[:gross] / max_category * 100).round(1) %>%"></span></div><span><%= compact_money.call(category[:gross]) %></span></div>
+                <%= link_to calculation_path.call("gross", detail_category: category[:category]), class: "fa-tax fa-tax--category fa-tax--detail", aria: { label: "Abrir memória de #{category[:category]}" } do %><span class="fa-tax__rank"><%= format("%02d", index + 1) %></span><strong><%= category[:category] %></strong><div class="fa-tax__track"><span style="width: <%= max_category.zero? ? 0 : (category[:gross] / max_category * 100).round(1) %>%"></span></div><span><%= compact_money.call(category[:gross]) %></span><% end %>
               <% end %>
             </div>
           </article>
@@ -77,10 +78,10 @@
         <section class="fa-grid fa-grid--clients">
           <article class="fa-panel"><header class="fa-panel__header"><div><p class="fa-kicker">Concentração da carteira</p><h2>Maiores clientes</h2></div><span class="fa-panel__tag">TOP 10</span></header><div class="fa-ranking">
             <% max_client = @dashboard.top_clients.first&.dig(:gross).to_d %>
-            <% @dashboard.top_clients.each_with_index do |client, index| %><div class="fa-ranking__row"><span class="fa-ranking__number"><%= index + 1 %></span><div class="fa-ranking__client"><strong><%= client[:client] %></strong><small>Cód. <%= client[:client_code] %> · <%= client[:documents] %> notas</small></div><div class="fa-ranking__track"><span style="width: <%= max_client.zero? ? 0 : (client[:gross] / max_client * 100).round(1) %>%"></span></div><strong class="fa-ranking__value"><%= compact_money.call(client[:gross]) %></strong></div><% end %>
+            <% @dashboard.top_clients.each_with_index do |client, index| %><%= link_to calculation_path.call("gross", detail_client_code: client[:client_code]), class: "fa-ranking__row fa-ranking__row--detail", aria: { label: "Abrir memória de #{client[:client]}" } do %><span class="fa-ranking__number"><%= index + 1 %></span><div class="fa-ranking__client"><strong><%= client[:client] %></strong><small>Cód. <%= client[:client_code] %> · <%= client[:documents] %> notas</small></div><div class="fa-ranking__track"><span style="width: <%= max_client.zero? ? 0 : (client[:gross] / max_client * 100).round(1) %>%"></span></div><strong class="fa-ranking__value"><%= compact_money.call(client[:gross]) %></strong><% end %><% end %>
           </div></article>
           <aside class="fa-panel fa-contingency-note"><p class="fa-kicker">Exposição por cliente</p><h2>Maiores contingências</h2><div class="fa-contingency-list">
-            <% @dashboard.top_contingencies(limit: 6).each do |client| %><div><span><strong><%= client[:client] %></strong><small><%= client[:documents] %> notas</small></span><b><%= compact_money.call(client[:contingency].abs) %></b></div><% end %>
+            <% @dashboard.top_contingencies(limit: 6).each do |client| %><%= link_to calculation_path.call("contingency", detail_client_code: client[:client_code]), class: "fa-contingency-link", aria: { label: "Abrir contingência de #{client[:client]}" } do %><span><strong><%= client[:client] %></strong><small><%= client[:documents] %> notas</small></span><b><%= compact_money.call(client[:contingency].abs) %></b><% end %><% end %>
           </div></aside>
         </section>
 

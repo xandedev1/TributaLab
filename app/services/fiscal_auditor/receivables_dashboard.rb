@@ -9,10 +9,12 @@ module FiscalAuditor
 
       def records
         signature = source_paths.map { |path| [ path, File.mtime(path).to_i, File.size(path) ] }
-        return @records if @signature == signature
+        return @records if @records && @signature == signature
 
+        records = ReceivableSnapshot.new(source_paths).records
+        @records = records
         @signature = signature
-        @records = ReceivableSnapshot.new(source_paths).records
+        records
       end
     end
 

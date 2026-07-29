@@ -1,0 +1,62 @@
+<% content_for :title, "#{@result.filename} | Visualizador de planilha" %>
+<% base_params = { source_kind: @result.source_kind, filename: @result.filename, sheet: @result.sheet, return_to: @return_path } %>
+
+<div class="fa-shell" data-controller="spreadsheet-viewer">
+  <%= render "fiscal_auditor/shared/sidebar", active: @active_module, status: "Planilha protegida", detail: @result.filename %>
+
+  <main class="fa-main fa-spreadsheet-page">
+    <header class="fa-topbar">
+      <div><p class="fa-kicker">Registro integral da origem</p><h1>Visualizador de planilha</h1></div>
+      <%= link_to @return_path, class: "fa-back-link" do %><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m15 18-6-6 6-6"/></svg>Voltar à memória<% end %>
+    </header>
+
+    <section class="fa-sheet-toolbar" aria-label="Controles da planilha">
+      <div class="fa-sheet-title">
+        <span class="fa-source">XL</span>
+        <div><strong><%= @result.filename %></strong><small><%= number_with_delimiter(@result.total_rows, delimiter: ".") %> linhas · <%= number_with_delimiter(@result.total_columns, delimiter: ".") %> colunas</small></div>
+      </div>
+      <%= form_with url: fiscal_auditor_spreadsheet_path, method: :get, class: "fa-sheet-jump" do |form| %>
+        <%= form.hidden_field :source_kind, value: @result.source_kind %>
+        <%= form.hidden_field :filename, value: @result.filename %>
+        <%= form.hidden_field :sheet, value: @result.sheet %>
+        <%= form.hidden_field :return_to, value: @return_path %>
+        <%= form.label :row, "Ir para linha" %>
+        <%= form.number_field :row, value: @result.highlighted_row, min: 1, max: @result.total_rows, placeholder: "1" %>
+        <%= form.submit "Ir" %>
+      <% end %>
+    </section>
+
+    <div class="fa-sheet-formula" aria-label="Localização atual">
+      <strong><%= @result.highlighted_row ? "#{@result.highlighted_row}:#{@result.highlighted_row}" : @result.sheet %></strong>
+      <span><%= @result.filename %> / <%= @result.sheet %></span>
+    </div>
+
+    <section class="fa-spreadsheet-grid" data-spreadsheet-viewer-target="grid">
+      <table>
+        <thead><tr><th class="fa-sheet-corner"></th><% @result.columns.each do |column| %><th><%= column %></th><% end %></tr></thead>
+        <tbody>
+          <% @result.rows.each do |row| %>
+            <% focused = row["number"] == @result.highlighted_row %>
+            <tr class="<%= "fa-sheet-row--focused" if focused %>" <%= "data-spreadsheet-viewer-target=focusedRow" if focused %>>
+              <th scope="row"><%= number_with_delimiter(row["number"], delimiter: ".") %></th>
+              <% row["cells"].each do |value| %><td title="<%= value %>"><%= value.presence || " " %></td><% end %>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </section>
+
+    <footer class="fa-sheet-footer">
+      <nav class="fa-sheet-tabs" aria-label="Abas da planilha">
+        <% @result.sheets.each do |sheet| %>
+          <%= link_to sheet, fiscal_auditor_spreadsheet_path(base_params.merge(sheet: sheet, row: @result.highlighted_row)), class: ("fa-sheet-tab--active" if sheet == @result.sheet) %>
+        <% end %>
+      </nav>
+      <nav class="fa-sheet-pages" aria-label="Paginação da planilha">
+        <% if @result.page > 1 %><%= link_to "Anterior", fiscal_auditor_spreadsheet_path(base_params.merge(page: @result.page - 1)), rel: "prev" %><% end %>
+        <span>Página <strong><%= @result.page %></strong> de <strong><%= @result.total_pages %></strong></span>
+        <% if @result.page < @result.total_pages %><%= link_to "Próxima", fiscal_auditor_spreadsheet_path(base_params.merge(page: @result.page + 1)), rel: "next" %><% end %>
+      </nav>
+    </footer>
+  </main>
+</div>

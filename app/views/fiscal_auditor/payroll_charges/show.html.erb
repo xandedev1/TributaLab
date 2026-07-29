@@ -1,0 +1,137 @@
+<% content_for :title, "Descontos e encargos | Auditor Fiscal" %>
+<% month_abbreviations = %w[jan fev mar abr mai jun jul ago set out nov dez] %>
+<% month_name = ->(month) { date = Date.strptime(month, "%Y-%m"); "#{month_abbreviations.fetch(date.month - 1)}/#{date.year}" } %>
+<% money = ->(value) { number_to_currency(value, unit: "R$ ", separator: ",", delimiter: ".") } %>
+<% charge_source_path = ->(entry) { fiscal_auditor_spreadsheet_path(source_kind: "payroll_charges", filename: entry.source, row: entry.source_row, return_to: request.fullpath) } %>
+<% payroll_source_path = ->(record) { fiscal_auditor_spreadsheet_path(source_kind: "payroll", filename: record.source, row: record.source_row, return_to: request.fullpath) } %>
+<% totals = @dashboard.totals %>
+
+<div class="fa-shell" data-controller="fiscal-dashboard" data-action="click@window->fiscal-dashboard#closePeriodSelectors">
+  <%= render "fiscal_auditor/shared/sidebar", active: :payroll, status: "Encargos conciliados", detail: "INSS e FGTS de 2025" %>
+
+  <main class="fa-main">
+    <header class="fa-topbar">
+      <div><p class="fa-kicker">Reconstrução auditável do custo de pessoal</p><h1>Descontos e encargos</h1></div>
+      <div class="fa-topbar__meta"><span class="fa-pill"><span class="fa-status-dot"></span> Fontes locais conciliadas</span><span class="fa-avatar">XA</span><span><strong>Xande</strong><small>Auditor responsável</small></span></div>
+    </header>
+
+    <nav class="fa-payroll-tabs" aria-label="Visões da folha">
+      <%= link_to "Visão da folha", fiscal_auditor_payroll_path %>
+      <%= link_to "Descontos e encargos", fiscal_auditor_payroll_charges_path, class: "fa-payroll-tab--active", aria: { current: "page" } %>
+    </nav>
+
+    <% if @dashboard.available? %>
+      <section class="fa-filterbar fa-filterbar--payroll">
+        <%= form_with url: fiscal_auditor_payroll_charges_path, method: :get, class: "fa-filters fa-filters--payroll" do %>
+          <%= render "fiscal_auditor/reconciliation/period_selector", name: "periods", label: "Competência dos encargos", available_periods: @available_periods, selected_periods: @dashboard.periods, month_name: month_name %>
+          <button class="fa-button fa-button--filter" type="submit"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6h18M7 12h10M10 18h4"/></svg>Aplicar leitura</button>
+          <% if @dashboard.periods.any? %><%= link_to "Limpar", fiscal_auditor_payroll_charges_path, class: "fa-clear" %><% end %>
+        <% end %>
+        <div class="fa-filterbar__count"><strong><%= @dashboard.rows.size %></strong><span>competências na conta</span></div>
+      </section>
+
+      <% if @dashboard.rows.any? %>
+        <section class="fa-charge-equation" aria-labelledby="charge-equation-title">
+          <header><div><p class="fa-kicker fa-kicker--light">Conta completa do período</p><h2 id="charge-equation-title">Da folha líquida à folha ajustada</h2></div><small>Sem rateio por cliente</small></header>
+          <div class="fa-charge-equation__flow">
+            <div><span>Folha líquida existente</span><strong><%= money.call(totals[:payroll_net]) %></strong></div>
+            <b aria-hidden="true">+</b>
+            <div><span>INSS bruto informado</span><strong><%= money.call(totals[:inss_gross]) %></strong></div>
+            <b aria-hidden="true">−</b>
+            <div class="fa-charge-equation__deduction"><span>Descontos INSS da folha</span><strong><%= money.call(totals[:inss_discounts]) %></strong></div>
+            <b aria-hidden="true">+</b>
+            <div><span>FGTS a adicionar</span><strong><%= money.call(totals[:fgts_to_add]) %></strong></div>
+            <b aria-hidden="true">=</b>
+            <div class="fa-charge-equation__result"><span>Folha ajustada</span><strong><%= money.call(totals[:adjusted_payroll]) %></strong></div>
+          </div>
+          <footer>
+            <span>INSS após descontos <strong><%= money.call(totals[:inss_to_add]) %></strong></span>
+            <span>Total somado à folha <strong><%= money.call(totals[:charges_to_add]) %></strong></span>
+          </footer>
+        </section>
+
+        <section class="fa-charge-kpis" aria-label="Totais da conciliação">
+          <article><span>INSS mensal + 13º</span><strong><%= money.call(totals[:inss_gross]) %></strong><small>Valor antes dos descontos da folha</small></article>
+          <article class="fa-charge-kpi--deduction"><span>(−) Descontos de INSS</span><strong><%= money.call(totals[:inss_discounts]) %></strong><small>Rubricas 566, 596, 641 e 757</small></article>
+          <article><span>(=) INSS a adicionar</span><strong><%= money.call(totals[:inss_to_add]) %></strong><small>INSS bruto menos descontos já lançados</small></article>
+          <article><span>(+) FGTS a adicionar</span><strong><%= money.call(totals[:fgts_to_add]) %></strong><small>Mensal + 13º em dezembro</small></article>
+          <article class="fa-charge-kpi--result"><span>(=) Encargos adicionais</span><strong><%= money.call(totals[:charges_to_add]) %></strong><small>Valor efetivamente somado à folha</small></article>
+        </section>
+
+        <section class="fa-panel fa-documents fa-charge-table">
+          <header class="fa-panel__header"><div><p class="fa-kicker">Conferência horizontal</p><h2>Conta mês a mês</h2></div><span class="fa-panel__tag"><%= @dashboard.rows.size %> <%= @dashboard.rows.one? ? "competência" : "competências" %><%= " · dezembro inclui 13º" if @dashboard.rows.any? { |row| row[:period] == "2025-12" } %></span></header>
+          <div class="fa-table-wrap">
+            <table class="fa-table fa-table--charges">
+              <thead><tr><th>Competência</th><th>Folha líquida</th><th>INSS bruto</th><th>(−) Descontos INSS</th><th>(=) INSS a adicionar</th><th>FGTS mensal</th><th>FGTS 13º</th><th>Encargos adicionados</th><th>Folha ajustada</th></tr></thead>
+              <tbody>
+                <% @dashboard.rows.each do |row| %>
+                  <tr><td><strong><%= month_name.call(row[:period]) %></strong></td><td><%= money.call(row[:payroll_net]) %></td><td><%= money.call(row[:inss_gross]) %></td><td class="fa-charge-deduction"><%= money.call(row[:inss_discounts]) %></td><td><strong><%= money.call(row[:inss_to_add]) %></strong></td><td><%= money.call(row[:fgts_monthly]) %></td><td><%= row[:fgts_thirteenth].zero? ? "—" : money.call(row[:fgts_thirteenth]) %></td><td><strong><%= money.call(row[:charges_to_add]) %></strong></td><td class="fa-charge-adjusted"><strong><%= money.call(row[:adjusted_payroll]) %></strong></td></tr>
+                <% end %>
+              </tbody>
+              <tfoot class="fa-table-total"><tr><th>Total filtrado</th><td><strong><%= money.call(totals[:payroll_net]) %></strong></td><td><strong><%= money.call(totals[:inss_gross]) %></strong></td><td><strong><%= money.call(totals[:inss_discounts]) %></strong></td><td><strong><%= money.call(totals[:inss_to_add]) %></strong></td><td><strong><%= money.call(totals[:fgts_monthly]) %></strong></td><td><strong><%= money.call(totals[:fgts_thirteenth]) %></strong></td><td><strong><%= money.call(totals[:charges_to_add]) %></strong></td><td><strong><%= money.call(totals[:adjusted_payroll]) %></strong></td></tr></tfoot>
+            </table>
+          </div>
+        </section>
+
+        <section class="fa-charge-audit" aria-labelledby="charge-audit-title">
+          <header><div><p class="fa-kicker">Memória documental</p><h2 id="charge-audit-title">Cada etapa da conta</h2></div><p>Abra uma competência para conferir os valores, rubricas e linhas de origem.</p></header>
+
+          <% @dashboard.rows.each do |row| %>
+            <details class="fa-charge-month" <%= "open" if @dashboard.rows.one? %>>
+              <summary><span><strong><%= month_name.call(row[:period]) %></strong><small><%= row[:fgts_thirteenth].positive? ? "Inclui encargos do 13º" : "Encargos mensais" %></small></span><span>Somado à folha <strong><%= money.call(row[:charges_to_add]) %></strong></span><span>Folha ajustada <strong><%= money.call(row[:adjusted_payroll]) %></strong></span></summary>
+              <div class="fa-charge-month__body">
+                <ol class="fa-charge-steps">
+                  <li><span>1</span><div><small>Folha líquida existente</small><strong><%= money.call(row[:payroll_net]) %></strong></div></li>
+                  <li><span>2</span><div><small>INSS bruto mensal<%= " + 13º" if row[:inss_thirteenth].positive? %></small><strong><%= money.call(row[:inss_gross]) %></strong></div></li>
+                  <li class="fa-charge-step--deduction"><span>3</span><div><small>(−) Descontos de INSS da folha</small><strong><%= money.call(row[:inss_discounts]) %></strong></div></li>
+                  <li><span>4</span><div><small>(=) INSS a adicionar</small><strong><%= money.call(row[:inss_to_add]) %></strong></div></li>
+                  <li><span>5</span><div><small>(+) FGTS mensal<%= " + 13º" if row[:fgts_thirteenth].positive? %></small><strong><%= money.call(row[:fgts_to_add]) %></strong></div></li>
+                  <li><span>6</span><div><small>(=) Total somado à folha</small><strong><%= money.call(row[:charges_to_add]) %></strong></div></li>
+                  <li class="fa-charge-step--result"><span>7</span><div><small>(=) Folha líquida ajustada</small><strong><%= money.call(row[:adjusted_payroll]) %></strong></div></li>
+                </ol>
+
+                <div class="fa-charge-evidence">
+                  <section>
+                    <header><span>01</span><div><strong>INSS informado</strong><small><%= money.call(row[:inss_gross]) %> antes dos descontos</small></div></header>
+                    <table><thead><tr><th>Código</th><th>Descrição</th><th>Parcela</th><th>Origem</th><th>Valor</th></tr></thead><tbody>
+                      <% @dashboard.inss_components(row[:period]).each do |entry| %>
+                        <tr><td><%= entry.code %></td><td><%= entry.description %></td><td><%= entry.source_column == "N" ? "13º" : "Mensal" %></td><td><%= link_to charge_source_path.call(entry), class: "fa-source-reference" do %><%= entry.source %><small>Linha <%= entry.source_row %> · coluna <%= entry.source_column %></small><% end %></td><td><strong><%= money.call(entry.amount) %></strong></td></tr>
+                      <% end %>
+                    </tbody></table>
+                  </section>
+
+                  <section>
+                    <header><span>02</span><div><strong>Descontos retirados do INSS</strong><small><%= money.call(row[:inss_discounts]) %> já registrados na folha</small></div></header>
+                    <table><thead><tr><th>Rubrica</th><th>Descrição</th><th>Linhas da folha</th><th>Valor abatido</th></tr></thead><tbody>
+                      <% @dashboard.discount_components(row[:period]).each do |component| %>
+                        <tr><td><%= component[:code] %></td><td><%= component[:description] %></td><td><details class="fa-source-detail"><summary><strong><%= component[:records].size %> linhas de origem</strong></summary><div><% component[:records].each do |record| %><%= link_to "#{record.source} · linha #{record.source_row}", payroll_source_path.call(record), class: "fa-source-reference" %><% end %></div></details></td><td class="fa-charge-deduction"><strong><%= money.call(component[:amount]) %></strong></td></tr>
+                      <% end %>
+                    </tbody></table>
+                  </section>
+
+                  <section>
+                    <header><span>03</span><div><strong>FGTS adicionado</strong><small><%= money.call(row[:fgts_to_add]) %> pelo totalizador líquido</small></div></header>
+                    <table><thead><tr><th>Parcela</th><th>Planilha</th><th>Totalizador usado</th><th>Valor</th></tr></thead><tbody>
+                      <% @dashboard.fgts_components(row[:period]).each do |entry| %>
+                        <tr><td><%= entry.kind == :thirteenth ? "FGTS 13º" : "FGTS mensal" %></td><td><%= link_to entry.source, charge_source_path.call(entry), class: "fa-source-reference" %></td><td><code>Q<%= entry.source_row %> = <%= entry.formula %></code></td><td><strong><%= money.call(entry.amount) %></strong></td></tr>
+                      <% end %>
+                    </tbody></table>
+                  </section>
+                </div>
+              </div>
+            </details>
+          <% end %>
+        </section>
+
+        <section class="fa-charge-method-note">
+          <strong>Critério de leitura</strong>
+          <p>O arquivo de INSS é consolidado por competência e não contém código de cliente. Por isso, estes encargos corrigem a folha mensal global sem criar rateio por cliente. O cruzamento cliente × competência da visão principal permanece inalterado. Em setembro, outubro e dezembro, o FGTS usa o último totalizador líquido da coluna Q, preservando as exclusões manuais registradas nas próprias planilhas.</p>
+        </section>
+      <% else %>
+        <section class="fa-empty fa-empty--module"><div class="fa-empty__icon">EC</div><p class="fa-kicker">Filtro sem resultado</p><h2>Nenhuma competência corresponde ao filtro.</h2><p>Limpe a seleção para voltar ao período completo.</p></section>
+      <% end %>
+    <% else %>
+      <section class="fa-empty fa-empty--module"><div class="fa-empty__icon">EC</div><p class="fa-kicker">Fontes não localizadas</p><h2>As bases de INSS e FGTS ainda não estão disponíveis.</h2><p>Adicione os arquivos XLSX em <code>storage/private/fiscal_auditor/payroll_charges</code>.</p></section>
+    <% end %>
+  </main>
+</div>

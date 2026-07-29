@@ -1,0 +1,26 @@
+<% selected_labels = selected_statuses.map { |status| status_labels.fetch(status.to_sym) } %>
+
+<div class="fa-period-select fa-status-select" data-period-selector data-empty-summary="Todas as situações">
+  <button type="button" class="fa-period-select__trigger" aria-haspopup="true" aria-expanded="false" data-action="click->fiscal-dashboard#togglePeriodSelector">
+    <span>
+      <small>Situação</small>
+      <strong data-period-summary><%= selected_labels.any? ? selected_labels.join(", ") : "Todas as situações" %></strong>
+    </span>
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+  </button>
+
+  <div class="fa-period-select__menu">
+    <header>
+      <span>Situações disponíveis</span>
+      <button type="button" data-action="click->fiscal-dashboard#clearPeriodSelector">Selecionar todas</button>
+    </header>
+    <div class="fa-status-select__options">
+      <% FiscalAuditor::PayrollDashboard::STATUSES.each do |status| %>
+        <label>
+          <%= check_box_tag "statuses[]", status, selected_statuses.include?(status), id: "statuses_#{status}", data: { action: "change->fiscal-dashboard#periodChanged", period_label: status_labels.fetch(status.to_sym) } %>
+          <span><%= status_labels.fetch(status.to_sym) %></span>
+        </label>
+      <% end %>
+    </div>
+  </div>
+</div>

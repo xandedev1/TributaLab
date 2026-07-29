@@ -82,7 +82,7 @@ export default class extends Controller {
 
   updatePeriodSummary(selector) {
     const labels = [...selector.querySelectorAll('input[type="checkbox"]:checked')].map((input) => input.dataset.periodLabel)
-    selector.querySelector("[data-period-summary]").textContent = labels.length > 0 ? labels.join(", ") : "Todos os anos e meses"
+    selector.querySelector("[data-period-summary]").textContent = labels.length > 0 ? labels.join(", ") : selector.dataset.emptySummary
   }
 
   search() {
@@ -90,5 +90,15 @@ export default class extends Controller {
     this.rowTargets.forEach((row) => {
       row.hidden = query.length > 0 && !row.dataset.search.includes(query)
     })
+  }
+
+  visitRow(event) {
+    if (event.target.closest("a, button, input, select, label")) return
+
+    const href = event.currentTarget.dataset.href
+    if (!href) return
+
+    event.preventDefault()
+    window.location.assign(href)
   }
 }

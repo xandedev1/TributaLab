@@ -10,10 +10,12 @@ module FiscalAuditor
 
       def records
         signature = source_paths.map { |path| [ path, File.mtime(path).to_i, File.size(path) ] }
-        return @records if @signature == signature
+        return @records if @records && @signature == signature
 
+        records = ExpenseSnapshot.new(source_paths).records
+        @records = records
         @signature = signature
-        @records = ExpenseSnapshot.new(source_paths).records
+        records
       end
     end
 
@@ -44,6 +46,10 @@ module FiscalAuditor
       @records ||= records_for_period_and_source.select do |record|
         identification.blank? || record.identification == identification
       end
+    end
+
+    def receivable_records
+      filtered_receivables
     end
 
     def totals

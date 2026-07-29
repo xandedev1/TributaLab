@@ -3,6 +3,7 @@
 <% month_name = ->(month) { date = Date.strptime(month, "%Y-%m"); "#{month_abbreviations.fetch(date.month - 1)}/#{date.year}" } %>
 <% money = ->(value) { number_to_currency(value, unit: "R$ ", separator: ",", delimiter: ".") } %>
 <% compact_money = ->(value) { value >= 1_000_000 ? "R$ #{number_with_precision(value / 1_000_000, precision: 1, separator: ",")} mi" : money.call(value) } %>
+<% calculation_path = ->(metric, extra = {}) { fiscal_auditor_calculation_detail_path("billing", metric, request.query_parameters.except("page").merge(extra.stringify_keys)) } %>
 
 <div class="fa-shell" data-controller="fiscal-dashboard" data-action="click@window->fiscal-dashboard#closeCompetences">
   <%= render "fiscal_auditor/shared/sidebar", active: :billing, status: "Base consolidada", detail: "#{@dashboard.source_count} arquivos processados" %>
@@ -75,21 +76,25 @@
       <%= turbo_frame_tag "fiscal-results", target: "_top" do %>
         <section class="fa-kpis" aria-label="Indicadores principais">
           <article class="fa-kpi fa-kpi--billed">
+            <%= link_to "Abrir memória de cálculo do faturado", calculation_path.call("billed"), class: "fa-detail-hit" %>
             <div class="fa-kpi__icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 3v18h18M7 16l4-5 3 3 6-8"/></svg></div>
             <p>Faturado</p><strong><%= money.call(@dashboard.totals[:billed]) %></strong>
             <small><%= number_with_delimiter(@dashboard.records.size, delimiter: ".") %> documentos fiscais</small>
           </article>
           <article class="fa-kpi fa-kpi--retained">
+            <%= link_to "Abrir memória de cálculo do total retido", calculation_path.call("retained"), class: "fa-detail-hit" %>
             <div class="fa-kpi__icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div>
             <p>Total retido</p><strong><%= money.call(@dashboard.totals[:retained]) %></strong>
             <small><%= number_with_precision(@dashboard.retention_rate, precision: 2, separator: ",") %>% do faturamento</small>
           </article>
           <article class="fa-kpi fa-kpi--net">
+            <%= link_to "Abrir memória de cálculo do valor líquido", calculation_path.call("net"), class: "fa-detail-hit" %>
             <div class="fa-kpi__icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m20 6-11 11-5-5"/></svg></div>
             <p>Valor líquido</p><strong><%= money.call(@dashboard.totals[:net]) %></strong>
             <small><%= number_with_precision(100 - @dashboard.retention_rate, precision: 2, separator: ",") %>% convertido em receita líquida</small>
           </article>
           <article class="fa-kpi fa-kpi--quality">
+            <%= link_to "Abrir memória da conciliação matemática", calculation_path.call("reconciliation"), class: "fa-detail-hit" %>
             <div class="fa-kpi__icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z"/><path d="m9 12 2 2 4-4"/></svg></div>
             <p>Conciliação</p><strong><%= @dashboard.discrepancy_count.zero? ? "100%" : number_with_delimiter(@dashboard.discrepancy_count) %></strong>
             <small><%= @dashboard.discrepancy_count.zero? ? "Valores matematicamente conciliados" : "documentos com diferença acima de R$ 0,05" %></small>
@@ -107,8 +112,8 @@
               <% @dashboard.monthly_flow.each do |month, flow| %>
                 <div class="fa-chart__column">
                   <div class="fa-chart__bars" title="<%= month_name.call(month) %>: <%= money.call(flow[:billed]) %> faturados">
-                    <span class="fa-chart__bar fa-chart__bar--billed" style="height: <%= max_flow.zero? ? 0 : (flow[:billed] / max_flow * 100).round(1) %>%"></span>
-                    <span class="fa-chart__bar fa-chart__bar--retained" style="height: <%= max_flow.zero? ? 0 : (flow[:retained] / max_flow * 100).round(1) %>%"></span>
+                    <%= link_to "", calculation_path.call("billed", emission_month: month), class: "fa-chart__bar fa-chart__bar--billed", style: "height: #{max_flow.zero? ? 0 : (flow[:billed] / max_flow * 100).round(1)}%", aria: { label: "Abrir faturamento de #{month_name.call(month)}" } %>
+                    <%= link_to "", calculation_path.call("retained", emission_month: month), class: "fa-chart__bar fa-chart__bar--retained", style: "height: #{max_flow.zero? ? 0 : (flow[:retained] / max_flow * 100).round(1)}%", aria: { label: "Abrir retenções de #{month_name.call(month)}" } %>
                   </div>
                   <small><%= month_name.call(month).split("/").first %></small>
                 </div>
@@ -121,12 +126,12 @@
             <% max_tax = @dashboard.tax_totals.values.max.to_d %>
             <div class="fa-tax-list">
               <% @dashboard.tax_totals.sort_by { |_, value| -value }.each_with_index do |(tax, value), index| %>
-                <div class="fa-tax">
+                <%= link_to calculation_path.call("tax_#{tax}"), class: "fa-tax fa-tax--detail", aria: { label: "Abrir memória de #{tax}" } do %>
                   <span class="fa-tax__rank"><%= format("%02d", index + 1) %></span>
                   <strong><%= tax %></strong>
                   <div class="fa-tax__track"><span style="width: <%= max_tax.zero? ? 0 : (value / max_tax * 100).round(1) %>%"></span></div>
                   <span><%= compact_money.call(value) %></span>
-                </div>
+                <% end %>
               <% end %>
             </div>
           </article>
@@ -138,12 +143,12 @@
             <div class="fa-ranking">
               <% max_client = @dashboard.top_clients.first&.dig(:billed).to_d %>
               <% @dashboard.top_clients.each_with_index do |client, index| %>
-                <div class="fa-ranking__row">
+                <%= link_to calculation_path.call("billed", detail_cnpj: client[:cnpj]), class: "fa-ranking__row fa-ranking__row--detail", aria: { label: "Abrir memória de #{client[:client]}" } do %>
                   <span class="fa-ranking__number"><%= index + 1 %></span>
                   <div class="fa-ranking__client"><strong><%= client[:client].presence || "Cliente sem identificação" %></strong><small><%= client[:cnpj] %> · <%= client[:documents] %> docs</small></div>
                   <div class="fa-ranking__track"><span style="width: <%= max_client.zero? ? 0 : (client[:billed] / max_client * 100).round(1) %>%"></span></div>
                   <strong class="fa-ranking__value"><%= compact_money.call(client[:billed]) %></strong>
-                </div>
+                <% end %>
               <% end %>
             </div>
           </article>
@@ -154,8 +159,8 @@
             <div class="fa-audit-score"><strong><%= @dashboard.discrepancy_count.zero? ? "A" : "B" %></strong><span>Qualidade<br>da conciliação</span></div>
             <dl>
               <div><dt>Arquivos</dt><dd><%= @dashboard.source_count %>/12</dd></div>
-              <div><dt>Cancelados</dt><dd><%= number_with_delimiter(@dashboard.cancelled_count, delimiter: ".") %></dd></div>
-              <div><dt>Divergências</dt><dd><%= number_with_delimiter(@dashboard.discrepancy_count, delimiter: ".") %></dd></div>
+              <div><dt>Cancelados</dt><dd><%= link_to number_with_delimiter(@dashboard.cancelled_count, delimiter: "."), calculation_path.call("cancelled"), class: "fa-metric-link" %></dd></div>
+              <div><dt>Divergências</dt><dd><%= link_to number_with_delimiter(@dashboard.discrepancy_count, delimiter: "."), calculation_path.call("reconciliation"), class: "fa-metric-link" %></dd></div>
             </dl>
           </aside>
         </section>

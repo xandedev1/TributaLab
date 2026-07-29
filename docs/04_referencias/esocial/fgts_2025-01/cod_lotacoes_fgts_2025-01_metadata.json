@@ -1,0 +1,36 @@
+{
+  "source_url": "https://esocial.gov.br/portal/Totalizador/FGTSPorEmpregador?id=0fa4be5c-4ff5-422d-8972-bb8336346f58",
+  "extracted_at": "2026-07-28T19:16:48.162Z",
+  "source_path": "tmp/esocial_fgts_2025-01.json",
+  "source_sha256": "02ef37af5b8a727beced77fba8c669500026e64bc9e435fb7428f2537a71e604",
+  "competence": "01/2025",
+  "establishment": {
+    "registration": "05.969.071/0001-10",
+    "name": "APPA SERVICOS TEMPORARIOS E EFETIVOS LTDA"
+  },
+  "closing_receipt": "1.1.0000000040589883915",
+  "lotation_count": 147,
+  "lotation_type_counts": {
+    "04": 143,
+    "01": 4
+  },
+  "fgts_row_count": 296,
+  "calculation_base_counts": {
+    "11 - FGTS mensal": 145,
+    "12 - FGTS 13° salário": 22,
+    "21 - FGTS mês da rescisão": 47,
+    "23 - FGTS aviso prévio indenizado": 36,
+    "22 - FGTS 13° salário rescisório": 32,
+    "13 - FGTS (período anterior) mensal": 10,
+    "14 - FGTS (período anterior) 13º salário": 3,
+    "15 - FGTS mensal - Aprendiz/Contrato Verde e Amarelo": 1
+  },
+  "incidence_indicator_counts": {
+    "1 - Normal (incidência de FGTS)": 296
+  },
+  "output_files": {
+    "markdown": "C:/Users/xandao/Documents/GitHub/TributaLab/docs/04_referencias/esocial/fgts_2025-01/cod_lotacoes_fgts_2025-01.md",
+    "postgresql_csv": "C:/Users/xandao/Documents/GitHub/TributaLab/docs/04_referencias/esocial/fgts_2025-01/cod_lotacoes_fgts_2025-01_postgresql.csv",
+    "metadata": "C:/Users/xandao/Documents/GitHub/TributaLab/docs/04_referencias/esocial/fgts_2025-01/cod_lotacoes_fgts_2025-01_metadata.json"
+  }
+}

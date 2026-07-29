@@ -3,6 +3,7 @@
 <% month_name = ->(month) { date = Date.strptime(month, "%Y-%m"); "#{month_abbreviations.fetch(date.month - 1)}/#{date.year}" } %>
 <% money = ->(value) { number_to_currency(value, unit: "R$ ", separator: ",", delimiter: ".") } %>
 <% compact_money = ->(value) { value.abs >= 1_000_000 ? "R$ #{number_with_precision(value / 1_000_000, precision: 1, separator: ",")} mi" : money.call(value) } %>
+<% calculation_path = ->(metric) { fiscal_auditor_calculation_detail_path("expenses", metric, request.query_parameters.except("page")) } %>
 
 <div class="fa-shell" data-controller="fiscal-dashboard" data-action="click@window->fiscal-dashboard#closePeriodSelectors">
   <%= render "fiscal_auditor/shared/sidebar", active: :expenses, status: "Pagamentos consolidados", detail: "#{@dashboard.source_count} arquivo XLSB processado" %>
@@ -24,15 +25,15 @@
       </section>
 
       <section class="fa-kpis fa-kpis--expenses" aria-label="Indicadores de despesas">
-        <article class="fa-kpi fa-kpi--net"><div class="fa-kpi__icon"><svg viewBox="0 0 24 24"><path d="M3 6h18v12H3zM7 10h4M17 14h.01"/></svg></div><p>Recebido real</p><strong><%= money.call(@dashboard.totals[:received]) %></strong><small>Entradas com data de recebimento no período</small></article>
-        <article class="fa-kpi fa-kpi--billed"><div class="fa-kpi__icon"><svg viewBox="0 0 24 24"><path d="M4 4h16v16H4zM8 12h8M12 8v8"/></svg></div><p>Despesas de competência</p><strong><%= money.call(@dashboard.totals[:competence]) %></strong><small>Custo operacional pertencente ao período</small></article>
-        <article class="fa-kpi fa-kpi--retained"><div class="fa-kpi__icon"><svg viewBox="0 0 24 24"><path d="M12 3v18M5 8h14M7 16h10"/></svg></div><p>Despesas de não competência</p><strong><%= money.call(@dashboard.totals[:non_competence]) %></strong><small>Dívidas antigas, repasses, acordos e financiamentos</small></article>
-        <article class="fa-kpi fa-kpi--quality"><div class="fa-kpi__icon"><svg viewBox="0 0 24 24"><path d="m5 9 7-5 7 5v10H5zM9 19v-6h6v6"/></svg></div><p>Total pago no período</p><strong><%= money.call(@dashboard.totals[:paid]) %></strong><small>Competência e não competência somadas</small></article>
+        <article class="fa-kpi fa-kpi--net"><%= link_to "Abrir memória do recebido real", calculation_path.call("received"), class: "fa-detail-hit" %><div class="fa-kpi__icon"><svg viewBox="0 0 24 24"><path d="M3 6h18v12H3zM7 10h4M17 14h.01"/></svg></div><p>Recebido real</p><strong><%= money.call(@dashboard.totals[:received]) %></strong><small>Entradas com data de recebimento no período</small></article>
+        <article class="fa-kpi fa-kpi--billed"><%= link_to "Abrir memória das despesas de competência", calculation_path.call("competence"), class: "fa-detail-hit" %><div class="fa-kpi__icon"><svg viewBox="0 0 24 24"><path d="M4 4h16v16H4zM8 12h8M12 8v8"/></svg></div><p>Despesas de competência</p><strong><%= money.call(@dashboard.totals[:competence]) %></strong><small>Custo operacional pertencente ao período</small></article>
+        <article class="fa-kpi fa-kpi--retained"><%= link_to "Abrir memória das despesas de não competência", calculation_path.call("non_competence"), class: "fa-detail-hit" %><div class="fa-kpi__icon"><svg viewBox="0 0 24 24"><path d="M12 3v18M5 8h14M7 16h10"/></svg></div><p>Despesas de não competência</p><strong><%= money.call(@dashboard.totals[:non_competence]) %></strong><small>Dívidas antigas, repasses, acordos e financiamentos</small></article>
+        <article class="fa-kpi fa-kpi--quality"><%= link_to "Abrir memória do total pago", calculation_path.call("paid"), class: "fa-detail-hit" %><div class="fa-kpi__icon"><svg viewBox="0 0 24 24"><path d="m5 9 7-5 7 5v10H5zM9 19v-6h6v6"/></svg></div><p>Total pago no período</p><strong><%= money.call(@dashboard.totals[:paid]) %></strong><small>Competência e não competência somadas</small></article>
       </section>
 
       <section class="fa-grid fa-grid--expenses-summary">
-        <article class="fa-panel fa-expense-result <%= "fa-expense-result--negative" if @dashboard.competence_balance.negative? %>"><p class="fa-kicker">Leitura operacional</p><h2>Recebido menos despesas de competência</h2><strong><%= money.call(@dashboard.competence_balance) %></strong><small>Mostra o resultado do período sem dívidas e repasses de outras competências.</small></article>
-        <article class="fa-panel fa-expense-result <%= "fa-expense-result--negative" if @dashboard.cash_balance.negative? %>"><p class="fa-kicker">Leitura de caixa</p><h2>Recebido menos todos os pagamentos</h2><strong><%= money.call(@dashboard.cash_balance) %></strong><small>Explica a variação efetiva do caixa depois de todas as saídas pagas.</small></article>
+        <article class="fa-panel fa-expense-result <%= "fa-expense-result--negative" if @dashboard.competence_balance.negative? %>"><%= link_to "Abrir memória do resultado operacional", calculation_path.call("competence_balance"), class: "fa-detail-hit" %><p class="fa-kicker">Leitura operacional</p><h2>Recebido menos despesas de competência</h2><strong><%= money.call(@dashboard.competence_balance) %></strong><small>Mostra o resultado do período sem dívidas e repasses de outras competências.</small></article>
+        <article class="fa-panel fa-expense-result <%= "fa-expense-result--negative" if @dashboard.cash_balance.negative? %>"><%= link_to "Abrir memória do resultado de caixa", calculation_path.call("cash_balance"), class: "fa-detail-hit" %><p class="fa-kicker">Leitura de caixa</p><h2>Recebido menos todos os pagamentos</h2><strong><%= money.call(@dashboard.cash_balance) %></strong><small>Explica a variação efetiva do caixa depois de todas as saídas pagas.</small></article>
       </section>
 
       <section class="fa-grid fa-grid--charts">

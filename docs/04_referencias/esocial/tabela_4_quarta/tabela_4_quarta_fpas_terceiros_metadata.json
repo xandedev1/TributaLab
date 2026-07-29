@@ -1,0 +1,14 @@
+{
+  "source_url": "https://suporte.quarta.com.br/LayOuts/eSocial/Tabelas/Tabela_04.htm",
+  "source_html_path": "tmp/quarta_tabela_04.html",
+  "downloaded_at": "2026-07-28T15:04:24-03:00",
+  "source_sha256": "f2a0dc17347903aaf2059ea71df47ecd49695f2377ecaefc74bfc738ed265560",
+  "record_count": 129,
+  "fpas_count": 26,
+  "output_files": {
+    "markdown": "docs/04_referencias/esocial/tabela_4_quarta/tabela_4_quarta_fpas_terceiros.md",
+    "csv": "docs/04_referencias/esocial/tabela_4_quarta/tabela_4_quarta_fpas_terceiros.csv",
+    "postgresql_csv": "docs/04_referencias/esocial/tabela_4_quarta/tabela_4_quarta_fpas_terceiros_postgresql.csv",
+    "metadata": "docs/04_referencias/esocial/tabela_4_quarta/tabela_4_quarta_fpas_terceiros_metadata.json"
+  }
+}

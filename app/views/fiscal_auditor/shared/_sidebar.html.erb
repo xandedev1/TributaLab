@@ -15,6 +15,10 @@
       <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 7h11l-3-3M17 17H6l3 3M18 7l-3 3M6 17l3-3"/></svg>
       Cruzamento
     <% end %>
+    <%= link_to fiscal_auditor_payroll_path, class: "fa-nav__item #{"fa-nav__item--active" if active == :payroll}" do %>
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 3h16v18H4zM8 7h8M8 11h3M8 15h3M14 11h2M14 15h2"/></svg>
+      Folha
+    <% end %>
     <%= link_to fiscal_auditor_expenses_path, class: "fa-nav__item #{"fa-nav__item--active" if active == :expenses}" do %>
       <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4h16v16H4zM8 15l3-3 2 2 4-5"/></svg>
       Dashboard de despesas
@@ -22,6 +26,10 @@
     <%= link_to fiscal_auditor_expense_explorer_path, class: "fa-nav__item #{"fa-nav__item--active" if active == :expense_explorer}" do %>
       <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4M8 11h6M11 8v6"/></svg>
       Explorador de despesas
+    <% end %>
+    <%= link_to fiscal_auditor_tax_lotations_path, class: "fa-nav__item #{"fa-nav__item--active" if active == :tax_lotations}" do %>
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4h16v16H4zM8 8h8M8 12h8M8 16h5"/></svg>
+      Lotações tributárias
     <% end %>
   </nav>
 

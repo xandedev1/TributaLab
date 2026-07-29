@@ -1,0 +1,108 @@
+<% content_for :title, "Folha | Auditor Fiscal" %>
+<% month_abbreviations = %w[jan fev mar abr mai jun jul ago set out nov dez] %>
+<% month_name = ->(month) { date = Date.strptime(month, "%Y-%m"); "#{month_abbreviations.fetch(date.month - 1)}/#{date.year}" } %>
+<% money = ->(value) { number_to_currency(value, unit: "R$ ", separator: ",", delimiter: ".") } %>
+<% compact_money = ->(value) { value.abs >= 1_000_000 ? "R$ #{number_with_precision(value / 1_000_000, precision: 1, separator: ",")} mi" : money.call(value) } %>
+<% status_labels = { covered: "Coberta", deficit: "Déficit", missing_billing: "Sem faturamento", negative_payroll: "Folha negativa" } %>
+<% calculation_path = ->(metric, extra = {}) { fiscal_auditor_calculation_detail_path("payroll", metric, request.query_parameters.except("page").merge(extra)) } %>
+<% detail_path = ->(row) { fiscal_auditor_payroll_detail_path(client_code: row[:client_code], period: row[:month], return_to: request.fullpath) } %>
+
+<div class="fa-shell" data-controller="fiscal-dashboard" data-action="click@window->fiscal-dashboard#closePeriodSelectors">
+  <%= render "fiscal_auditor/shared/sidebar", active: :payroll, status: "Folha consolidada", detail: "#{@dashboard.source_count} empresas auxiliares" %>
+
+  <main class="fa-main">
+    <header class="fa-topbar">
+      <div><p class="fa-kicker">Custo de pessoal por competência</p><h1>Folha</h1></div>
+      <div class="fa-topbar__meta"><span class="fa-pill"><span class="fa-status-dot"></span> Janeiro a dezembro de 2025</span><span class="fa-avatar">XA</span><span><strong>Xande</strong><small>Auditor responsável</small></span></div>
+    </header>
+
+    <nav class="fa-payroll-tabs" aria-label="Visões da folha">
+      <%= link_to "Visão da folha", fiscal_auditor_payroll_path, class: "fa-payroll-tab--active", aria: { current: "page" } %>
+      <%= link_to "Descontos e encargos", fiscal_auditor_payroll_charges_path %>
+    </nav>
+
+    <% if @dashboard.available? %>
+      <section class="fa-filterbar fa-filterbar--payroll">
+        <%= form_with url: fiscal_auditor_payroll_path, method: :get, class: "fa-filters fa-filters--payroll" do %>
+          <%= render "fiscal_auditor/reconciliation/period_selector", name: "periods", label: "Competência da folha", available_periods: @dashboard.available_periods, selected_periods: @dashboard.periods, month_name: month_name %>
+          <label class="fa-select-filter"><span>Cliente</span><%= select_tag :client_code, options_for_select([["Todos os clientes", ""]] + @dashboard.available_clients.map { |code, name| ["#{code} · #{name}", code] }, @dashboard.client_code), class: "fa-select-filter__control" %></label>
+          <% @dashboard.statuses.each do |status| %><%= hidden_field_tag "statuses[]", status %><% end %>
+          <button class="fa-button fa-button--filter" type="submit"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6h18M7 12h10M10 18h4"/></svg>Aplicar leitura</button>
+          <% if @dashboard.periods.any? || @dashboard.client_code.present? || @dashboard.statuses.any? %><%= link_to "Limpar", fiscal_auditor_payroll_path, class: "fa-clear" %><% end %>
+        <% end %>
+        <div class="fa-filterbar__count"><strong><%= number_with_delimiter(@dashboard.comparison_rows.size, delimiter: ".") %></strong><span>combinações cliente-mês</span></div>
+      </section>
+
+      <section class="fa-kpis fa-kpis--payroll" aria-label="Indicadores da folha">
+        <article class="fa-kpi fa-kpi--billed"><%= link_to "Abrir memória dos vencimentos", calculation_path.call("earnings"), class: "fa-detail-hit" %><div class="fa-kpi__icon"><svg viewBox="0 0 24 24"><path d="M4 19V5h16v14M8 15h8M8 11h8"/></svg></div><p>Total de vencimentos</p><strong><%= money.call(@dashboard.totals[:earnings]) %></strong><small>Soma dos eventos classificados como vencimento</small></article>
+        <article class="fa-kpi fa-kpi--retained"><%= link_to "Abrir memória dos descontos", calculation_path.call("discounts"), class: "fa-detail-hit" %><div class="fa-kpi__icon"><svg viewBox="0 0 24 24"><path d="M5 12h14M12 5v14"/></svg></div><p>Total de descontos</p><strong><%= money.call(@dashboard.totals[:discounts]) %></strong><small>Soma dos eventos classificados como desconto</small></article>
+        <article class="fa-kpi fa-kpi--net"><%= link_to "Abrir memória da folha líquida", calculation_path.call("net"), class: "fa-detail-hit" %><div class="fa-kpi__icon"><svg viewBox="0 0 24 24"><path d="m5 13 4 4L19 7"/></svg></div><p>Folha líquida</p><strong><%= money.call(@dashboard.totals[:net]) %></strong><small>Vencimentos menos descontos</small></article>
+        <article class="fa-kpi fa-kpi--quality"><%= link_to "Abrir memória do faturamento líquido", calculation_path.call("billing_net"), class: "fa-detail-hit" %><div class="fa-kpi__icon"><svg viewBox="0 0 24 24"><path d="M4 17 10 11l4 4 6-8"/></svg></div><p>Faturamento líquido</p><strong><%= money.call(@dashboard.billing_total) %></strong><small>Notas não canceladas na mesma competência</small></article>
+      </section>
+
+      <section class="fa-grid fa-grid--payroll-summary">
+        <article class="fa-panel fa-payroll-result <%= "fa-payroll-result--negative" if @dashboard.difference.negative? %>">
+          <%= link_to "Abrir memória da margem", calculation_path.call("difference"), class: "fa-detail-hit" %>
+          <p class="fa-kicker">Cobertura agregada</p><h2>Faturamento líquido menos folha líquida</h2>
+          <strong><%= money.call(@dashboard.difference) %></strong>
+          <small>O saldo global não substitui a análise individual por cliente e competência.</small>
+        </article>
+        <article class="fa-panel fa-payroll-coverage">
+          <p class="fa-kicker">Cobertura cliente-mês</p><h2>Competências cobertas</h2>
+          <strong><%= number_with_precision(@dashboard.coverage_rate, precision: 2, separator: ",") %>%</strong>
+          <div class="fa-payroll-statuses">
+            <%= link_to calculation_path.call("covered") do %><b><%= @dashboard.status_counts.fetch(:covered, 0) %></b> cobertas<% end %>
+            <%= link_to calculation_path.call("deficit") do %><b><%= @dashboard.status_counts.fetch(:deficit, 0) %></b> com déficit<% end %>
+            <%= link_to calculation_path.call("missing_billing") do %><b><%= @dashboard.status_counts.fetch(:missing_billing, 0) %></b> sem faturamento<% end %>
+          </div>
+        </article>
+      </section>
+
+      <section class="fa-grid fa-grid--charts">
+        <article class="fa-panel fa-flow">
+          <header class="fa-panel__header"><div><p class="fa-kicker">Leitura por competência</p><h2>Folha líquida × faturamento</h2></div><div class="fa-legend"><span class="fa-legend--paid">Faturamento</span><span class="fa-legend--billed">Folha líquida</span></div></header>
+          <% max_flow = @dashboard.monthly_flow.values.flat_map { |flow| flow.values_at(:payroll_net, :billing_net) }.map(&:abs).max.to_d %>
+          <div class="fa-chart" aria-label="Folha e faturamento por competência">
+            <% @dashboard.monthly_flow.each do |month, flow| %><div class="fa-chart__column"><div class="fa-chart__bars" title="<%= month_name.call(month) %>: <%= money.call(flow[:payroll_net]) %> de folha; <%= money.call(flow[:billing_net]) %> faturados"><span class="fa-chart__bar fa-chart__bar--paid" style="height: <%= max_flow.zero? ? 0 : (flow[:billing_net].abs / max_flow * 100).round(1) %>%"></span><span class="fa-chart__bar fa-chart__bar--billed" style="height: <%= max_flow.zero? ? 0 : (flow[:payroll_net].abs / max_flow * 100).round(1) %>%"></span></div><small><%= month_name.call(month).split("/").first %><%= "*" if @dashboard.partial_period?(month) %></small></div><% end %>
+          </div>
+          <% if @dashboard.monthly_flow.key?("2025-12") %><p class="fa-payroll-warning"><strong>* Dezembro parcial:</strong> a competência depende de notas emitidas em janeiro de 2026, ainda ausentes da base.</p><% end %>
+        </article>
+
+        <article class="fa-panel fa-payroll-months">
+          <header class="fa-panel__header"><div><p class="fa-kicker">Resultado mensal</p><h2>Margem por competência</h2></div></header>
+          <div class="fa-payroll-month-list">
+            <% @dashboard.monthly_flow.each do |month, flow| %>
+              <%= link_to calculation_path.call("difference", periods: [month]), class: ("fa-payroll-month--negative" if flow[:difference].negative?) do %><span><strong><%= month_name.call(month) %><%= " · parcial" if @dashboard.partial_period?(month) %></strong><small><%= compact_money.call(flow[:payroll_net]) %> de folha</small></span><b><%= money.call(flow[:difference]) %></b><% end %>
+            <% end %>
+          </div>
+        </article>
+      </section>
+
+      <section class="fa-panel fa-documents fa-payroll-table">
+        <header class="fa-panel__header"><div><p class="fa-kicker">Cruzamento por competência</p><h2>Cliente × folha × faturamento</h2></div><div class="fa-payroll-table__tools">
+          <%= form_with url: fiscal_auditor_payroll_path, method: :get, class: "fa-payroll-status-filter" do %>
+            <% @dashboard.periods.each do |period| %><%= hidden_field_tag "periods[]", period %><% end %>
+            <%= hidden_field_tag :client_code, @dashboard.client_code if @dashboard.client_code.present? %>
+            <%= render "status_selector", selected_statuses: @dashboard.statuses, status_labels: status_labels %>
+            <button type="submit" class="fa-button fa-button--filter"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6h18M7 12h10M10 18h4"/></svg>Filtrar</button>
+            <% if @dashboard.statuses.any? %><%= link_to "Todas", fiscal_auditor_payroll_path(request.query_parameters.except("page", "statuses")), class: "fa-clear" %><% end %>
+          <% end %>
+          <label class="fa-search"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg><input type="search" placeholder="Buscar nesta página" data-fiscal-dashboard-target="search" data-action="input->fiscal-dashboard#search"></label>
+        </div></header>
+        <div class="fa-table-wrap fa-table-wrap--paginated">
+          <table class="fa-table fa-table--payroll"><thead><tr><th>Competência</th><th>Cliente</th><th>Vencimentos</th><th>Descontos</th><th>Folha líquida</th><th>Faturamento líquido</th><th>Diferença</th><th>Situação</th><th>Detalhar</th></tr></thead><tbody>
+            <% @dashboard.paginated_comparison_rows.each do |row| %><tr class="fa-table-row--link" data-href="<%= detail_path.call(row) %>" data-action="click->fiscal-dashboard#visitRow" data-fiscal-dashboard-target="row" data-search="<%= [row[:month], row[:client_code], row[:client], status_labels[row[:status]]].join(" ").downcase %>"><td><strong><%= month_name.call(row[:month]) %></strong><small><%= @dashboard.partial_period?(row[:month]) ? "Parcial" : "Fechada" %></small></td><td><strong><%= row[:client] %></strong><small>Cód. <%= row[:client_code] %> · <%= row[:events] %> eventos</small></td><td><%= money.call(row[:earnings]) %></td><td><%= money.call(row[:discounts]) %></td><td><strong><%= money.call(row[:payroll_net]) %></strong></td><td><strong><%= money.call(row[:billing_net]) %></strong><small><%= row[:documents] %> documentos</small></td><td class="<%= "fa-money-difference" if row[:difference].negative? %>"><%= money.call(row[:difference]) %></td><td><span class="fa-status fa-status--<%= row[:status] %>"><%= status_labels.fetch(row[:status]) %></span></td><td><%= link_to detail_path.call(row), class: "fa-row-detail-link", aria: { label: "Detalhar #{row[:client]} em #{month_name.call(row[:month])}" } do %><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14m-6-6 6 6-6 6"/></svg><span>Detalhar</span><% end %></td></tr><% end %>
+          </tbody></table>
+        </div>
+        <nav class="fa-pagination" aria-label="Paginação da folha">
+          <% first = @dashboard.comparison_rows.empty? ? 0 : ((@dashboard.page - 1) * FiscalAuditor::PayrollDashboard::PAGE_SIZE) + 1 %>
+          <% last = [@dashboard.page * FiscalAuditor::PayrollDashboard::PAGE_SIZE, @dashboard.comparison_rows.size].min %>
+          <span>Exibindo <strong><%= number_with_delimiter(first, delimiter: ".") %>–<%= number_with_delimiter(last, delimiter: ".") %></strong> de <strong><%= number_with_delimiter(@dashboard.comparison_rows.size, delimiter: ".") %></strong></span>
+          <div><% if @dashboard.page > 1 %><%= link_to "Anterior", request.query_parameters.merge(page: @dashboard.page - 1), rel: "prev" %><% end %><small>Página <%= @dashboard.page %> de <%= @dashboard.total_pages %></small><% if @dashboard.page < @dashboard.total_pages %><%= link_to "Próxima", request.query_parameters.merge(page: @dashboard.page + 1), rel: "next" %><% end %></div>
+        </nav>
+      </section>
+    <% else %>
+      <section class="fa-empty fa-empty--module"><div class="fa-empty__icon">FL</div><p class="fa-kicker">Fonte não localizada</p><h2>A base da folha ainda não está disponível.</h2><p>Adicione os arquivos XLSX em <code>storage/private/fiscal_auditor/payroll</code>.</p></section>
+    <% end %>
+  </main>
+</div>
