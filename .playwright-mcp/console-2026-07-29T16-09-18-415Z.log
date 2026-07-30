@@ -1,0 +1,13 @@
+[     606ms] [ERROR] Failed to load resource: the server responded with a status of 404 () @ https://login.esocial.gov.br/favicon.ico:0
+[   10056ms] [WARNING] The ScriptProcessorNode is deprecated. Use AudioWorkletNode instead. (https://bit.ly/audio-worklet) @ https://sso.acesso.gov.br/TSPD/0877702dbcab20001f638623cf49a86750f07680b26f6dcb48ccbca7509cd325db8e8a1c806a1878?type=8:438
+[   10057ms] [WARNING] The AudioContext was not allowed to start. It must be resumed (or created) after a user gesture on the page. https://developer.chrome.com/blog/autoplay/#web_audio @ https://sso.acesso.gov.br/TSPD/0877702dbcab20001f638623cf49a86750f07680b26f6dcb48ccbca7509cd325db8e8a1c806a1878?type=8:440
+[   11064ms] [ERROR] Connecting to 'https://8e07d0948089.w.hcaptcha.com/logo.png' violates the following Content Security Policy directive: "connect-src 'self' www.google-analytics.com newassets.hcaptcha.com hcaptcha.com serprobots.estaleiro.serpro.gov.br maps.googleapis.com". The action has been blocked. @ https://js.hcaptcha.com/1/api.js?onload=onLoadHcaptcha&recaptchacompat=off&render=explicit&hl=pt:3
+[   11065ms] [ERROR] Fetch API cannot load https://8e07d0948089.w.hcaptcha.com/logo.png. Refused to connect because it violates the document's Content Security Policy. @ https://js.hcaptcha.com/1/api.js?onload=onLoadHcaptcha&recaptchacompat=off&render=explicit&hl=pt:3
+[   11066ms] [LOG] recaptchacompat disabled @ https://js.hcaptcha.com/1/api.js?onload=onLoadHcaptcha&recaptchacompat=off&render=explicit&hl=pt:3
+[   11085ms] [LOG] hCaptcha is ready. @ https://sso.acesso.gov.br/login?client_id=login.esocial.gov.br&authorization_id=19faea365f9:589
+[   32992ms] [ERROR] Failed to load resource: the server responded with a status of 404 () @ https://www.esocial.gov.br/content/jqueryui/images/ui-bg_glass_75_ffffff_1x400.png:0
+[   90536ms] [ERROR] Failed to load resource: the server responded with a status of 404 () @ https://www.esocial.gov.br/portal/Content/webfonts/fa-solid-900.woff2:0
+[  318360ms] [ERROR] Failed to load resource: the server responded with a status of 404 () @ https://www.esocial.gov.br/portal/Content/webfonts/fa-solid-900.woff2:0
+[  620524ms] [ERROR] Failed to load resource: the server responded with a status of 404 () @ https://www.esocial.gov.br/portal/Content/webfonts/fa-solid-900.woff2:0
+[  657417ms] [ERROR] Failed to load resource: the server responded with a status of 404 () @ https://www.esocial.gov.br/portal/Content/webfonts/fa-solid-900.woff2:0
+[  690665ms] [ERROR] Failed to load resource: the server responded with a status of 404 () @ https://www.esocial.gov.br/portal/Content/webfonts/fa-solid-900.woff2:0

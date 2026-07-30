@@ -1,0 +1,143 @@
+- generic [active] [ref=f19e1]:
+  - list [ref=f19e3]:
+    - listitem [ref=f19e4]:
+      - link "Portal do Governo Brasileiro" [ref=f19e5] [cursor=pointer]:
+        - /url: http://brasil.gov.br
+    - listitem [ref=f19e6]:
+      - link "Atualize sua Barra de Governo" [ref=f19e7] [cursor=pointer]:
+        - /url: http://epwg.governoeletronico.gov.br/barra/atualize.html
+  - generic [ref=f19e8]:
+    - generic [ref=f19e9]:
+      - link "eSocial" [ref=f19e10] [cursor=pointer]:
+        - /url: /portal/Home/Inicial
+      - generic [ref=f19e11]: "Módulo: Geral Pessoa Jurídica"
+      - generic [ref=f19e12]:
+        - paragraph [ref=f19e13]: Titular do Certificado
+        - paragraph [ref=f19e14]: 05.969.071/0001-10 - APPA SERVICOS TEMPORARIOS E EFETIVOS LTDA:05969071000110
+        - link "Trocar Perfil/Módulo" [ref=f19e16] [cursor=pointer]:
+          - /url: javascript:void(0)
+      - generic [ref=f19e18]: 14:59
+      - link "SAIR" [ref=f19e19] [cursor=pointer]:
+        - /url: "#"
+    - navigation [ref=f19e20]:
+      - list [ref=f19e23]:
+        - listitem [ref=f19e24]:
+          - button "Empregador/Contribuinte" [ref=f19e25] [cursor=pointer]
+        - listitem [ref=f19e27]:
+          - button "Empregado" [ref=f19e28] [cursor=pointer]
+        - listitem [ref=f19e30]:
+          - button "Trabalhador sem Vínculo" [ref=f19e31] [cursor=pointer]
+        - listitem [ref=f19e33]:
+          - button "Download" [ref=f19e34] [cursor=pointer]
+        - listitem [ref=f19e36]:
+          - button "Folha de Pagamento" [ref=f19e37] [cursor=pointer]
+        - listitem [ref=f19e39]:
+          - link "Ajuda" [ref=f19e40] [cursor=pointer]:
+            - /url: javascript:void(0)
+    - paragraph [ref=f19e43]:
+      - text: "Você está aqui:"
+      - generic [ref=f19e44]:
+        - link "Home" [ref=f19e45] [cursor=pointer]:
+          - /url: /portal/Home/Inicial
+          - generic [ref=f19e46]: 
+        - text: ">"
+        - generic [ref=f19e47]: Empregador/Contribuinte > Tabelas > Tabela de Lotações Tributárias
+    - generic [ref=f19e50]:
+      - heading "Tabela de Lotações Tributárias" [level=1] [ref=f19e51]
+      - heading "Filtro de pesquisa" [level=2] [ref=f19e52]
+      - generic [ref=f19e54]:
+        - generic [ref=f19e55]:
+          - generic [ref=f19e56]: Código
+          - status [ref=f19e57]
+          - textbox "Código" [ref=f19e58]:
+            - /placeholder: Informe o código
+            - text: E00472-001-02A
+        - generic [ref=f19e60]: ou
+        - generic [ref=f19e61]:
+          - generic [ref=f19e62]: Tipo de Inscrição
+          - combobox "Tipo de Inscrição" [ref=f19e63]:
+            - option [selected]
+            - option "1 - CNPJ"
+            - option "2 - CPF"
+            - option "4 - CNO/CEI"
+        - generic [ref=f19e64]:
+          - generic [ref=f19e65]: Número de Inscrição
+          - status [ref=f19e66]
+          - textbox "Número de Inscrição" [disabled] [ref=f19e67]:
+            - /placeholder: Informe o valor
+      - generic [ref=f19e69]:
+        - generic [ref=f19e71]:
+          - heading "Resultado da pesquisa" [level=2] [ref=f19e72]
+          - generic [ref=f19e73]:
+            - 'heading "Código da Lotação: E00472-001-02A" [level=3] [ref=f19e74]'
+            - link "Incluir validade" [ref=f19e75] [cursor=pointer]:
+              - /url: /portal/Lotacao/CadastroCompleto/incluirNovoPeriodo?codigo=E00472-001-02A
+            - table [ref=f19e76]:
+              - rowgroup [ref=f19e77]:
+                - row [ref=f19e78]:
+                  - columnheader [ref=f19e79]
+                  - columnheader "Início da Validade" [ref=f19e80]
+                  - columnheader "Término da Validade" [ref=f19e81]
+                  - columnheader "Tipo de Inscrição" [ref=f19e82]
+                  - columnheader "Número de Inscrição" [ref=f19e83]
+                  - columnheader "FPAS" [ref=f19e84]
+                  - columnheader "Data de Recepção" [ref=f19e85]
+                  - columnheader "Ação" [ref=f19e86]
+              - rowgroup [ref=f19e87]:
+                - row [ref=f19e88]:
+                  - cell [ref=f19e89]
+                  - cell [ref=f19e90]:
+                    - link "12/2024" [ref=f19e91] [cursor=pointer]:
+                      - /url: /portal/Lotacao/CadastroCompleto/Visualizar?idLotacao=30322954112&idEvento=30322954112
+                  - cell "-" [ref=f19e92]
+                  - cell "CNPJ" [ref=f19e93]
+                  - cell "14.921.092/0001-57" [ref=f19e94]
+                  - cell "515" [ref=f19e95]
+                  - cell "20/01/2025 08:17:08" [ref=f19e96]
+                  - cell [ref=f19e97]:
+                    - link "Alterar" [ref=f19e99] [cursor=pointer]:
+                      - /url: /portal/Lotacao/CadastroCompleto/Editar?idLotacao=30322954112&idEvento=30322954112
+                    - link "Excluir" [ref=f19e100] [cursor=pointer]:
+                      - /url: javascript:void(0)
+                    - link "" [ref=f19e101] [cursor=pointer]:
+                      - /url: https://www.esocial.gov.br/portal/Lotacao/CadastroCompleto/DownloadEvento?idEvento=30322954112&recibo=
+                - row [ref=f19e103]:
+                  - cell [ref=f19e104]
+                  - cell [ref=f19e105]:
+                    - link "01/2023" [ref=f19e106] [cursor=pointer]:
+                      - /url: /portal/Lotacao/CadastroCompleto/Visualizar?idLotacao=26460376750&idEvento=26460376750
+                  - cell "11/2024 !" [ref=f19e107]:
+                    - text: 11/2024
+                    - generic [ref=f19e108] [cursor=pointer]: "!"
+                  - cell "CNPJ" [ref=f19e109]
+                  - cell "14.921.092/0001-57" [ref=f19e110]
+                  - cell "515" [ref=f19e111]
+                  - cell "17/06/2024 14:35:47" [ref=f19e112]
+                  - cell [ref=f19e113]:
+                    - link "Alterar" [ref=f19e115] [cursor=pointer]:
+                      - /url: /portal/Lotacao/CadastroCompleto/Editar?idLotacao=26460376750&idEvento=26460376750
+                    - link "Excluir" [ref=f19e116] [cursor=pointer]:
+                      - /url: javascript:void(0)
+                    - link "" [ref=f19e117] [cursor=pointer]:
+                      - /url: https://www.esocial.gov.br/portal/Lotacao/CadastroCompleto/DownloadEvento?idEvento=26460376750&recibo=
+        - generic [ref=f19e119]: Página 1 / 1
+      - link "Cadastrar nova Lotação" [ref=f19e122] [cursor=pointer]:
+        - /url: /portal/Lotacao/CadastroCompleto/incluir
+    - contentinfo [ref=f19e123]:
+      - generic [ref=f19e124]:
+        - link "Ministério da Previdência Social" [ref=f19e125] [cursor=pointer]:
+          - /url: https://www.gov.br/previdencia/pt-br/
+          - text: Ministério da
+          - generic [ref=f19e126]: Previdência Social
+        - link "Ministério do Trabalho e Emprego" [ref=f19e127] [cursor=pointer]:
+          - /url: https://www.gov.br/trabalho-e-emprego/pt-br/
+          - text: Ministério do
+          - generic [ref=f19e128]: Trabalho e Emprego
+        - link "Secretaria Especial da Receita Federal do Brasil" [ref=f19e129] [cursor=pointer]:
+          - /url: https://www.gov.br/receitafederal/pt-br/
+          - text: Secretaria Especial da
+          - generic [ref=f19e130]: Receita Federal do Brasil
+      - generic [ref=f19e131]: "eSocial.RecepcaoEvento: 15.14.1 | eSocial.Web.Negocio: 3.16.11"
+  - generic [ref=f19e132]:
+    - paragraph
+  - text: ; ;

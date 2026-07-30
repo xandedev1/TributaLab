@@ -1,0 +1,38 @@
+[     383ms] [ERROR] Failed to load resource: the server responded with a status of 404 () @ https://login.esocial.gov.br/favicon.ico:0
+[    4187ms] [ERROR] Connecting to 'https://764210206998.w.hcaptcha.com/logo.png' violates the following Content Security Policy directive: "connect-src 'self' www.google-analytics.com newassets.hcaptcha.com hcaptcha.com serprobots.estaleiro.serpro.gov.br maps.googleapis.com". The action has been blocked. @ https://js.hcaptcha.com/1/api.js?onload=onLoadHcaptcha&recaptchacompat=off&render=explicit&hl=pt:3
+[    4187ms] [ERROR] Fetch API cannot load https://764210206998.w.hcaptcha.com/logo.png. Refused to connect because it violates the document's Content Security Policy. @ https://js.hcaptcha.com/1/api.js?onload=onLoadHcaptcha&recaptchacompat=off&render=explicit&hl=pt:3
+[    4189ms] [LOG] recaptchacompat disabled @ https://js.hcaptcha.com/1/api.js?onload=onLoadHcaptcha&recaptchacompat=off&render=explicit&hl=pt:3
+[    4229ms] [LOG] hCaptcha is ready. @ https://sso.acesso.gov.br/login?client_id=login.esocial.gov.br&authorization_id=19faf318bab:565
+[  105070ms] [ERROR] Failed to load resource: the server responded with a status of 404 () @ https://www.esocial.gov.br/content/jqueryui/images/ui-bg_glass_75_ffffff_1x400.png:0
+[  129545ms] [ERROR] Failed to load resource: the server responded with a status of 404 () @ https://www.esocial.gov.br/portal/Content/webfonts/fa-solid-900.woff2:0
+[  150043ms] [ERROR] Failed to load resource: the server responded with a status of 404 () @ https://www.esocial.gov.br/portal/Content/webfonts/fa-solid-900.woff2:0
+[  168263ms] [ERROR] Failed to load resource: the server responded with a status of 404 () @ https://www.esocial.gov.br/portal/Content/webfonts/fa-solid-900.woff2:0
+[  189811ms] [ERROR] Failed to load resource: the server responded with a status of 404 () @ https://www.esocial.gov.br/portal/Content/webfonts/fa-solid-900.woff2:0
+[  208568ms] [ERROR] Failed to load resource: the server responded with a status of 404 () @ https://www.esocial.gov.br/portal/Content/webfonts/fa-solid-900.woff2:0
+[  454124ms] [ERROR] Failed to load resource: the server responded with a status of 404 () @ https://www.esocial.gov.br/portal/Content/webfonts/fa-solid-900.woff2:0
+[  473285ms] [ERROR] Failed to load resource: the server responded with a status of 404 () @ https://www.esocial.gov.br/portal/Content/webfonts/fa-solid-900.woff2:0
+[  503191ms] [ERROR] Failed to load resource: the server responded with a status of 404 () @ https://www.esocial.gov.br/portal/Content/webfonts/fa-solid-900.woff2:0
+[  526677ms] [ERROR] Failed to load resource: the server responded with a status of 404 () @ https://www.esocial.gov.br/portal/Content/webfonts/fa-solid-900.woff2:0
+[  551341ms] [ERROR] Failed to load resource: the server responded with a status of 404 () @ https://www.esocial.gov.br/portal/Content/webfonts/fa-solid-900.woff2:0
+[  574840ms] [ERROR] Failed to load resource: the server responded with a status of 404 () @ https://www.esocial.gov.br/portal/Content/webfonts/fa-solid-900.woff2:0
+[  596932ms] [ERROR] Failed to load resource: the server responded with a status of 404 () @ https://www.esocial.gov.br/portal/Content/webfonts/fa-solid-900.woff2:0
+[  622655ms] [ERROR] Failed to load resource: the server responded with a status of 404 () @ https://www.esocial.gov.br/portal/Content/webfonts/fa-solid-900.woff2:0
+[  650926ms] [ERROR] Failed to load resource: the server responded with a status of 404 () @ https://www.esocial.gov.br/portal/Content/webfonts/fa-solid-900.woff2:0
+[  684661ms] [ERROR] Failed to load resource: the server responded with a status of 404 () @ https://www.esocial.gov.br/portal/Content/webfonts/fa-solid-900.woff2:0
+[  715539ms] [ERROR] Failed to load resource: the server responded with a status of 404 () @ https://www.esocial.gov.br/Content/img/icones/ico_collapse_tabela_contrair.png:0
+[  715588ms] [ERROR] Failed to load resource: the server responded with a status of 404 () @ https://www.esocial.gov.br/portal/Content/webfonts/fa-solid-900.woff2:0
+[  745531ms] [ERROR] Failed to load resource: the server responded with a status of 404 () @ https://www.esocial.gov.br/Content/img/icones/ico_collapse_tabela_contrair.png:0
+[  745600ms] [ERROR] Failed to load resource: the server responded with a status of 404 () @ https://www.esocial.gov.br/portal/Content/webfonts/fa-solid-900.woff2:0
+[  772754ms] [ERROR] Failed to load resource: the server responded with a status of 404 () @ https://www.esocial.gov.br/Content/img/icones/ico_collapse_tabela_contrair.png:0
+[  772819ms] [ERROR] Failed to load resource: the server responded with a status of 404 () @ https://www.esocial.gov.br/portal/Content/webfonts/fa-solid-900.woff2:0
+[  805836ms] [ERROR] Failed to load resource: the server responded with a status of 404 () @ https://www.esocial.gov.br/portal/Content/webfonts/fa-solid-900.woff2:0
+[  841137ms] [ERROR] Failed to load resource: the server responded with a status of 404 () @ https://www.esocial.gov.br/portal/Content/webfonts/fa-solid-900.woff2:0
+[  875349ms] [ERROR] Failed to load resource: the server responded with a status of 404 () @ https://www.esocial.gov.br/portal/Content/webfonts/fa-solid-900.woff2:0
+[  911366ms] [ERROR] Failed to load resource: the server responded with a status of 404 () @ https://www.esocial.gov.br/portal/Content/webfonts/fa-solid-900.woff2:0
+[  947430ms] [ERROR] Failed to load resource: the server responded with a status of 404 () @ https://www.esocial.gov.br/portal/Content/webfonts/fa-solid-900.woff2:0
+[  992519ms] [ERROR] Failed to load resource: the server responded with a status of 404 () @ https://www.esocial.gov.br/Content/img/icones/ico_collapse_tabela_contrair.png:0
+[  992577ms] [ERROR] Failed to load resource: the server responded with a status of 404 () @ https://www.esocial.gov.br/portal/Content/webfonts/fa-solid-900.woff2:0
+[ 1032761ms] [ERROR] Failed to load resource: the server responded with a status of 404 () @ https://www.esocial.gov.br/portal/Content/webfonts/fa-solid-900.woff2:0
+[ 1084069ms] [ERROR] Failed to load resource: the server responded with a status of 404 () @ https://www.esocial.gov.br/portal/Content/webfonts/fa-solid-900.woff2:0
+[ 1138356ms] [ERROR] Failed to load resource: the server responded with a status of 404 () @ https://www.esocial.gov.br/portal/Content/webfonts/fa-solid-900.woff2:0
+[ 1169253ms] [ERROR] Failed to load resource: the server responded with a status of 404 () @ https://www.esocial.gov.br/portal/Content/webfonts/fa-solid-900.woff2:0

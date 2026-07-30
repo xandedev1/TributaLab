@@ -1,0 +1,75 @@
+- generic [active] [ref=f10e1]:
+  - list [ref=f10e3]:
+    - listitem [ref=f10e4]:
+      - link "Portal do Governo Brasileiro" [ref=f10e5] [cursor=pointer]:
+        - /url: http://brasil.gov.br
+    - listitem [ref=f10e6]:
+      - link "Atualize sua Barra de Governo" [ref=f10e7] [cursor=pointer]:
+        - /url: http://epwg.governoeletronico.gov.br/barra/atualize.html
+  - generic [ref=f10e8]:
+    - navigation [ref=f10e10]:
+      - list [ref=f10e13]:
+        - listitem [ref=f10e14]:
+          - button "Empregador/Contribuinte" [ref=f10e15] [cursor=pointer]
+        - listitem [ref=f10e17]:
+          - button "Empregado" [ref=f10e18] [cursor=pointer]
+        - listitem [ref=f10e20]:
+          - button "Trabalhador sem Vínculo" [ref=f10e21] [cursor=pointer]
+        - listitem [ref=f10e23]:
+          - button "Download" [ref=f10e24] [cursor=pointer]
+        - listitem [ref=f10e26]:
+          - button "Folha de Pagamento" [ref=f10e27] [cursor=pointer]
+        - listitem [ref=f10e29]:
+          - link "Ajuda" [ref=f10e30] [cursor=pointer]:
+            - /url: javascript:void(0)
+    - paragraph [ref=f10e33]:
+      - text: "Você está aqui:"
+      - generic [ref=f10e34]:
+        - link "Home" [ref=f10e35] [cursor=pointer]:
+          - /url: /portal/Home/Inicial
+          - generic [ref=f10e36]: 
+        - text: ">"
+        - generic [ref=f10e37]: Empregador/Contribuinte > Tabelas > Tabela de Lotações Tributárias
+    - generic [ref=f10e40]:
+      - heading "Tabela de Lotações Tributárias" [level=1] [ref=f10e41]
+      - heading "Filtro de pesquisa" [level=2] [ref=f10e42]
+      - generic [ref=f10e44]:
+        - generic [ref=f10e45]:
+          - generic [ref=f10e46]: Código
+          - status [ref=f10e47]
+          - textbox "Código" [ref=f10e48]:
+            - /placeholder: Informe o código
+            - text: E00490-001-02AE00490-001-02A
+        - generic [ref=f10e50]: ou
+        - generic [ref=f10e51]:
+          - generic [ref=f10e52]: Tipo de Inscrição
+          - combobox "Tipo de Inscrição" [ref=f10e53]:
+            - option [selected]
+            - option "1 - CNPJ"
+            - option "2 - CPF"
+            - option "4 - CNO/CEI"
+        - generic [ref=f10e54]:
+          - generic [ref=f10e55]: Número de Inscrição
+          - status [ref=f10e56]
+          - textbox "Número de Inscrição" [disabled] [ref=f10e57]:
+            - /placeholder: Informe o valor
+      - link "Cadastrar nova Lotação" [ref=f10e60] [cursor=pointer]:
+        - /url: /portal/Lotacao/CadastroCompleto/incluir
+    - contentinfo [ref=f10e61]:
+      - generic [ref=f10e62]:
+        - link "Ministério da Previdência Social" [ref=f10e63] [cursor=pointer]:
+          - /url: https://www.gov.br/previdencia/pt-br/
+          - text: Ministério da
+          - generic [ref=f10e64]: Previdência Social
+        - link "Ministério do Trabalho e Emprego" [ref=f10e65] [cursor=pointer]:
+          - /url: https://www.gov.br/trabalho-e-emprego/pt-br/
+          - text: Ministério do
+          - generic [ref=f10e66]: Trabalho e Emprego
+        - link "Secretaria Especial da Receita Federal do Brasil" [ref=f10e67] [cursor=pointer]:
+          - /url: https://www.gov.br/receitafederal/pt-br/
+          - text: Secretaria Especial da
+          - generic [ref=f10e68]: Receita Federal do Brasil
+      - generic [ref=f10e69]: "eSocial.RecepcaoEvento: 15.14.1 | eSocial.Web.Negocio: 3.16.11"
+  - generic [ref=f10e70]:
+    - paragraph
+  - text: ; ;

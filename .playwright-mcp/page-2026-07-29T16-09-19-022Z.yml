@@ -1,0 +1,86 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e3]:
+    - link "Brasil" [ref=e5] [cursor=pointer]:
+      - /url: https://gov.br
+    - navigation:
+      - list [ref=e6]:
+        - listitem
+        - listitem [ref=e7]:
+          - link "Simplifique!" [ref=e8] [cursor=pointer]:
+            - /url: http://www.gov.br/economia/pt-br/canais_atendimento/ouvidoria/simplifique
+        - listitem [ref=e9]:
+          - link "Participe" [ref=e10] [cursor=pointer]:
+            - /url: https://www.gov.br/pt-br/participacao-social/
+        - listitem [ref=e11]:
+          - link "Acesso à informação" [ref=e12] [cursor=pointer]:
+            - /url: http://www.gov.br/acessoainformacao/
+        - listitem [ref=e13]:
+          - link "Legislação" [ref=e14] [cursor=pointer]:
+            - /url: http://www.planalto.gov.br/legislacao
+        - listitem [ref=e15]:
+          - link "Canais" [ref=e16] [cursor=pointer]:
+            - /url: https://gov.br/pt-br/canais-do-executivo-federal
+    - link [ref=e18] [cursor=pointer]:
+      - /url: "#"
+  - generic [ref=e19]:
+    - generic [ref=e20]:
+      - link "eSocial" [ref=e21] [cursor=pointer]:
+        - /url: /
+      - link "Login" [ref=e23] [cursor=pointer]:
+        - /url: https://login.esocial.gov.br/
+    - group "Login" [ref=e26]:
+      - generic [ref=e27]:
+        - heading "Acesso GOV.BR" [level=2] [ref=e28]
+        - generic [ref=e29]:
+          - paragraph [ref=e30]: O GovBR é um serviço online de identificação e autenticação digital do cidadão em único meio, para acesso aos diversos serviços públicos digitais.
+          - paragraph [ref=e31]:
+            - link "Saiba mais sobre GOV.BR" [ref=e32] [cursor=pointer]:
+              - /url: https://www.gov.br/esocial/pt-br/acesso-ao-sistema/acesso-ao-esocial-por-meio-do-gov.br
+        - paragraph [ref=e34]:
+          - button "Entrar com gov.br" [ref=e35] [cursor=pointer]:
+            - text: Entrar com
+            - generic [ref=e36]: gov.br
+      - generic [ref=e37]:
+        - heading "Acesso à sua conta em ambiente seguro" [level=1] [ref=e38]
+        - paragraph [ref=e39]: O eSocial é um sistema informatizado da Administração Pública e todas as informações nele contidas estão protegidas por sigilo. O acesso não autorizado, a disponibilização voluntária ou acidental da senha de acesso ou de informações e a quebra do sigilo constituem infrações ou ilícitos que sujeitam o usuário a responsabilidade administrativa, penal e civil.
+        - paragraph [ref=e40]: O usuário declara-se ciente das responsabilidades acima referidas ao acessar qualquer sistema no sítio eletrônico do eSocial.
+        - heading "Módulo Simplificado" [level=2] [ref=e41]
+        - paragraph [ref=e42]:
+          - text: Disponível para o Empregador Doméstico, o Segurado Especial e o MEI – Microempreendedor Individual. A partir de 12/06/2023, o acesso é feito exclusivamente via login do Gov.br. O acesso por meio de código de acesso e senha foi descontinuado. Para mais informações sobre o Gov.br e como realizar seu cadastro,
+          - link "clique aqui" [ref=e43] [cursor=pointer]:
+            - /url: http://faq-login-unico.servicos.gov.br/en/latest/_perguntasdafaq/contaacesso.html
+          - text: .
+        - heading "Módulo Web Geral" [level=2] [ref=e44]
+        - paragraph [ref=e45]: As Empresas e o Empregador Pessoa Física poderão acessar o eSocial por meio do login do Gov.br, sendo necessário o cadastro prévio e atribuição do respectivo selo de confiabilidade no Portal Gov.br (será exigido o tipo de selo “Certificado Digital”).
+        - paragraph [ref=e46]:
+          - text: Ressalte-se que o cadastramento é realizado uma única vez. A empresa optante pelo SIMPLES, que tenha até um empregado, ou MEI – Microempreendedor Individual, também somente poderá efetuar login utilizando o Gov.br para acessar o eSocial, uma vez que o acesso mediante código de acesso e senha foi descontinuado a partir de 12/06/2023. Para mais informações sobre o Gov.br e como realizar seu cadastro,
+          - link "clique aqui" [ref=e47] [cursor=pointer]:
+            - /url: http://faq-login-unico.servicos.gov.br/en/latest/_perguntasdafaq/contaacesso.html
+          - text: .
+        - paragraph [ref=e48]:
+          - text: Para utilização do ambiente de testes, seguir orientações na página de
+          - link "Produção Restrita" [ref=e49] [cursor=pointer]:
+            - /url: https://www.gov.br/esocial/pt-br/acesso-ao-sistema/ambiente-de-producao-restrita
+          - text: .
+        - paragraph [ref=e50]:
+          - text: Para consultar a
+          - link "Qualificação Cadastral" [ref=e51] [cursor=pointer]:
+            - /url: https://www.gov.br/esocial/pt-br/empresas/consulta-qualificacao-cadastral
+          - text: ", seguir orientações na página do portal do eSocial."
+    - contentinfo [ref=e52]:
+      - generic [ref=e53]:
+        - link "Ministério da Previdência Social" [ref=e54] [cursor=pointer]:
+          - /url: https://www.gov.br/previdencia/pt-br/
+          - text: Ministério da
+          - generic [ref=e55]: Previdência Social
+        - link "Ministério do Trabalho e Emprego" [ref=e56] [cursor=pointer]:
+          - /url: https://www.gov.br/trabalho-e-emprego/pt-br/
+          - text: Ministério do
+          - generic [ref=e57]: Trabalho e Emprego
+        - link "Secretaria Especial da Receita Federal do Brasil" [ref=e58] [cursor=pointer]:
+          - /url: https://www.gov.br/receitafederal/pt-br/
+          - text: Secretaria Especial da
+          - generic [ref=e59]: Receita Federal do Brasil
+  - generic [ref=e61] [cursor=pointer]:
+    - img "Conteúdo acessível em Libras usando o VLibras Widget com opções dos Avatares Ícaro, Hosana ou Guga." [ref=e62]
+    - img "Conteúdo acessível em Libras usando o VLibras Widget com opções dos Avatares Ícaro, Hosana ou Guga." [ref=e63]

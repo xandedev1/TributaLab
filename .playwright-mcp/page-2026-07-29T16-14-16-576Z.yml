@@ -1,0 +1,87 @@
+- generic [ref=f8e1]:
+  - list [ref=f8e3]:
+    - listitem [ref=f8e4]:
+      - link "Portal do Governo Brasileiro" [ref=f8e5] [cursor=pointer]:
+        - /url: http://brasil.gov.br
+    - listitem [ref=f8e6]:
+      - link "Atualize sua Barra de Governo" [ref=f8e7] [cursor=pointer]:
+        - /url: http://epwg.governoeletronico.gov.br/barra/atualize.html
+  - generic [ref=f8e8]:
+    - generic [ref=f8e9]:
+      - link "eSocial" [ref=f8e71] [cursor=pointer]:
+        - /url: /portal/Home/Inicial
+      - generic [ref=f8e72]: "Módulo: Geral Pessoa Jurídica"
+      - generic [ref=f8e73]:
+        - paragraph [ref=f8e74]: Titular do Certificado
+        - paragraph [ref=f8e75]: 05.969.071/0001-10 - APPA SERVICOS TEMPORARIOS E EFETIVOS LTDA:05969071000110
+        - link "Trocar Perfil/Módulo" [ref=f8e77] [cursor=pointer]:
+          - /url: javascript:void(0)
+      - generic [ref=f8e79]: 14:35
+      - link "SAIR" [ref=f8e80] [cursor=pointer]:
+        - /url: "#"
+    - navigation [ref=f8e10]:
+      - list [ref=f8e13]:
+        - listitem [ref=f8e14]:
+          - button "Empregador/Contribuinte" [ref=f8e15] [cursor=pointer]
+        - listitem [ref=f8e17]:
+          - button "Empregado" [ref=f8e18] [cursor=pointer]
+        - listitem [ref=f8e20]:
+          - button "Trabalhador sem Vínculo" [ref=f8e21] [cursor=pointer]
+        - listitem [ref=f8e23]:
+          - button "Download" [ref=f8e24] [cursor=pointer]
+        - listitem [ref=f8e26]:
+          - button "Folha de Pagamento" [ref=f8e27] [cursor=pointer]
+        - listitem [ref=f8e29]:
+          - link "Ajuda" [ref=f8e30] [cursor=pointer]:
+            - /url: javascript:void(0)
+    - paragraph [ref=f8e33]:
+      - text: "Você está aqui:"
+      - generic [ref=f8e34]:
+        - link "Home" [ref=f8e35] [cursor=pointer]:
+          - /url: /portal/Home/Inicial
+          - generic [ref=f8e36]: 
+        - text: ">"
+        - generic [ref=f8e37]: Empregador/Contribuinte > Tabelas > Tabela de Lotações Tributárias
+    - generic [ref=f8e40]:
+      - heading "Tabela de Lotações Tributárias" [level=1] [ref=f8e41]
+      - heading "Filtro de pesquisa" [level=2] [ref=f8e42]
+      - generic [ref=f8e44]:
+        - generic [ref=f8e45]:
+          - generic [ref=f8e46]: Código
+          - status [ref=f8e47]
+          - textbox "Código" [active] [ref=f8e48]:
+            - /placeholder: Informe o código
+            - text: E00340-001-02AE00410-001-02A
+        - generic [ref=f8e50]: ou
+        - generic [ref=f8e51]:
+          - generic [ref=f8e52]: Tipo de Inscrição
+          - combobox "Tipo de Inscrição" [ref=f8e53]:
+            - option [selected]
+            - option "1 - CNPJ"
+            - option "2 - CPF"
+            - option "4 - CNO/CEI"
+        - generic [ref=f8e54]:
+          - generic [ref=f8e55]: Número de Inscrição
+          - status [ref=f8e56]
+          - textbox "Número de Inscrição" [disabled] [ref=f8e57]:
+            - /placeholder: Informe o valor
+      - link "Cadastrar nova Lotação" [ref=f8e60] [cursor=pointer]:
+        - /url: /portal/Lotacao/CadastroCompleto/incluir
+    - contentinfo [ref=f8e61]:
+      - generic [ref=f8e62]:
+        - link "Ministério da Previdência Social" [ref=f8e63] [cursor=pointer]:
+          - /url: https://www.gov.br/previdencia/pt-br/
+          - text: Ministério da
+          - generic [ref=f8e64]: Previdência Social
+        - link "Ministério do Trabalho e Emprego" [ref=f8e65] [cursor=pointer]:
+          - /url: https://www.gov.br/trabalho-e-emprego/pt-br/
+          - text: Ministério do
+          - generic [ref=f8e66]: Trabalho e Emprego
+        - link "Secretaria Especial da Receita Federal do Brasil" [ref=f8e67] [cursor=pointer]:
+          - /url: https://www.gov.br/receitafederal/pt-br/
+          - text: Secretaria Especial da
+          - generic [ref=f8e68]: Receita Federal do Brasil
+      - generic [ref=f8e69]: "eSocial.RecepcaoEvento: 15.14.1 | eSocial.Web.Negocio: 3.16.11"
+  - generic [ref=f8e70]:
+    - paragraph
+  - text: ; ;

@@ -1,7 +1,7 @@
 <% content_for :title, "Lotações tributárias | Auditor Fiscal" %>
 
 <div class="fa-shell">
-  <%= render "fiscal_auditor/shared/sidebar", active: :tax_lotations, status: "4 referências disponíveis", detail: "Leitura independente, sem cruzamentos" %>
+  <%= render "fiscal_auditor/shared/sidebar", active: :tax_lotations, status: "#{@reference.sources.size} referências disponíveis", detail: "Leitura independente, sem cruzamentos" %>
 
   <main class="fa-main">
     <header class="fa-topbar">
@@ -10,7 +10,7 @@
         <h1>Lotações tributárias</h1>
       </div>
       <div class="fa-topbar__meta">
-        <span class="fa-pill"><span class="fa-status-dot"></span> 4 tabelas de referência</span>
+        <span class="fa-pill"><span class="fa-status-dot"></span> <%= @reference.sources.size %> tabelas de referência</span>
         <span class="fa-avatar">XA</span>
         <span><strong>Xande</strong><small>Auditor responsável</small></span>
       </div>
@@ -38,8 +38,8 @@
           <% section.paragraphs.each do |paragraph| %><p><%= paragraph %></p><% end %>
           <% section.tables.each do |table| %>
             <div class="fa-table-wrap">
-              <table class="fa-table fa-reference-table">
-                <thead><tr><% table.headers.each do |header| %><th><%= header %></th><% end %></tr></thead>
+              <table class="fa-table fa-reference-table <%= "fa-reference-table--official" if @reference.source.key == "tabela_4_oficial" %>">
+                <thead><tr><% table.headers.each do |header| %><th><%= @reference.display_header(header) %></th><% end %></tr></thead>
                 <tbody>
                   <% table.rows.each do |row| %>
                     <tr><% table.headers.each_with_index do |_, index| %><td><%= row[index] %></td><% end %></tr>

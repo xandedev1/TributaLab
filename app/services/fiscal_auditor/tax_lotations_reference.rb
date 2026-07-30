@@ -8,7 +8,8 @@ module FiscalAuditor
       Source.new(key: "fgts", label: "Lotações FGTS", filename: "cod_lotacoes_fgts_2025-01.md"),
       Source.new(key: "contribuicoes", label: "Lotações tributárias", filename: "cod_lotacoes_tributarias_2025-01.md"),
       Source.new(key: "tabela_4_oficial", label: "Tabela 4 oficial", filename: "tabela_4_fpas_terceiros.md"),
-      Source.new(key: "tabela_4_quarta", label: "Tabela 4 Quarta RH", filename: "tabela_4_quarta_fpas_terceiros.md")
+      Source.new(key: "tabela_4_quarta", label: "Tabela 4 Quarta RH", filename: "tabela_4_quarta_fpas_terceiros.md"),
+      Source.new(key: "lotacoes_cnpj", label: "Lotações por CNPJ", filename: "lotacoes_por_cnpj_2025-01.md")
     ].freeze
 
     attr_reader :source
@@ -31,6 +32,12 @@ module FiscalAuditor
 
     def source_path
       Rails.root.join("docs", "04_referencias", "MD modelos Banco de dado", source.filename)
+    end
+
+    def display_header(header)
+      return "ALIQTERC (%)" if source.key == "tabela_4_oficial" && header == "Alíquota (%)"
+
+      header
     end
 
     private
@@ -83,7 +90,7 @@ module FiscalAuditor
     end
 
     def split_row(line)
-      line.split("|")[1..-2].map { |value| value.strip.delete("`") }
+      line.split("|", -1)[1..-2].map { |value| value.strip.delete("`") }
     end
   end
 end

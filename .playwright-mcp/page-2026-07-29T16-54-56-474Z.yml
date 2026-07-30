@@ -1,0 +1,49 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e3]:
+    - link "Brasil" [ref=e5] [cursor=pointer]:
+      - /url: https://gov.br
+    - navigation:
+      - list [ref=e6]:
+        - listitem
+        - listitem [ref=e7]:
+          - link "Simplifique!" [ref=e8] [cursor=pointer]:
+            - /url: http://www.gov.br/economia/pt-br/canais_atendimento/ouvidoria/simplifique
+        - listitem [ref=e9]:
+          - link "Participe" [ref=e10] [cursor=pointer]:
+            - /url: https://www.gov.br/pt-br/participacao-social/
+        - listitem [ref=e11]:
+          - link "Acesso à informação" [ref=e12] [cursor=pointer]:
+            - /url: http://www.gov.br/acessoainformacao/
+        - listitem [ref=e13]:
+          - link "Legislação" [ref=e14] [cursor=pointer]:
+            - /url: http://www.planalto.gov.br/legislacao
+        - listitem [ref=e15]:
+          - link "Canais" [ref=e16] [cursor=pointer]:
+            - /url: https://gov.br/pt-br/canais-do-executivo-federal
+    - link [ref=e18] [cursor=pointer]:
+      - /url: "#"
+  - generic [ref=e19]:
+    - generic [ref=e20]:
+      - link "eSocial" [ref=e21] [cursor=pointer]:
+        - /url: /
+      - link "Login" [ref=e23] [cursor=pointer]:
+        - /url: https://login.esocial.gov.br/
+    - generic "Sessão encerrada" [ref=e25]:
+      - paragraph [ref=e26]: Sua sessão no sistema foi encerrada com sucesso. É necessário fechar todas as abas/janelas do navegador para acessar novamente
+    - contentinfo [ref=e27]:
+      - generic [ref=e28]:
+        - link "Ministério da Previdência Social" [ref=e29] [cursor=pointer]:
+          - /url: https://www.gov.br/previdencia/pt-br/
+          - text: Ministério da
+          - generic [ref=e30]: Previdência Social
+        - link "Ministério do Trabalho e Emprego" [ref=e31] [cursor=pointer]:
+          - /url: https://www.gov.br/trabalho-e-emprego/pt-br/
+          - text: Ministério do
+          - generic [ref=e32]: Trabalho e Emprego
+        - link "Secretaria Especial da Receita Federal do Brasil" [ref=e33] [cursor=pointer]:
+          - /url: https://www.gov.br/receitafederal/pt-br/
+          - text: Secretaria Especial da
+          - generic [ref=e34]: Receita Federal do Brasil
+  - generic [ref=e36] [cursor=pointer]:
+    - img "Conteúdo acessível em Libras usando o VLibras Widget com opções dos Avatares Ícaro, Hosana ou Guga." [ref=e37]
+    - img "Conteúdo acessível em Libras usando o VLibras Widget com opções dos Avatares Ícaro, Hosana ou Guga." [ref=e38]

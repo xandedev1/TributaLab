@@ -1,0 +1,24 @@
+[   60831ms] [WARNING] ⚠️ IDs não fornecidos — modo direto (sem empresa/funcionário): {companyId: undefined, employeeId: undefined} @ https://realprev.com/static/js/main.08049bc9.js:1
+[   60979ms] [LOG] 🔍 WizardContext useEffect - existingProcesso changed: null @ https://realprev.com/static/js/main.08049bc9.js:1
+[   60979ms] [LOG] ⚠️ WizardContext: existingProcesso vazio ou sem formData @ https://realprev.com/static/js/main.08049bc9.js:1
+[   60979ms] [LOG]   - existingProcesso: null @ https://realprev.com/static/js/main.08049bc9.js:1
+[   65877ms] [LOG] 🔄 MONITOR: formData.calculoTributos mudou: [] @ https://realprev.com/static/js/main.08049bc9.js:1
+[   70903ms] [LOG] 🔍 S2500 loadData - Parâmetros: @ https://realprev.com/static/js/main.08049bc9.js:1
+[   70903ms] [LOG]   - companyId: 10 @ https://realprev.com/static/js/main.08049bc9.js:1
+[   70904ms] [LOG]   - employeeId: 11 @ https://realprev.com/static/js/main.08049bc9.js:1
+[   70904ms] [LOG]   - draftId: undefined @ https://realprev.com/static/js/main.08049bc9.js:1
+[   70904ms] [LOG]   - isValidId(companyId): true @ https://realprev.com/static/js/main.08049bc9.js:1
+[   70904ms] [LOG]   - isValidId(employeeId): true @ https://realprev.com/static/js/main.08049bc9.js:1
+[   70904ms] [LOG]   - isValidId(draftId): N/A (draftId is null) @ https://realprev.com/static/js/main.08049bc9.js:1
+[   70907ms] [LOG] ❌ draftId inválido ou ausente - NÃO vai buscar processo @ https://realprev.com/static/js/main.08049bc9.js:1
+[   70908ms] [LOG]   - draftId value: undefined @ https://realprev.com/static/js/main.08049bc9.js:1
+[   70908ms] [LOG]   - draftId type: undefined @ https://realprev.com/static/js/main.08049bc9.js:1
+[   70988ms] [LOG] ✅ Company carregada: {id: 10, cnpj: 60902939000173, tp_insc: 1, nome: BRASANITAS EMPRESA BRASILEIRA DE SANEAMENTO E COM LTDA, razao_social: BRASANITAS EMPRESA BRASILEIRA DE SANEAMENTO E COM LTDA} @ https://realprev.com/static/js/main.08049bc9.js:1
+[   70988ms] [LOG] ✅ Employee carregado: {id: 11, cpf: 37937293896, nome: GIOVANI VALE DA SILVA, data_nascimento: 1995-08-12, has_installment: false} @ https://realprev.com/static/js/main.08049bc9.js:1
+[   70988ms] [LOG] ⚠️ Tentando fallback para carregar processo por company/employee... @ https://realprev.com/static/js/main.08049bc9.js:1
+[   71039ms] [LOG] ⚠️ Fallback sem registros para company/employee {companyId: 10, employeeId: 11} @ https://realprev.com/static/js/main.08049bc9.js:1
+[   71039ms] [LOG] 🔄 Tentando fallback por CPF do funcionário: 37937293896 @ https://realprev.com/static/js/main.08049bc9.js:1
+[   71102ms] [LOG] ℹ️ Nenhum processo encontrado pelo CPF do funcionário @ https://realprev.com/static/js/main.08049bc9.js:1
+[   71129ms] [LOG] 🔍 WizardContext useEffect - existingProcesso changed: null @ https://realprev.com/static/js/main.08049bc9.js:1
+[   71129ms] [LOG] ⚠️ WizardContext: existingProcesso vazio ou sem formData @ https://realprev.com/static/js/main.08049bc9.js:1
+[   71129ms] [LOG]   - existingProcesso: null @ https://realprev.com/static/js/main.08049bc9.js:1

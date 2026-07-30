@@ -1,0 +1,73 @@
+- generic [ref=f5e1]:
+  - list [ref=f5e3]:
+    - listitem [ref=f5e4]:
+      - link "Portal do Governo Brasileiro" [ref=f5e5] [cursor=pointer]:
+        - /url: http://brasil.gov.br
+    - listitem [ref=f5e6]:
+      - link "Atualize sua Barra de Governo" [ref=f5e7] [cursor=pointer]:
+        - /url: http://epwg.governoeletronico.gov.br/barra/atualize.html
+  - generic [ref=f5e8]:
+    - generic [ref=f5e9]:
+      - link "eSocial" [ref=f5e10] [cursor=pointer]:
+        - /url: /portal/Home/Inicial
+      - generic [ref=f5e11]: "Módulo: Geral Pessoa Jurídica"
+      - generic [ref=f5e12]:
+        - paragraph [ref=f5e13]: Titular do Certificado
+        - paragraph [ref=f5e14]: 05.969.071/0001-10 - APPA SERVICOS TEMPORARIOS E EFETIVOS LTDA:05969071000110
+        - link "Trocar Perfil/Módulo" [ref=f5e16] [cursor=pointer]:
+          - /url: javascript:void(0)
+      - generic [ref=f5e18]: 13:41
+      - link "SAIR" [ref=f5e19] [cursor=pointer]:
+        - /url: "#"
+    - navigation [ref=f5e20]:
+      - list [ref=f5e23]:
+        - listitem [ref=f5e24]:
+          - button "Empregador/Contribuinte" [active] [ref=f5e25] [cursor=pointer]
+          - menu [ref=f5e60]:
+            - listitem [ref=f5e61]:
+              - link "Dados do Empregador/Contribuinte" [ref=f5e62] [cursor=pointer]:
+                - /url: /portal/Empregador/CadastroCompleto?id=4751ac73-dd56-4a13-96a0-5798a97d9618
+            - listitem [ref=f5e63]:
+              - link "Tabelas" [ref=f5e64] [cursor=pointer]:
+                - /url: javascript:void(0)
+            - listitem [ref=f5e65]:
+              - link "Consultar Eventos Por Recibo" [ref=f5e66] [cursor=pointer]:
+                - /url: /portal/Empregador/ConsultarEventosPorRecibo
+            - listitem [ref=f5e67]:
+              - link "Consulta obrigatoriedade" [ref=f5e68] [cursor=pointer]:
+                - /url: /portal/ConsultaObrigatoriedade
+        - listitem [ref=f5e27]:
+          - button "Empregado" [ref=f5e28] [cursor=pointer]
+        - listitem [ref=f5e30]:
+          - button "Trabalhador sem Vínculo" [ref=f5e31] [cursor=pointer]
+        - listitem [ref=f5e33]:
+          - button "Download" [ref=f5e34] [cursor=pointer]
+        - listitem [ref=f5e36]:
+          - button "Folha de Pagamento" [ref=f5e37] [cursor=pointer]
+        - listitem [ref=f5e39]:
+          - link "Ajuda" [ref=f5e40] [cursor=pointer]:
+            - /url: javascript:void(0)
+    - generic [ref=f5e44]:
+      - heading "eSocial – Módulo Geral" [level=1] [ref=f5e45]
+      - paragraph [ref=f5e46]: "Orientações gerais:"
+      - generic [ref=f5e47]:
+        - paragraph [ref=f5e48]: O Módulo Geral é uma ferramenta auxiliar para a inserção de dados no eSocial.Pode ser usado por qualquer usuário e permite que sejam cumpridas as obrigações legais em situações de contingência ou indisponibilidade do seu próprio software.
+        - paragraph [ref=f5e49]: O sistema permitirá a consulta e a edição dos eventos enviados por meio de web service(sistema próprio da empresa). Serão exibidos, além do conteúdo do evento, os números de recibo.
+    - contentinfo [ref=f5e50]:
+      - generic [ref=f5e51]:
+        - link "Ministério da Previdência Social" [ref=f5e52] [cursor=pointer]:
+          - /url: https://www.gov.br/previdencia/pt-br/
+          - text: Ministério da
+          - generic [ref=f5e53]: Previdência Social
+        - link "Ministério do Trabalho e Emprego" [ref=f5e54] [cursor=pointer]:
+          - /url: https://www.gov.br/trabalho-e-emprego/pt-br/
+          - text: Ministério do
+          - generic [ref=f5e55]: Trabalho e Emprego
+        - link "Secretaria Especial da Receita Federal do Brasil" [ref=f5e56] [cursor=pointer]:
+          - /url: https://www.gov.br/receitafederal/pt-br/
+          - text: Secretaria Especial da
+          - generic [ref=f5e57]: Receita Federal do Brasil
+      - generic [ref=f5e58]: "eSocial.RecepcaoEvento: 15.14.1 | eSocial.Web.Negocio: 3.16.11"
+  - generic [ref=f5e59]:
+    - paragraph
+  - text: ; ;

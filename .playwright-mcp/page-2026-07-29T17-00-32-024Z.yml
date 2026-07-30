@@ -1,0 +1,87 @@
+- generic [ref=f11e1]:
+  - list [ref=f11e3]:
+    - listitem [ref=f11e4]:
+      - link "Portal do Governo Brasileiro" [ref=f11e5] [cursor=pointer]:
+        - /url: http://brasil.gov.br
+    - listitem [ref=f11e6]:
+      - link "Atualize sua Barra de Governo" [ref=f11e7] [cursor=pointer]:
+        - /url: http://epwg.governoeletronico.gov.br/barra/atualize.html
+  - generic [ref=f11e8]:
+    - generic [ref=f11e9]:
+      - link "eSocial" [ref=f11e10] [cursor=pointer]:
+        - /url: /portal/Home/Inicial
+      - generic [ref=f11e11]: "Módulo: Geral Pessoa Jurídica"
+      - generic [ref=f11e12]:
+        - paragraph [ref=f11e13]: Titular do Certificado
+        - paragraph [ref=f11e14]: 05.969.071/0001-10 - APPA SERVICOS TEMPORARIOS E EFETIVOS LTDA:05969071000110
+        - link "Trocar Perfil/Módulo" [ref=f11e16] [cursor=pointer]:
+          - /url: javascript:void(0)
+      - generic [ref=f11e80]: 14:51
+      - link "SAIR" [ref=f11e18] [cursor=pointer]:
+        - /url: "#"
+    - navigation [ref=f11e19]:
+      - list [ref=f11e22]:
+        - listitem [ref=f11e23]:
+          - button "Empregador/Contribuinte" [ref=f11e24] [cursor=pointer]
+        - listitem [ref=f11e26]:
+          - button "Empregado" [ref=f11e27] [cursor=pointer]
+        - listitem [ref=f11e29]:
+          - button "Trabalhador sem Vínculo" [ref=f11e30] [cursor=pointer]
+        - listitem [ref=f11e32]:
+          - button "Download" [ref=f11e33] [cursor=pointer]
+        - listitem [ref=f11e35]:
+          - button "Folha de Pagamento" [ref=f11e36] [cursor=pointer]
+        - listitem [ref=f11e38]:
+          - link "Ajuda" [ref=f11e39] [cursor=pointer]:
+            - /url: javascript:void(0)
+    - paragraph [ref=f11e42]:
+      - text: "Você está aqui:"
+      - generic [ref=f11e43]:
+        - link "Home" [ref=f11e44] [cursor=pointer]:
+          - /url: /portal/Home/Inicial
+          - generic [ref=f11e45]: 
+        - text: ">"
+        - generic [ref=f11e46]: Empregador/Contribuinte > Tabelas > Tabela de Lotações Tributárias
+    - generic [ref=f11e49]:
+      - heading "Tabela de Lotações Tributárias" [level=1] [ref=f11e50]
+      - heading "Filtro de pesquisa" [level=2] [ref=f11e51]
+      - generic [ref=f11e53]:
+        - generic [ref=f11e54]:
+          - generic [ref=f11e55]: Código
+          - status [ref=f11e56]
+          - textbox "Código" [active] [ref=f11e57]:
+            - /placeholder: Informe o código
+            - text: E0E02013-001-02AE00460-001-02A
+        - generic [ref=f11e59]: ou
+        - generic [ref=f11e60]:
+          - generic [ref=f11e61]: Tipo de Inscrição
+          - combobox "Tipo de Inscrição" [ref=f11e62]:
+            - option [selected]
+            - option "1 - CNPJ"
+            - option "2 - CPF"
+            - option "4 - CNO/CEI"
+        - generic [ref=f11e63]:
+          - generic [ref=f11e64]: Número de Inscrição
+          - status [ref=f11e65]
+          - textbox "Número de Inscrição" [disabled] [ref=f11e66]:
+            - /placeholder: Informe o valor
+      - link "Cadastrar nova Lotação" [ref=f11e69] [cursor=pointer]:
+        - /url: /portal/Lotacao/CadastroCompleto/incluir
+    - contentinfo [ref=f11e70]:
+      - generic [ref=f11e71]:
+        - link "Ministério da Previdência Social" [ref=f11e72] [cursor=pointer]:
+          - /url: https://www.gov.br/previdencia/pt-br/
+          - text: Ministério da
+          - generic [ref=f11e73]: Previdência Social
+        - link "Ministério do Trabalho e Emprego" [ref=f11e74] [cursor=pointer]:
+          - /url: https://www.gov.br/trabalho-e-emprego/pt-br/
+          - text: Ministério do
+          - generic [ref=f11e75]: Trabalho e Emprego
+        - link "Secretaria Especial da Receita Federal do Brasil" [ref=f11e76] [cursor=pointer]:
+          - /url: https://www.gov.br/receitafederal/pt-br/
+          - text: Secretaria Especial da
+          - generic [ref=f11e77]: Receita Federal do Brasil
+      - generic [ref=f11e78]: "eSocial.RecepcaoEvento: 15.14.1 | eSocial.Web.Negocio: 3.16.11"
+  - generic [ref=f11e79]:
+    - paragraph
+  - text: ; ;
