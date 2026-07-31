@@ -23,6 +23,7 @@ Rails.application.routes.draw do
     get "folha/detalhamento/:client_code/:period", to: "payroll_details#show", as: :payroll_detail
     get "despesas", to: "expenses#show", as: :expenses
     get "explorador-de-despesas", to: "expense_explorer#show", as: :expense_explorer
+    get "extrato-conta-vinculada", to: "linked_accounts#show", as: :linked_accounts
     get "lotacoes-tributarias", to: "tax_lotations#index", as: :tax_lotations
     get "memoria-de-calculo/:module_name/:metric", to: "calculation_details#show", as: :calculation_detail
     get "visualizador-de-planilha", to: "spreadsheets#show", as: :spreadsheet

@@ -1,0 +1,175 @@
+<% content_for :title, "Extrato Conta Vinculada | Auditor Fiscal" %>
+<% money = ->(value) { number_to_currency(value, unit: "R$ ", separator: ",", delimiter: ".") } %>
+<% compact_money = ->(value) { value.abs >= 1_000_000 ? "R$ #{number_with_precision(value / 1_000_000, precision: 1, separator: ",")} mi" : money.call(value) } %>
+
+<div class="fa-shell">
+  <%= render "fiscal_auditor/shared/sidebar", active: :linked_accounts, status: "Extrato vinculado", detail: "#{@dashboard.total_records} contratos" %>
+
+  <main class="fa-main">
+    <header class="fa-topbar">
+      <div><p class="fa-kicker">Controladoria financeira</p><h1>Extrato Conta Vinculada</h1></div>
+      <div class="fa-topbar__meta">
+        <span class="fa-pill"><span class="fa-status-dot"></span> Dados atualizados</span>
+        <span class="fa-avatar">XA</span><span><strong>Xande</strong><small>Auditor responsável</small></span>
+      </div>
+    </header>
+
+    <% if @dashboard.available? %>
+      <section class="fa-kpis" aria-label="Indicadores de contas vinculadas">
+        <article class="fa-kpi fa-kpi--billed">
+          <div class="fa-kpi__icon"><svg viewBox="0 0 24 24"><path d="M4 2h16v20l-4-3-4 3-4-3-4 3V2Z"/><path d="M8 7h8M8 11h8"/></svg></div>
+          <p>Total de contratos</p>
+          <strong><%= @dashboard.total_records %></strong>
+          <small><%= @dashboard.active_count %> ativos · <%= @dashboard.closed_count %> encerrados</small>
+        </article>
+        <article class="fa-kpi fa-kpi--net">
+          <div class="fa-kpi__icon"><svg viewBox="0 0 24 24"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div>
+          <p>Saldo total mai/2026</p>
+          <strong><%= money.call(@dashboard.total_saldo_mai) %></strong>
+          <small><%= @dashboard.with_account_count %> com conta vinculada</small>
+        </article>
+        <article class="fa-kpi fa-kpi--retained">
+          <div class="fa-kpi__icon"><svg viewBox="0 0 24 24"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div>
+          <p>Encerrados com saldo</p>
+          <strong><%= money.call(@dashboard.closed_with_balance_total) %></strong>
+          <small><%= @dashboard.closed_with_balance_count %> contratos encerrados</small>
+        </article>
+        <article class="fa-kpi fa-kpi--quality">
+          <div class="fa-kpi__icon"><svg viewBox="0 0 24 24"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div>
+          <p>Variação jan → mai</p>
+          <strong><%= compact_money.call(@dashboard.total_saldo_mai - @dashboard.total_saldo_jan) %></strong>
+          <small>jan: <%= compact_money.call(@dashboard.total_saldo_jan) %> → mai: <%= compact_money.call(@dashboard.total_saldo_mai) %></small>
+        </article>
+      </section>
+
+      <section class="fa-grid fa-grid--charts">
+        <article class="fa-panel">
+          <header class="fa-panel__header">
+            <div><p class="fa-kicker">Distribuição por UF</p><h2>Saldo por estado</h2></div>
+          </header>
+          <% max_uf = @dashboard.uf_breakdown.first&.dig(:total).to_d %>
+          <div class="fa-tax-list">
+            <% @dashboard.uf_breakdown.each do |row| %>
+              <div class="fa-tax fa-tax--category">
+                <strong><%= row[:uf] %></strong>
+                <div class="fa-tax__track"><span style="width: <%= max_uf.zero? ? 0 : (row[:total] / max_uf * 100).round(1) %>%"></span></div>
+                <span><%= compact_money.call(row[:total]) %></span>
+                <small><%= row[:count] %> contratos</small>
+              </div>
+            <% end %>
+          </div>
+        </article>
+
+        <article class="fa-panel">
+          <header class="fa-panel__header">
+            <div><p class="fa-kicker">Concentração</p><h2>Maiores saldos</h2></div>
+            <span class="fa-panel__tag">TOP 10</span>
+          </header>
+          <% max_client = @dashboard.top_clients.first&.dig(:total).to_d %>
+          <div class="fa-ranking">
+            <% @dashboard.top_clients.each_with_index do |client, index| %>
+              <div class="fa-ranking__row">
+                <span class="fa-ranking__number"><%= index + 1 %></span>
+                <div class="fa-ranking__client">
+                  <strong><%= client[:cliente] %></strong>
+                  <small>Cód. <%= client[:codigo] %> · <%= client[:count] %> contrato<%= "s" if client[:count] > 1 %></small>
+                </div>
+                <div class="fa-ranking__track"><span style="width: <%= max_client.zero? ? 0 : (client[:total] / max_client * 100).round(1) %>%"></span></div>
+                <strong class="fa-ranking__value"><%= compact_money.call(client[:total]) %></strong>
+              </div>
+            <% end %>
+          </div>
+        </article>
+      </section>
+
+      <section class="fa-grid fa-grid--clients">
+        <article class="fa-panel">
+          <header class="fa-panel__header">
+            <div><p class="fa-kicker">Atenção</p><h2>Encerrados com saldo</h2></div>
+          </header>
+          <div class="fa-contingency-list">
+            <% @dashboard.closed_with_balance.sort_by { |r| -r.saldo_mai }.each do |record| %>
+              <div class="fa-contingency-link">
+                <span>
+                  <strong><%= record.cliente %></strong>
+                  <small>Cód. <%= record.codigo %> · <%= record.contrato %></small>
+                </span>
+                <b><%= compact_money.call(record.saldo_mai) %></b>
+              </div>
+            <% end %>
+          </div>
+        </article>
+
+        <article class="fa-panel">
+          <header class="fa-panel__header">
+            <div><p class="fa-kicker">Status</p><h2>Resumo por situação</h2></div>
+          </header>
+          <div class="fa-tax-list">
+            <% @dashboard.status_breakdown.each do |row| %>
+              <div class="fa-tax fa-tax--category">
+                <strong><%= row[:status] %></strong>
+                <div class="fa-tax__track"><span style="width: <%= max_uf.zero? ? 0 : (row[:total] / max_uf * 100).round(1) %>%"></span></div>
+                <span><%= compact_money.call(row[:total]) %></span>
+                <small><%= row[:count] %> contratos</small>
+              </div>
+            <% end %>
+          </div>
+        </article>
+      </section>
+
+      <section class="fa-panel fa-documents">
+        <header class="fa-panel__header">
+          <div><p class="fa-kicker">Detalhamento</p><h2>Todos os contratos</h2></div>
+          <label class="fa-search">
+            <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+            <input type="search" placeholder="Buscar cliente, código ou contrato" data-fiscal-dashboard-target="search" data-action="input->fiscal-dashboard#search">
+          </label>
+        </header>
+        <div class="fa-table-wrap">
+          <table class="fa-table fa-table--receivables">
+            <thead>
+              <tr>
+                <th>Código</th>
+                <th>UF</th>
+                <th>Cliente</th>
+                <th>Contrato</th>
+                <th>Banco</th>
+                <th>Conta vinculada</th>
+                <th>Saldo jan/2026</th>
+                <th>Saldo mai/2026</th>
+                <th>Status</th>
+                <th>Observação</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% @dashboard.records.each do |record| %>
+                <tr data-fiscal-dashboard-target="row" data-search="<%= [record.cliente, record.codigo, record.contrato, record.conta].join(" ").to_s.downcase %>">
+                  <td><strong><%= record.codigo %></strong></td>
+                  <td><%= record.uf || "—" %></td>
+                  <td><strong><%= record.cliente %></strong></td>
+                  <td><%= record.contrato || "—" %></td>
+                  <td><%= record.banco || "—" %></td>
+                  <td><%= record.conta || "—" %></td>
+                  <td><%= money.call(record.saldo_jan) %></td>
+                  <td><strong><%= money.call(record.saldo_mai) %></strong></td>
+                  <td>
+                    <% status_class = record.status.to_s.match?(/ATIVO/i) ? "matched" : (record.status.to_s.match?(/ENCERRADO/i) ? "divergent" : "pending") %>
+                    <span class="fa-status fa-status--<%= status_class %>"><%= record.status || "Sem status" %></span>
+                  </td>
+                  <td><small><%= record.obs || "—" %></small></td>
+                </tr>
+              <% end %>
+            </tbody>
+          </table>
+        </div>
+      </section>
+    <% else %>
+      <section class="fa-empty fa-empty--module">
+        <div class="fa-empty__icon">CV</div>
+        <p class="fa-kicker">Fonte não localizada</p>
+        <h2>A planilha de contas vinculadas ainda não está disponível.</h2>
+        <p>Adicione <code>EXTRATO CONTA VINCULADA.xlsx</code> em <code>storage/private/fiscal_auditor/linked_accounts</code>.</p>
+      </section>
+    <% end %>
+  </main>
+</div>

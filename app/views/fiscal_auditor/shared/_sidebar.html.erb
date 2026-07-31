@@ -27,6 +27,10 @@
       <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4M8 11h6M11 8v6"/></svg>
       Explorador de despesas
     <% end %>
+    <%= link_to fiscal_auditor_linked_accounts_path, class: "fa-nav__item #{"fa-nav__item--active" if active == :linked_accounts}" do %>
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6h18M5 6v14h14V6M8 10h8M8 14h5"/><path d="M8 3v3M16 3v3"/></svg>
+      Extrato conta vinculada
+    <% end %>
     <%= link_to fiscal_auditor_tax_lotations_path, class: "fa-nav__item #{"fa-nav__item--active" if active == :tax_lotations}" do %>
       <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4h16v16H4zM8 8h8M8 12h8M8 16h5"/></svg>
       Lotações tributárias

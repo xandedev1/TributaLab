@@ -1,0 +1,2 @@
+[   11173ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://127.0.0.1:3101/auditor-fiscal/login:0
+[   20586ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://127.0.0.1:3101/auditor-fiscal/login:0
