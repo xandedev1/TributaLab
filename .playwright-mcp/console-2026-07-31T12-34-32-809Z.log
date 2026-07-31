@@ -1,0 +1,71 @@
+[    7238ms] [ERROR] Failed to load resource: the server responded with a status of 404 () @ https://login.esocial.gov.br/favicon.ico:0
+[   12686ms] [WARNING] The ScriptProcessorNode is deprecated. Use AudioWorkletNode instead. (https://bit.ly/audio-worklet) @ https://sso.acesso.gov.br/TSPD/0877702dbcab20007c7c3def37ada69c849c52d05fdd1626449154bda87c15556572930a071cd018?type=8:452
+[   12687ms] [WARNING] The AudioContext was not allowed to start. It must be resumed (or created) after a user gesture on the page. https://developer.chrome.com/blog/autoplay/#web_audio @ https://sso.acesso.gov.br/TSPD/0877702dbcab20007c7c3def37ada69c849c52d05fdd1626449154bda87c15556572930a071cd018?type=8:454
+[   13916ms] [ERROR] Connecting to 'https://11b5662de7f4.w.hcaptcha.com/logo.png' violates the following Content Security Policy directive: "connect-src 'self' www.google-analytics.com newassets.hcaptcha.com hcaptcha.com serprobots.estaleiro.serpro.gov.br maps.googleapis.com". The action has been blocked. @ https://js.hcaptcha.com/1/api.js?onload=onLoadHcaptcha&recaptchacompat=off&render=explicit&hl=pt:3
+[   13917ms] [ERROR] Fetch API cannot load https://11b5662de7f4.w.hcaptcha.com/logo.png. Refused to connect because it violates the document's Content Security Policy. @ https://js.hcaptcha.com/1/api.js?onload=onLoadHcaptcha&recaptchacompat=off&render=explicit&hl=pt:3
+[   13919ms] [LOG] recaptchacompat disabled @ https://js.hcaptcha.com/1/api.js?onload=onLoadHcaptcha&recaptchacompat=off&render=explicit&hl=pt:3
+[   13939ms] [LOG] hCaptcha is ready. @ https://sso.acesso.gov.br/login?client_id=login.esocial.gov.br&authorization_id=19fb82b8340:589
+[  730540ms] [ERROR] Failed to load resource: the server responded with a status of 404 () @ https://www.esocial.gov.br/Content/img/icones/ico_collapse_tabela_contrair.png:0
+[  730567ms] [ERROR] Failed to load resource: the server responded with a status of 404 () @ https://www.esocial.gov.br/portal/Content/webfonts/fa-solid-900.woff2:0
+[  735608ms] [ERROR] Failed to load resource: the server responded with a status of 404 () @ https://www.esocial.gov.br/Content/img/icones/ico_collapse_tabela_contrair.png:0
+[  753022ms] [ERROR] Failed to load resource: the server responded with a status of 404 () @ https://www.esocial.gov.br/Content/img/icones/ico_collapse_tabela_contrair.png:0
+[  809872ms] [ERROR] Failed to load resource: the server responded with a status of 404 () @ https://www.esocial.gov.br/Content/img/icones/ico_collapse_tabela_contrair.png:0
+[  832444ms] [ERROR] Failed to load resource: the server responded with a status of 404 () @ https://www.esocial.gov.br/Content/img/icones/ico_collapse_tabela_contrair.png:0
+[  834723ms] [ERROR] Failed to load resource: the server responded with a status of 404 () @ https://www.esocial.gov.br/Content/img/icones/ico_collapse_tabela_contrair.png:0
+[  862648ms] [ERROR] Failed to load resource: the server responded with a status of 404 () @ https://www.esocial.gov.br/Content/img/icones/ico_collapse_tabela_contrair.png:0
+[  865222ms] [ERROR] Failed to load resource: the server responded with a status of 404 () @ https://www.esocial.gov.br/Content/img/icones/ico_collapse_tabela_contrair.png:0
+[  867670ms] [ERROR] Failed to load resource: the server responded with a status of 404 () @ https://www.esocial.gov.br/Content/img/icones/ico_collapse_tabela_contrair.png:0
+[  870915ms] [ERROR] Failed to load resource: the server responded with a status of 404 () @ https://www.esocial.gov.br/Content/img/icones/ico_collapse_tabela_contrair.png:0
+[  874449ms] [ERROR] Failed to load resource: the server responded with a status of 404 () @ https://www.esocial.gov.br/Content/img/icones/ico_collapse_tabela_contrair.png:0
+[  878059ms] [ERROR] Failed to load resource: the server responded with a status of 404 () @ https://www.esocial.gov.br/Content/img/icones/ico_collapse_tabela_contrair.png:0
+[  881578ms] [ERROR] Failed to load resource: the server responded with a status of 404 () @ https://www.esocial.gov.br/Content/img/icones/ico_collapse_tabela_contrair.png:0
+[  885602ms] [ERROR] Failed to load resource: the server responded with a status of 404 () @ https://www.esocial.gov.br/Content/img/icones/ico_collapse_tabela_contrair.png:0
+[  889271ms] [ERROR] Failed to load resource: the server responded with a status of 404 () @ https://www.esocial.gov.br/Content/img/icones/ico_collapse_tabela_contrair.png:0
+[  892883ms] [ERROR] Failed to load resource: the server responded with a status of 404 () @ https://www.esocial.gov.br/Content/img/icones/ico_collapse_tabela_contrair.png:0
+[  896405ms] [ERROR] Failed to load resource: the server responded with a status of 404 () @ https://www.esocial.gov.br/Content/img/icones/ico_collapse_tabela_contrair.png:0
+[  899915ms] [ERROR] Failed to load resource: the server responded with a status of 404 () @ https://www.esocial.gov.br/Content/img/icones/ico_collapse_tabela_contrair.png:0
+[  903469ms] [ERROR] Failed to load resource: the server responded with a status of 404 () @ https://www.esocial.gov.br/Content/img/icones/ico_collapse_tabela_contrair.png:0
+[  908154ms] [ERROR] Failed to load resource: the server responded with a status of 404 () @ https://www.esocial.gov.br/Content/img/icones/ico_collapse_tabela_contrair.png:0
+[  912662ms] [ERROR] Failed to load resource: the server responded with a status of 404 () @ https://www.esocial.gov.br/Content/img/icones/ico_collapse_tabela_contrair.png:0
+[  917327ms] [ERROR] Failed to load resource: the server responded with a status of 404 () @ https://www.esocial.gov.br/Content/img/icones/ico_collapse_tabela_contrair.png:0
+[  921584ms] [ERROR] Failed to load resource: the server responded with a status of 404 () @ https://www.esocial.gov.br/Content/img/icones/ico_collapse_tabela_contrair.png:0
+[  925870ms] [ERROR] Failed to load resource: the server responded with a status of 404 () @ https://www.esocial.gov.br/Content/img/icones/ico_collapse_tabela_contrair.png:0
+[  930608ms] [ERROR] Failed to load resource: the server responded with a status of 404 () @ https://www.esocial.gov.br/Content/img/icones/ico_collapse_tabela_contrair.png:0
+[  935102ms] [ERROR] Failed to load resource: the server responded with a status of 404 () @ https://www.esocial.gov.br/Content/img/icones/ico_collapse_tabela_contrair.png:0
+[  939725ms] [ERROR] Failed to load resource: the server responded with a status of 404 () @ https://www.esocial.gov.br/Content/img/icones/ico_collapse_tabela_contrair.png:0
+[  944005ms] [ERROR] Failed to load resource: the server responded with a status of 404 () @ https://www.esocial.gov.br/Content/img/icones/ico_collapse_tabela_contrair.png:0
+[  949323ms] [ERROR] Failed to load resource: the server responded with a status of 404 () @ https://www.esocial.gov.br/Content/img/icones/ico_collapse_tabela_contrair.png:0
+[  954559ms] [ERROR] Failed to load resource: the server responded with a status of 404 () @ https://www.esocial.gov.br/Content/img/icones/ico_collapse_tabela_contrair.png:0
+[  960260ms] [ERROR] Failed to load resource: the server responded with a status of 404 () @ https://www.esocial.gov.br/Content/img/icones/ico_collapse_tabela_contrair.png:0
+[  966050ms] [ERROR] Failed to load resource: the server responded with a status of 404 () @ https://www.esocial.gov.br/Content/img/icones/ico_collapse_tabela_contrair.png:0
+[  971609ms] [ERROR] Failed to load resource: the server responded with a status of 404 () @ https://www.esocial.gov.br/Content/img/icones/ico_collapse_tabela_contrair.png:0
+[  977304ms] [ERROR] Failed to load resource: the server responded with a status of 404 () @ https://www.esocial.gov.br/Content/img/icones/ico_collapse_tabela_contrair.png:0
+[  982887ms] [ERROR] Failed to load resource: the server responded with a status of 404 () @ https://www.esocial.gov.br/Content/img/icones/ico_collapse_tabela_contrair.png:0
+[  989243ms] [ERROR] Failed to load resource: the server responded with a status of 404 () @ https://www.esocial.gov.br/Content/img/icones/ico_collapse_tabela_contrair.png:0
+[  994777ms] [ERROR] Failed to load resource: the server responded with a status of 404 () @ https://www.esocial.gov.br/Content/img/icones/ico_collapse_tabela_contrair.png:0
+[ 1000405ms] [ERROR] Failed to load resource: the server responded with a status of 404 () @ https://www.esocial.gov.br/Content/img/icones/ico_collapse_tabela_contrair.png:0
+[ 1005989ms] [ERROR] Failed to load resource: the server responded with a status of 404 () @ https://www.esocial.gov.br/Content/img/icones/ico_collapse_tabela_contrair.png:0
+[ 1012247ms] [ERROR] Failed to load resource: the server responded with a status of 404 () @ https://www.esocial.gov.br/Content/img/icones/ico_collapse_tabela_contrair.png:0
+[ 1018920ms] [ERROR] Failed to load resource: the server responded with a status of 404 () @ https://www.esocial.gov.br/Content/img/icones/ico_collapse_tabela_contrair.png:0
+[ 1025676ms] [ERROR] Failed to load resource: the server responded with a status of 404 () @ https://www.esocial.gov.br/Content/img/icones/ico_collapse_tabela_contrair.png:0
+[ 1032398ms] [ERROR] Failed to load resource: the server responded with a status of 404 () @ https://www.esocial.gov.br/Content/img/icones/ico_collapse_tabela_contrair.png:0
+[ 1039422ms] [ERROR] Failed to load resource: the server responded with a status of 404 () @ https://www.esocial.gov.br/Content/img/icones/ico_collapse_tabela_contrair.png:0
+[ 1046321ms] [ERROR] Failed to load resource: the server responded with a status of 404 () @ https://www.esocial.gov.br/Content/img/icones/ico_collapse_tabela_contrair.png:0
+[ 1052591ms] [ERROR] Failed to load resource: the server responded with a status of 404 () @ https://www.esocial.gov.br/Content/img/icones/ico_collapse_tabela_contrair.png:0
+[ 1059115ms] [ERROR] Failed to load resource: the server responded with a status of 404 () @ https://www.esocial.gov.br/Content/img/icones/ico_collapse_tabela_contrair.png:0
+[ 1065336ms] [ERROR] Failed to load resource: the server responded with a status of 404 () @ https://www.esocial.gov.br/Content/img/icones/ico_collapse_tabela_contrair.png:0
+[ 1071578ms] [ERROR] Failed to load resource: the server responded with a status of 404 () @ https://www.esocial.gov.br/Content/img/icones/ico_collapse_tabela_contrair.png:0
+[ 1078816ms] [ERROR] Failed to load resource: the server responded with a status of 404 () @ https://www.esocial.gov.br/Content/img/icones/ico_collapse_tabela_contrair.png:0
+[ 1086061ms] [ERROR] Failed to load resource: the server responded with a status of 404 () @ https://www.esocial.gov.br/Content/img/icones/ico_collapse_tabela_contrair.png:0
+[ 1093296ms] [ERROR] Failed to load resource: the server responded with a status of 404 () @ https://www.esocial.gov.br/Content/img/icones/ico_collapse_tabela_contrair.png:0
+[ 1100560ms] [ERROR] Failed to load resource: the server responded with a status of 404 () @ https://www.esocial.gov.br/Content/img/icones/ico_collapse_tabela_contrair.png:0
+[ 1107799ms] [ERROR] Failed to load resource: the server responded with a status of 404 () @ https://www.esocial.gov.br/Content/img/icones/ico_collapse_tabela_contrair.png:0
+[ 1115060ms] [ERROR] Failed to load resource: the server responded with a status of 404 () @ https://www.esocial.gov.br/Content/img/icones/ico_collapse_tabela_contrair.png:0
+[ 1122472ms] [ERROR] Failed to load resource: the server responded with a status of 404 () @ https://www.esocial.gov.br/Content/img/icones/ico_collapse_tabela_contrair.png:0
+[ 1129908ms] [ERROR] Failed to load resource: the server responded with a status of 404 () @ https://www.esocial.gov.br/Content/img/icones/ico_collapse_tabela_contrair.png:0
+[ 1137392ms] [ERROR] Failed to load resource: the server responded with a status of 404 () @ https://www.esocial.gov.br/Content/img/icones/ico_collapse_tabela_contrair.png:0
+[ 1145017ms] [ERROR] Failed to load resource: the server responded with a status of 404 () @ https://www.esocial.gov.br/Content/img/icones/ico_collapse_tabela_contrair.png:0
+[ 1154128ms] [ERROR] Failed to load resource: the server responded with a status of 404 () @ https://www.esocial.gov.br/Content/img/icones/ico_collapse_tabela_contrair.png:0
+[ 1162589ms] [ERROR] Failed to load resource: the server responded with a status of 404 () @ https://www.esocial.gov.br/Content/img/icones/ico_collapse_tabela_contrair.png:0
+[ 1171474ms] [ERROR] Failed to load resource: the server responded with a status of 404 () @ https://www.esocial.gov.br/Content/img/icones/ico_collapse_tabela_contrair.png:0
+[ 1570667ms] [ERROR] Failed to load resource: the server responded with a status of 404 () @ https://www.esocial.gov.br/content/jqueryui/images/ui-bg_glass_75_ffffff_1x400.png:0
