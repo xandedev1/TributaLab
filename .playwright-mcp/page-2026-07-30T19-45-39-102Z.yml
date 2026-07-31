@@ -1,0 +1,11 @@
+- generic [active] [ref=f2e1]:
+  - banner [ref=f2e2]:
+    - button "Copy as text" [ref=f2e3]
+    - 'heading "Blocked hosts: billing-bedrooms-lenders-counties.trycloudflare.com" [level=1] [ref=f2e4]'
+  - main [ref=f2e5]:
+    - heading "To allow requests to these hosts, make sure they are valid hostnames (containing only numbers, letters, dashes and dots), then add the following to your environment configuration:" [level=2] [ref=f2e6]
+    - generic [ref=f2e7]: config.hosts << "billing-bedrooms-lenders-counties.trycloudflare.com"
+    - paragraph [ref=f2e8]:
+      - text: "For more details view:"
+      - link "the Host Authorization guide" [ref=f2e9] [cursor=pointer]:
+        - /url: https://guides.rubyonrails.org/configuring.html#actiondispatch-hostauthorization

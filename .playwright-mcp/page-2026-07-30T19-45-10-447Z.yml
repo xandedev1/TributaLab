@@ -1,0 +1,27 @@
+- generic [ref=e1]:
+  - status [ref=e2]: Entre para acessar a central de auditoria.
+  - main [ref=e3]:
+    - region "TributaLab Auditor Fiscal" [ref=e4]:
+      - generic [ref=e5]:
+        - img "TributaLab" [ref=e6]
+        - generic [ref=e7]: Núcleo de inteligência fiscal
+      - generic [ref=e8]:
+        - paragraph [ref=e9]: 01 / Retenções
+        - heading "Visão fiscal sem ruído." [level=1] [ref=e10]: Visão fiscalsem ruído.
+        - paragraph [ref=e11]: Faturamento, retenções e competências reunidos em uma leitura executiva e rastreável.
+    - generic [ref=e20]:
+      - generic [ref=e21]: AF
+      - paragraph [ref=e22]: Ambiente protegido
+      - heading "Acessar auditoria" [level=2] [ref=e23]
+      - paragraph [ref=e24]: Informe suas credenciais para abrir o painel consolidado.
+      - generic [ref=e25]:
+        - generic [ref=e26]:
+          - generic [ref=e27]: Usuário
+          - textbox "Usuário" [active] [ref=e31]:
+            - /placeholder: Seu usuário
+        - generic [ref=e32]:
+          - generic [ref=e33]: Senha
+          - textbox "Senha" [ref=e38]:
+            - /placeholder: Sua senha
+        - button "Entrar no painel" [ref=e39] [cursor=pointer]
+      - paragraph [ref=e40]: Sessão protegida e acesso monitorado

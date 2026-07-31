@@ -1,0 +1,4 @@
+[    1856ms] [ERROR] Failed to load resource: the server responded with a status of 502 () @ https://billing-bedrooms-lenders-counties.trycloudflare.com/assets/controllers/simulation_form_controller-a66a26be.js:0
+[    1881ms] [ERROR] Failed to load resource: the server responded with a status of 502 () @ https://billing-bedrooms-lenders-counties.trycloudflare.com/assets/application-bfcdf840.js:0
+[    6885ms] [ERROR] Failed to load resource: the server responded with a status of 422 () @ https://billing-bedrooms-lenders-counties.trycloudflare.com/auditor-fiscal/login:0
+[    7255ms] [ERROR] Failed to load resource: the server responded with a status of 404 () @ https://billing-bedrooms-lenders-counties.trycloudflare.com/favicon.ico:0

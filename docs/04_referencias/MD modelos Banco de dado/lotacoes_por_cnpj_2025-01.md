@@ -614,8 +614,8 @@
 
 | Início da Validade | Término da Validade | Tipo de Inscrição | Número de Inscrição | FPAS | Data de Recepção | Ação exibida no eSocial |
 | --- | --- | --- | --- | --- | --- | --- |
-| 12/2024 | — | — | — | 515 | 17/01/2025 16:56:43 | Alterar / Excluir |
-| 01/2023 | 11/2024 ! | — | — | 515 | 17/06/2024 08:59:48 | Alterar / Excluir |
+| 12/2024 | — | CNPJ | 05.969.071/0001-10 | 515 | 17/01/2025 16:56:43 | Alterar / Excluir |
+| 01/2023 | 11/2024 ! | CNPJ | 05.969.071/0001-10 | 515 | 17/06/2024 08:59:48 | Alterar / Excluir |
 
 ## Código E00359-001-02A
 
@@ -813,8 +813,8 @@
 
 | Início da Validade | Término da Validade | Tipo de Inscrição | Número de Inscrição | FPAS | Data de Recepção | Ação exibida no eSocial |
 | --- | --- | --- | --- | --- | --- | --- |
-| 12/2024 | — | — | — | 515 | 20/01/2025 08:14:51 | Alterar / Excluir |
-| 01/2023 | 11/2024 ! | — | — | 515 | 17/06/2024 16:38:57 | Alterar / Excluir |
+| 12/2024 | — | CNPJ | 05.969.071/0001-10 | 515 | 20/01/2025 08:14:51 | Alterar / Excluir |
+| 01/2023 | 11/2024 ! | CNPJ | 05.969.071/0001-10 | 515 | 17/06/2024 16:38:57 | Alterar / Excluir |
 
 ## Código E02012-001-02A
 
@@ -1020,8 +1020,8 @@
 
 | Início da Validade | Término da Validade | Tipo de Inscrição | Número de Inscrição | FPAS | Data de Recepção | Ação exibida no eSocial |
 | --- | --- | --- | --- | --- | --- | --- |
-| 12/2024 | — | — | — | 515 | 20/01/2025 08:06:11 | Alterar / Excluir |
-| 01/2023 | 11/2024 ! | — | — | 515 | 17/09/2024 09:49:37 | Alterar / Excluir |
+| 12/2024 | — | CNPJ | 05.969.071/0001-10 | 515 | 20/01/2025 08:06:11 | Alterar / Excluir |
+| 01/2023 | 11/2024 ! | CNPJ | 05.969.071/0001-10 | 515 | 17/09/2024 09:49:37 | Alterar / Excluir |
 
 ## Código E00357-001-02A
 
@@ -1048,5 +1048,5 @@
 
 | Início da Validade | Término da Validade | Tipo de Inscrição | Número de Inscrição | FPAS | Data de Recepção | Ação exibida no eSocial |
 | --- | --- | --- | --- | --- | --- | --- |
-| 12/2024 | — | — | — | 515 | 19/01/2025 22:50:40 | Alterar / Excluir |
-| 01/2023 | 11/2024 ! | — | — | 515 | 17/09/2024 09:49:37 | Alterar / Excluir |
+| 12/2024 | — | CNPJ | 05.969.071/0001-10 | 515 | 19/01/2025 22:50:40 | Alterar / Excluir |
+| 01/2023 | 11/2024 ! | CNPJ | 05.969.071/0001-10 | 515 | 17/09/2024 09:49:37 | Alterar / Excluir |
