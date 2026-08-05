@@ -16,8 +16,20 @@ Interpretação confirmada:
 
 ## Única informação ainda pendente
 
-Denis respondeu que verificou o período `09/2025` e encontrou os códigos de Terceiros `0001`, `0002`, `0016`, `0032` e `0064`. Isso confirma os dados do S-1020, mas não identifica as rubricas do S-1010.
+Denis respondeu que verificou o período `09/2025` e encontrou os códigos de Terceiros `0001`, `0002`, `0016`, `0032` e `0064`. Isso confirma os dados do S-1020, mas não identificava as rubricas do S-1010.
 
-> Denis, esses cinco códigos de Terceiros do S-1020 estão confirmados. Agora precisamos dos códigos das verbas da folha, ou seja, das rubricas cadastradas no S-1010 que terão a contribuição patronal suspensa. Exemplos de resposta: rubricas 100, 101 e 205; ou todas as rubricas que hoje possuem incidência previdenciária patronal. Quais são?
+## Pergunta resolvida sem depender de Denis
+
+Em 31/07/2026 a tabela de rubricas da APPA foi lida no portal do eSocial e os eventos suspensos foram baixados em XML assinado. A resposta estava no próprio cadastro:
+
+- **78 rubricas** já possuem `codIncCP` `95`, ou seja, contribuição patronal com exigibilidade suspensa;
+- **75** delas já apontam para o processo `5006491-20.2022.4.03.6119` desde `12/2024`;
+- **3** ainda apontam para o processo anterior `5006493-87.2022.4.03.6119`, com validade aberta em `01/2023`: `EA001`, `E406A` e `E320A`.
+
+A APPA já havia implantado a suspensão patronal em `12/2024`. Não é necessário pedir a lista de rubricas a Denis.
+
+## Confirmação a solicitar antes de qualquer envio
+
+> Denis, auditamos a tabela de rubricas da APPA no eSocial. A suspensão patronal já está aplicada em 78 rubricas, e 75 já usam o processo `5006491-20.2022.4.03.6119` desde 12/2024. Apenas três rubricas continuam no processo anterior `5006493-87.2022.4.03.6119`: `EA001` (BASE INSS DEDUTORA), `E406A` (1/3 MEDIAS FERIAS) e `E320A` (SOBRE AVISO). Preparamos os eventos S-1010 de 06/2026 para atualizá-las. Você confirma o envio?
 
 Nenhum evento deve ser transmitido antes da resposta.

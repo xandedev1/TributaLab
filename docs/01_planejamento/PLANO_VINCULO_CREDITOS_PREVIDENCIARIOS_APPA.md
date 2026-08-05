@@ -49,13 +49,50 @@ O código combinado é `0115`.
 
 ## Evento correto para o vínculo
 
-Como o objeto informado são contribuições destinadas a terceiros, o vínculo pertence ao grupo `fpasLotacao` do evento S-1020, e não ao S-1010. Cada lotação aplicável deve preservar seu enquadramento e informar:
+O trabalho tem **dois eventos distintos**, confirmado por Denis em 30/07/2026 e comprovado pelo cadastro real da APPA:
+
+- **Terceiros** → grupo `fpasLotacao` do evento **S-1020**;
+- **Patronal** → grupo `ideProcessoCP` do evento **S-1010**.
+
+Para terceiros, cada lotação aplicável deve preservar seu enquadramento e informar:
 
 - `codTercs`: código de terceiros normal da lotação;
 - `codTercsSusp`: código combinado das entidades suspensas compatíveis com o FPAS;
 - um `procJudTerceiro` para cada entidade suspensa, contendo `codTerc`, `nrProcJud` e `codSusp`.
 
-O S-1010/`ideProcessoCP` é utilizado quando a decisão suspende incidência previdenciária de rubricas. Não é o mecanismo correspondente aos cinco códigos de terceiros fornecidos por Denis.
+Para o patronal, cada rubrica atingida recebe `codIncCP` `95` e um `ideProcessoCP` com `tpProc`, `nrProc`, `extDecisao` e `codSusp`.
+
+## Auditoria do S-1010 patronal em 31/07/2026
+
+A tabela de rubricas da APPA foi lida integralmente no portal do eSocial e cada evento suspenso foi baixado em XML assinado pelo endpoint `Rubrica/CadastroCompleto/DownloadEvento`.
+
+Resultado da varredura de 1.170 rubricas vigentes:
+
+| `codIncCP` | Significado | Quantidade |
+| --- | --- | ---: |
+| `11` | Base patronal normal | 559 |
+| `00` | Sem incidência | 480 |
+| `95` | Exigibilidade suspensa por decisão judicial | 80 |
+| `12` | Base patronal com particularidade | 35 |
+| `21` | Salário-maternidade | 8 |
+| `51` | Salário-família | 8 |
+
+As 80 ocorrências correspondem a **78 rubricas distintas**, todas na tabela `EA001`, todas com `extDecisao` `1` e `codSusp` `1`:
+
+| Vigência | Processo vinculado | Rubricas | Situação |
+| --- | --- | ---: | --- |
+| `2024-12` | `5006491-20.2022.4.03.6119` | 75 | corretas |
+| `2023-01` | `5006493-87.2022.4.03.6119` | 3 | divergentes |
+
+Portanto, a suspensão patronal no S-1010 **já foi implantada pela APPA em 12/2024** e já aponta para o processo solicitado por Denis. A lista de rubricas que faltava não precisava vir de Denis: ela é exatamente o conjunto que já está com `codIncCP` `95`.
+
+As três rubricas divergentes são:
+
+| `codRubr` | Descrição | `natRubr` | `tpRubr` | `codIncIRRF` | `codIncFGTS` |
+| --- | --- | --- | --- | --- | --- |
+| `EA001` | BASE INSS DEDUTORA | `9901` | `4` | `9` | `00` |
+| `E406A` | 1/3 MEDIAS FERIAS (Ferias) | `1017` | `1` | `13` | `11` |
+| `E320A` | SOBRE AVISO | `1003` | `1` | `11` | `11` |
 
 ## Distribuição conhecida das lotações
 
@@ -97,6 +134,8 @@ Essa amostragem não equivale a uma auditoria individual dos 146 XMLs FPAS `515`
 
 ## Artefato preparado
 
+### S-1020 — terceiros
+
 Foi preparado um único evento de revisão para a divergência comprovada:
 
 - arquivo: `storage/private/esocial/appa/s1020_2026-06/S-1020_E00482-001-01A_2026-06_UNSIGNED.xml`;
@@ -108,7 +147,23 @@ Foi preparado um único evento de revisão para a divergência comprovada:
 - validação: conteúdo aprovado sem erros pelo XSD oficial em produção desde 01/07/2026; no schema completo falta somente a assinatura digital obrigatória;
 - cruzamento offline: vínculo novo correspondente ao S-1070 atual, sem erros de análise.
 
-O identificador do evento é provisório para revisão. O arquivo não está assinado e não foi transmitido.
+### S-1010 — patronal
+
+Foram preparados três eventos de inclusão de validade `2026-06`, em `storage/private/esocial/appa/s1010_2026-06`:
+
+| Arquivo | `codRubr` | Origem auditada |
+| --- | --- | --- |
+| `S-1010_EA001_2026-06_UNSIGNED.xml` | `EA001` | evento `26437399041` |
+| `S-1010_E406A_2026-06_UNSIGNED.xml` | `E406A` | evento `26963878809` |
+| `S-1010_E320A_2026-06_UNSIGNED.xml` | `E320A` | evento `26982625585` |
+
+Cada evento preserva `dscRubr`, `natRubr`, `tpRubr`, `codIncIRRF` e `codIncFGTS` do cadastro atual, mantém `codIncCP` `95` e substitui apenas `nrProc` pelo processo `5006491-20.2022.4.03.6119`, com `tpProc` `2`, `extDecisao` `1` e `codSusp` `1`.
+
+Os três foram aprovados pelo XSD oficial `evtTabRubrica` S-1.3 e cruzados com os dois S-1070 pelo analisador offline: `3` vínculos, `3` correspondências, `0` sem correspondência e `0` erros.
+
+O gerador é `script/gera_s1010_2026_06.py`. As evidências da auditoria estão em `storage/private/esocial/appa/s1010_evidence_2026-07-31`.
+
+Nenhum dos arquivos está assinado e nenhum foi transmitido. Os identificadores de evento são provisórios para revisão.
 
 ## Preparação
 
