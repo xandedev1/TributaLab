@@ -12,5 +12,5 @@ test:
   <<: *default
 
 production:
-  database: cache
   <<: *default
+  # Usando memória em vez de Solid Cache para evitar erro de tabela não encontrada
