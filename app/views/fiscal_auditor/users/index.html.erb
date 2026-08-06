@@ -1,0 +1,46 @@
+<% content_for :title, "Usuários | Auditor Fiscal" %>
+
+<main class="fa-page">
+  <header class="fa-page__header">
+    <div>
+      <p class="fa-kicker">Administração</p>
+      <h1>Usuários do Auditor Fiscal</h1>
+      <p class="fa-muted">Gerencie quem tem acesso ao painel.</p>
+    </div>
+    <%= link_to "Novo usuário", new_fiscal_auditor_user_path, class: "fa-button fa-button--primary" %>
+  </header>
+
+  <table class="fa-table">
+    <thead>
+      <tr>
+        <th>Usuário</th>
+        <th>Nome</th>
+        <th>Status</th>
+        <th>Criado em</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      <% @users.each do |user| %>
+        <tr>
+          <td><strong><%= user.username %></strong></td>
+          <td><%= user.name.presence || "—" %></td>
+          <td>
+            <% if user.active? %>
+              <span class="fa-badge fa-badge--success">Ativo</span>
+            <% else %>
+              <span class="fa-badge">Desativado</span>
+            <% end %>
+          </td>
+          <td><%= l user.created_at, format: :short %></td>
+          <td>
+            <%= link_to "Editar", edit_fiscal_auditor_user_path(user), class: "fa-button fa-button--ghost" %>
+            <% if user.active? %>
+              <%= button_to "Desativar", fiscal_auditor_user_path(user), method: :delete, class: "fa-button fa-button--ghost", data: { turbo_confirm: "Desativar #{user.username}?" } %>
+            <% end %>
+          </td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+</main>

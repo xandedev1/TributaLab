@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_07_06_120000) do
+ActiveRecord::Schema[8.1].define(version: 2026_08_06_150000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -177,6 +177,16 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_06_120000) do
     t.integer "used_queries", default: 0, null: false
     t.index ["company_cnpj", "created_at"], name: "index_esocial_sync_runs_on_company_cnpj_and_created_at"
     t.index ["status", "created_at"], name: "index_esocial_sync_runs_on_status_and_created_at"
+  end
+
+  create_table "fiscal_auditor_users", force: :cascade do |t|
+    t.boolean "active", default: true, null: false
+    t.datetime "created_at", null: false
+    t.string "name"
+    t.string "password_digest", null: false
+    t.datetime "updated_at", null: false
+    t.string "username", null: false
+    t.index ["username"], name: "index_fiscal_auditor_users_on_username", unique: true
   end
 
   create_table "inss_payroll_employees", force: :cascade do |t|

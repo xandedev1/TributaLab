@@ -1,0 +1,35 @@
+<%= form_with model: [:fiscal_auditor, user], class: "fa-form" do |form| %>
+  <% if user.errors.any? %>
+    <div class="fa-alert fa-alert--error">
+      <ul>
+        <% user.errors.full_messages.each do |msg| %>
+          <li><%= msg %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <label class="fa-field">
+    <span>Usuário (login)</span>
+    <%= form.text_field :username, required: true, autocomplete: "off" %>
+  </label>
+
+  <label class="fa-field">
+    <span>Nome (opcional)</span>
+    <%= form.text_field :name, autocomplete: "off" %>
+  </label>
+
+  <label class="fa-field">
+    <span>Senha <%= "(deixe em branco para manter)" if user.persisted? %></span>
+    <%= form.password_field :password, required: !user.persisted?, autocomplete: "new-password" %>
+  </label>
+
+  <% if user.persisted? %>
+    <label class="fa-field fa-field--inline">
+      <%= form.check_box :active %>
+      <span>Usuário ativo</span>
+    </label>
+  <% end %>
+
+  <%= form.submit user.persisted? ? "Salvar alterações" : "Criar usuário", class: "fa-button fa-button--primary" %>
+<% end %>

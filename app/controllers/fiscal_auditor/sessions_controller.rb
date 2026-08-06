@@ -10,9 +10,13 @@ module FiscalAuditor
     end
 
     def create
-      if valid_credentials?
+      user = User.active.find_by("LOWER(username) = ?", params[:username].to_s.downcase)
+
+      if user&.authenticate(params[:password].to_s)
         reset_session
         session[:fiscal_auditor] = true
+        session[:fiscal_auditor_user_id] = user.id
+        session[:fiscal_auditor_username] = user.username
         redirect_to fiscal_auditor_root_path, notice: "Acesso liberado."
       else
         flash.now[:alert] = "Usuário ou senha inválidos."
@@ -23,20 +27,6 @@ module FiscalAuditor
     def destroy
       reset_session
       redirect_to fiscal_auditor_login_path, notice: "Sessão encerrada."
-    end
-
-    private
-
-    def valid_credentials?
-      secure_match?(params[:username], ENV.fetch("FISCAL_AUDITOR_USERNAME", "Xande")) &&
-        secure_match?(params[:password], ENV.fetch("FISCAL_AUDITOR_PASSWORD", "123321"))
-    end
-
-    def secure_match?(candidate, expected)
-      ActiveSupport::SecurityUtils.secure_compare(
-        Digest::SHA256.hexdigest(candidate.to_s),
-        Digest::SHA256.hexdigest(expected)
-      )
     end
   end
 end

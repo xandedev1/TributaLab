@@ -1,0 +1,13 @@
+<% content_for :title, "Novo usuário | Auditor Fiscal" %>
+
+<main class="fa-page">
+  <header class="fa-page__header">
+    <div>
+      <p class="fa-kicker">Administração</p>
+      <h1>Novo usuário</h1>
+    </div>
+    <%= link_to "Voltar", fiscal_auditor_users_path, class: "fa-button fa-button--ghost" %>
+  </header>
+
+  <%= render "form", user: @user %>
+</main>
