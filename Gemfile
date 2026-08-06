@@ -20,6 +20,7 @@ gem "tailwindcss-rails"
 gem "jbuilder"
 gem "csv"
 gem "rubyzip", "~> 3.3"
+gem "rexml", "~> 3.4"
 # Read text/positions from payroll PDFs (RESUMO MOVIMENTO MENSAL) [https://github.com/yob/pdf-reader]
 gem "pdf-reader", "~> 2.12"
 
