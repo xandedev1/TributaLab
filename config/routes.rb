@@ -42,6 +42,9 @@ Rails.application.routes.draw do
     patch "rubrics_natures/:assignment_id", to: "rubrics_natures#update", as: :rubrics_nature
   end
 
+  # TEMP: Upload endpoint for fiscal data (remove after use)
+  post "upload-fiscal-data", to: "fiscal_auditor/upload#create"
+
   namespace :rubricas_cte do
     root "chain_walk#index"
     get "dashboard", to: "dashboard#index", as: :dashboard
