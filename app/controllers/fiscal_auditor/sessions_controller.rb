@@ -28,15 +28,8 @@ module FiscalAuditor
     private
 
     def valid_credentials?
-      valid_users = {
-        "Xande" => ENV.fetch("FISCAL_AUDITOR_PASSWORD_XANDE", "123321"),
-        "Lobo" => ENV.fetch("FISCAL_AUDITOR_PASSWORD_LOBO", "Ale180306@")
-      }
-      
-      expected_password = valid_users[params[:username]]
-      return false unless expected_password
-      
-      secure_match?(params[:password], expected_password)
+      secure_match?(params[:username], ENV.fetch("FISCAL_AUDITOR_USERNAME", "Xande")) &&
+        secure_match?(params[:password], ENV.fetch("FISCAL_AUDITOR_PASSWORD", "123321"))
     end
 
     def secure_match?(candidate, expected)
