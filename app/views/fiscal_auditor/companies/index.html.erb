@@ -1,0 +1,35 @@
+<% content_for :title, "Selecionar empresa | Auditor Fiscal" %>
+
+<main class="fa-companies">
+  <div class="fa-companies__glow fa-companies__glow--a"></div>
+  <div class="fa-companies__glow fa-companies__glow--b"></div>
+
+  <header class="fa-companies__header">
+    <p class="fa-kicker fa-kicker--light">Central de auditoria</p>
+    <h1>Qual empresa vamos auditar?</h1>
+    <p class="fa-companies__sub">Selecione o grupo para abrir o painel consolidado.</p>
+  </header>
+
+  <section class="fa-companies__grid">
+    <% @companies.each do |key, company| %>
+      <%= button_to fiscal_auditor_select_company_path(company: key), class: "fa-company-card fa-company-card--#{key}" do %>
+        <span class="fa-company-card__shine"></span>
+        <span class="fa-company-card__tag"><%= company[:tag] %></span>
+        <span class="fa-company-card__name"><%= company[:name] %></span>
+        <span class="fa-company-card__legal"><%= company[:legal_name] %></span>
+        <span class="fa-company-card__cnpj">CNPJ <%= company[:cnpj] %></span>
+        <span class="fa-company-card__desc"><%= company[:description] %></span>
+        <span class="fa-company-card__cta">
+          Entrar no painel
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+        </span>
+      <% end %>
+    <% end %>
+  </section>
+
+  <footer class="fa-companies__footer">
+    <%= button_to fiscal_auditor_logout_path, method: :delete, class: "fa-companies__logout" do %>
+      Encerrar sessao
+    <% end %>
+  </footer>
+</main>

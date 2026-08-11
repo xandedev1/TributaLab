@@ -397,3 +397,34 @@ turbo-frame#fiscal-results { display: block; }
 }
 
 @media (prefers-reduced-motion: reduce) { *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; } }
+/* ===== Selecao de empresa (liquid glass) ===== */
+.fa-companies { position: relative; display: flex; min-height: 100vh; flex-direction: column; align-items: center; justify-content: center; overflow: hidden; padding: clamp(30px, 6vw, 80px) 24px; background: radial-gradient(1200px 700px at 15% 10%, #123c3d 0%, var(--fa-ink-strong) 55%, #071b1c 100%); color: white; isolation: isolate; }
+.fa-companies__glow { position: absolute; z-index: -1; border-radius: 50%; filter: blur(90px); opacity: .5; }
+.fa-companies__glow--a { top: -10%; left: -8%; width: 46vw; height: 46vw; background: rgba(155, 200, 181, .28); animation: fa-glow-a 14s ease-in-out infinite alternate; }
+.fa-companies__glow--b { right: -12%; bottom: -18%; width: 52vw; height: 52vw; background: rgba(214, 110, 84, .22); animation: fa-glow-b 17s ease-in-out infinite alternate; }
+@keyframes fa-glow-a { to { transform: translate(6vw, 4vh) scale(1.12); } }
+@keyframes fa-glow-b { to { transform: translate(-5vw, -6vh) scale(1.08); } }
+.fa-companies__header { max-width: 760px; margin-bottom: clamp(34px, 5vw, 60px); text-align: center; }
+.fa-companies__header h1 { margin: 14px 0 10px; font-family: "Barlow Condensed", sans-serif; font-size: clamp(44px, 6vw, 76px); font-weight: 600; line-height: .95; text-transform: uppercase; }
+.fa-companies__sub { margin: 0; color: rgba(255,255,255,.62); font-size: 15px; }
+.fa-companies__grid { display: grid; width: min(980px, 100%); grid-template-columns: repeat(2, minmax(0, 1fr)); gap: clamp(20px, 3vw, 34px); }
+.fa-company-card { position: relative; display: flex; min-height: 340px; flex-direction: column; align-items: flex-start; overflow: hidden; border: 1px solid rgba(255,255,255,.16); border-radius: 26px; padding: clamp(26px, 3.4vw, 40px); background: linear-gradient(135deg, rgba(255,255,255,.14), rgba(255,255,255,.04) 55%, rgba(255,255,255,.09)); box-shadow: 0 24px 70px rgba(0,0,0,.35), inset 0 1px 0 rgba(255,255,255,.22); color: white; cursor: pointer; text-align: left; backdrop-filter: blur(18px) saturate(1.4); -webkit-backdrop-filter: blur(18px) saturate(1.4); transition: transform .45s cubic-bezier(.2,.9,.25,1.2), border-color .3s, box-shadow .45s; }
+.fa-company-card::before { position: absolute; inset: 0; content: ""; background: radial-gradient(600px 300px at var(--mx, 20%) var(--my, 0%), rgba(255,255,255,.16), transparent 60%); opacity: 0; transition: opacity .35s; pointer-events: none; }
+.fa-company-card:hover { border-color: rgba(155,200,181,.55); box-shadow: 0 34px 90px rgba(0,0,0,.45), 0 0 0 1px rgba(155,200,181,.25), inset 0 1px 0 rgba(255,255,255,.3); transform: translateY(-8px) scale(1.015); }
+.fa-company-card:hover::before { opacity: 1; }
+.fa-company-card__shine { position: absolute; top: -60%; left: -30%; width: 60%; height: 220%; background: linear-gradient(100deg, transparent, rgba(255,255,255,.14), transparent); transform: rotate(12deg) translateX(-120%); transition: transform .9s ease; pointer-events: none; }
+.fa-company-card:hover .fa-company-card__shine { transform: rotate(12deg) translateX(320%); }
+.fa-company-card__tag { border: 1px solid rgba(255,255,255,.25); border-radius: 999px; padding: 6px 14px; background: rgba(255,255,255,.08); font-size: 10px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; backdrop-filter: blur(6px); }
+.fa-company-card--appa .fa-company-card__tag { border-color: rgba(155,200,181,.5); color: var(--fa-mint); }
+.fa-company-card--solucoes .fa-company-card__tag { border-color: rgba(201,155,82,.55); color: var(--fa-gold); }
+.fa-company-card__name { margin-top: 22px; font-family: "Barlow Condensed", sans-serif; font-size: clamp(38px, 4.4vw, 56px); font-weight: 700; line-height: .92; text-transform: uppercase; }
+.fa-company-card__legal { margin-top: 10px; color: rgba(255,255,255,.72); font-size: 12px; font-weight: 600; letter-spacing: .04em; text-transform: uppercase; }
+.fa-company-card__cnpj { margin-top: 4px; color: rgba(255,255,255,.45); font-size: 12px; letter-spacing: .08em; }
+.fa-company-card__desc { margin-top: 16px; color: rgba(255,255,255,.6); font-size: 13px; line-height: 1.6; }
+.fa-company-card__cta { display: inline-flex; align-items: center; gap: 10px; margin-top: auto; padding-top: 24px; color: var(--fa-mint); font-size: 12px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; }
+.fa-company-card__cta svg { width: 18px; transition: transform .3s; }
+.fa-company-card:hover .fa-company-card__cta svg { transform: translateX(6px); }
+.fa-companies__footer { margin-top: clamp(30px, 4vw, 50px); }
+.fa-companies__logout { border: 1px solid rgba(255,255,255,.2); border-radius: 999px; padding: 10px 22px; background: transparent; color: rgba(255,255,255,.6); cursor: pointer; font-size: 11px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; transition: .3s; }
+.fa-companies__logout:hover { border-color: rgba(214,110,84,.6); color: var(--fa-coral-soft); }
+@media (max-width: 760px) { .fa-companies__grid { grid-template-columns: 1fr; } .fa-company-card { min-height: 280px; } }

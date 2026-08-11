@@ -30,6 +30,8 @@ Rails.application.routes.draw do
     get "login", to: "sessions#new", as: :login
     post "login", to: "sessions#create"
     delete "logout", to: "sessions#destroy", as: :logout
+    get "empresas", to: "companies#index", as: :companies
+    post "empresas/:company", to: "companies#select", as: :select_company, constraints: { company: /appa|solucoes/ }
     resources :users, path: "usuarios", except: %i[show]
   end
 
