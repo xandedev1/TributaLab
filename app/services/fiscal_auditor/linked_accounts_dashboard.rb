@@ -24,7 +24,7 @@ module FiscalAuditor
         cache_key = "records_#{company}"
         return instance_variable_get("@#{cache_key}") if instance_variable_get("@#{cache_key}") && !stale?(company)
 
-        run_extractor(company) if stale?(company)
+        run_extractor(company) if stale?(company) && CompanyPath.linked_accounts_path(company).exist?
         instance_variable_set("@#{cache_key}", load_records(company))
         instance_variable_set("@#{cache_key}_mtime", source_mtime(company))
         instance_variable_get("@#{cache_key}")
@@ -43,8 +43,10 @@ module FiscalAuditor
       end
 
       def run_extractor(company)
-        python = ENV.fetch("PYTHON", Rails.root.join(".venv/Scripts/python.exe").to_s)
         source = CompanyPath.linked_accounts_path(company)
+        return unless source.exist?
+
+        python = ENV.fetch("PYTHON", Rails.root.join(".venv/Scripts/python.exe").to_s)
         system(python, EXTRACTOR_PATH.to_s, source.to_s, exception: true)
       end
 
