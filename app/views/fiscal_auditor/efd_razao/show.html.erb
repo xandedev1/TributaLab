@@ -43,15 +43,45 @@
 
       <!-- Report selector -->
       <section class="fa-report-selector">
+        <div class="fa-report-selector__glow fa-report-selector__glow--a"></div>
+        <div class="fa-report-selector__glow fa-report-selector__glow--b"></div>
         <nav class="fa-report-nav">
-          <%= link_to "A100 · EFD → Razão", fiscal_auditor_efd_razao_path(report: "a100_txt_pdf"),
-              class: "fa-report-nav__item #{"fa-report-nav__item--active" if params[:report] == "a100_txt_pdf"}" %>
-          <%= link_to "A100 · Razão → EFD", fiscal_auditor_efd_razao_path(report: "a100_pdf_txt"),
-              class: "fa-report-nav__item #{"fa-report-nav__item--active" if params[:report] == "a100_pdf_txt"}" %>
-          <%= link_to "C100 · EFD → Razão", fiscal_auditor_efd_razao_path(report: "c100_txt_pdf"),
-              class: "fa-report-nav__item #{"fa-report-nav__item--active" if params[:report] == "c100_txt_pdf"}" %>
-          <%= link_to "C100 · Razão → EFD", fiscal_auditor_efd_razao_path(report: "c100_pdf_txt"),
-              class: "fa-report-nav__item #{"fa-report-nav__item--active" if params[:report] == "c100_pdf_txt"}" %>
+          <%= link_to fiscal_auditor_efd_razao_path(report: "a100_txt_pdf"),
+              class: "fa-report-nav__item #{"fa-report-nav__item--active" if params[:report] == "a100_txt_pdf"}" do %>
+            <span class="fa-report-nav__shine"></span>
+            <span class="fa-report-nav__icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 3v18h18M7 16l4-5 3 3 6-8"/></svg></span>
+            <span class="fa-report-nav__text">
+              <strong>A100 · EFD → Razão</strong>
+              <small>Serviços</small>
+            </span>
+          <% end %>
+          <%= link_to fiscal_auditor_efd_razao_path(report: "a100_pdf_txt"),
+              class: "fa-report-nav__item #{"fa-report-nav__item--active" if params[:report] == "a100_pdf_txt"}" do %>
+            <span class="fa-report-nav__shine"></span>
+            <span class="fa-report-nav__icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 3v18h18M7 16l4-5 3 3 6-8"/></svg></span>
+            <span class="fa-report-nav__text">
+              <strong>A100 · Razão → EFD</strong>
+              <small>Serviços</small>
+            </span>
+          <% end %>
+          <%= link_to fiscal_auditor_efd_razao_path(report: "c100_txt_pdf"),
+              class: "fa-report-nav__item #{"fa-report-nav__item--active" if params[:report] == "c100_txt_pdf"}" do %>
+            <span class="fa-report-nav__shine"></span>
+            <span class="fa-report-nav__icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 19V9M10 19V5M16 19v-7M22 19V2"/></svg></span>
+            <span class="fa-report-nav__text">
+              <strong>C100 · EFD → Razão</strong>
+              <small>Vendas</small>
+            </span>
+          <% end %>
+          <%= link_to fiscal_auditor_efd_razao_path(report: "c100_pdf_txt"),
+              class: "fa-report-nav__item #{"fa-report-nav__item--active" if params[:report] == "c100_pdf_txt"}" do %>
+            <span class="fa-report-nav__shine"></span>
+            <span class="fa-report-nav__icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 19V9M10 19V5M16 19v-7M22 19V2"/></svg></span>
+            <span class="fa-report-nav__text">
+              <strong>C100 · Razão → EFD</strong>
+              <small>Vendas</small>
+            </span>
+          <% end %>
         </nav>
       </section>
 
@@ -69,6 +99,9 @@
           <% matched = @report[:records].count(&:matched?) %>
           <% unmatched = @report[:records].size - matched %>
           <% total_diff = @report[:records].sum(&:diferenca) %>
+          <% ok_count = @report[:records].count { |r| r.matched? && r.diferenca.abs <= 0.05 } %>
+          <% divergencia_count = @report[:records].count { |r| r.matched? && r.diferenca.abs > 0.05 } %>
+          <% sem_match_count = @report[:records].count { |r| !r.matched? } %>
           <% status_filter = params[:status].presence %>
           <% filtered_records = case status_filter
              when "ok" then @report[:records].select { |r| r.matched? && r.diferenca.abs <= 0.05 }
@@ -94,10 +127,22 @@
 
           <!-- Status filter -->
           <div class="fa-status-filter">
-            <%= link_to "Todos", fiscal_auditor_efd_razao_path(report: params[:report]), class: "fa-status-filter__item #{"fa-status-filter__item--active" unless status_filter}" %>
-            <%= link_to "OK", fiscal_auditor_efd_razao_path(report: params[:report], status: "ok"), class: "fa-status-filter__item fa-status-filter__item--ok #{"fa-status-filter__item--active" if status_filter == "ok"}" %>
-            <%= link_to "Divergência", fiscal_auditor_efd_razao_path(report: params[:report], status: "divergencia"), class: "fa-status-filter__item fa-status-filter__item--alert #{"fa-status-filter__item--active" if status_filter == "divergencia"}" %>
-            <%= link_to "Sem match", fiscal_auditor_efd_razao_path(report: params[:report], status: "sem_match"), class: "fa-status-filter__item fa-status-filter__item--warn #{"fa-status-filter__item--active" if status_filter == "sem_match"}" %>
+            <%= link_to fiscal_auditor_efd_razao_path(report: params[:report]), class: "fa-status-filter__item #{"fa-status-filter__item--active" unless status_filter}" do %>
+              <span>Todos</span>
+              <strong><%= number_with_delimiter(@report[:records].size, delimiter: ".") %></strong>
+            <% end %>
+            <%= link_to fiscal_auditor_efd_razao_path(report: params[:report], status: "ok"), class: "fa-status-filter__item fa-status-filter__item--ok #{"fa-status-filter__item--active" if status_filter == "ok"}" do %>
+              <span>OK</span>
+              <strong><%= number_with_delimiter(ok_count, delimiter: ".") %></strong>
+            <% end %>
+            <%= link_to fiscal_auditor_efd_razao_path(report: params[:report], status: "divergencia"), class: "fa-status-filter__item fa-status-filter__item--alert #{"fa-status-filter__item--active" if status_filter == "divergencia"}" do %>
+              <span>Divergência</span>
+              <strong><%= number_with_delimiter(divergencia_count, delimiter: ".") %></strong>
+            <% end %>
+            <%= link_to fiscal_auditor_efd_razao_path(report: params[:report], status: "sem_match"), class: "fa-status-filter__item fa-status-filter__item--warn #{"fa-status-filter__item--active" if status_filter == "sem_match"}" do %>
+              <span>Sem match</span>
+              <strong><%= number_with_delimiter(sem_match_count, delimiter: ".") %></strong>
+            <% end %>
           </div>
 
           <div class="fa-table-wrap">
