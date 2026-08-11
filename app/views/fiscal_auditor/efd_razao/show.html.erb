@@ -185,7 +185,9 @@
               </tbody>
               <tfoot>
                 <tr class="fa-row--total">
-                  <td colspan="3"><strong>TOTAL</strong> (<%= number_with_delimiter(filtered_records.size, delimiter: ".") %> registros)</td>
+                  <td><strong>TOTAL</strong></td>
+                  <td><%= number_with_delimiter(filtered_records.size, delimiter: ".") %> regs</td>
+                  <td></td>
                   <td class="fa-num"><strong><%= money.call(filtered_records.sum(&:valor_nf)) %></strong></td>
                   <td></td>
                   <td class="fa-num"><strong><%= money.call(filtered_records.sum(&:credito)) %></strong></td>
