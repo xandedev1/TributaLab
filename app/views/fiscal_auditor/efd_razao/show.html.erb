@@ -42,12 +42,8 @@
       </section>
 
       <!-- Report selector -->
-      <section class="fa-filterbar">
-        <div class="fa-filterbar__count">
-          <strong>4 relatórios</strong>
-          <span>de cruzamento</span>
-        </div>
-        <nav class="fa-report-nav">
+      <section class="fa-filterbar fa-filterbar--centered">
+        <nav class="fa-report-nav fa-report-nav--centered">
           <%= link_to "A100 · EFD → Razão", fiscal_auditor_efd_razao_path(report: "a100_txt_pdf"),
               class: "fa-report-nav__item #{"fa-report-nav__item--active" if params[:report] == "a100_txt_pdf"}" %>
           <%= link_to "A100 · Razão → EFD", fiscal_auditor_efd_razao_path(report: "a100_pdf_txt"),
@@ -104,7 +100,7 @@
                 </tr>
               </thead>
               <tbody>
-                <% @report[:records].first(200).each do |r| %>
+                <% @report[:records].each do |r| %>
                   <tr class="<%= r.matched? ? (r.diferenca.abs > 0.05 ? "fa-row--diff" : "fa-row--ok") : "fa-row--unmatched" %>">
                     <td><%= r.codigo || "—" %></td>
                     <td><%= r.num_nf %></td>
@@ -129,9 +125,7 @@
               </tbody>
             </table>
           </div>
-          <% if @report[:records].size > 200 %>
-            <p class="fa-table-note">Mostrando 200 de <%= number_with_delimiter(@report[:records].size, delimiter: ".") %> registros.</p>
-          <% end %>
+
         </section>
       <% else %>
         <!-- Overview / instructions -->
