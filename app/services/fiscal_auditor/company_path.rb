@@ -30,6 +30,22 @@ module FiscalAuditor
       base_path(company).join("linked_accounts/EXTRATO CONTA VINCULADA.xlsx")
     end
 
+    def efd_dir(company)
+      base_path(company).join("efd_razao/arquivos EFD")
+    end
+
+    def razao_servicos_pdf(company)
+      base_path(company).join("efd_razao/Razao/Servicos Mercado Interno.pdf")
+    end
+
+    def razao_vendas_pdf(company)
+      base_path(company).join("efd_razao/Razao/Venda Mercado Interno.pdf")
+    end
+
+    def efd_razao_snapshot(company)
+      base_path(company).join("efd_razao.marshal.gz")
+    end
+
     def payables_snapshot(company)
       base_path(company).join("payables.marshal.gz")
     end

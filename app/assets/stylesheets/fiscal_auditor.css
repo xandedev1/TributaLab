@@ -428,3 +428,33 @@ turbo-frame#fiscal-results { display: block; }
 .fa-companies__logout { border: 1px solid rgba(255,255,255,.2); border-radius: 999px; padding: 10px 22px; background: transparent; color: rgba(255,255,255,.6); cursor: pointer; font-size: 11px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; transition: .3s; }
 .fa-companies__logout:hover { border-color: rgba(214,110,84,.6); color: var(--fa-coral-soft); }
 @media (max-width: 760px) { .fa-companies__grid { grid-template-columns: 1fr; } .fa-company-card { min-height: 280px; } }
+
+/* ===== Cruzamento EFD x Razao ===== */
+.fa-report-nav { display: flex; flex-wrap: wrap; gap: 8px; }
+.fa-report-nav__item { display: inline-flex; align-items: center; gap: 6px; border: 1px solid var(--fa-line); border-radius: 999px; padding: 8px 16px; background: var(--fa-surface); color: var(--fa-ink); font-size: 13px; font-weight: 600; text-decoration: none; transition: all .2s; }
+.fa-report-nav__item:hover { border-color: var(--fa-accent); color: var(--fa-accent); }
+.fa-report-nav__item--active { background: var(--fa-accent); border-color: var(--fa-accent); color: white; }
+.fa-report-summary { display: flex; gap: 24px; padding: 20px 24px; background: var(--fa-surface); border-radius: 14px; margin-bottom: 20px; flex-wrap: wrap; }
+.fa-report-summary__item { display: flex; flex-direction: column; gap: 4px; }
+.fa-report-summary__label { font-size: 11px; text-transform: uppercase; letter-spacing: .08em; color: var(--fa-ink-soft); }
+.fa-report-summary__value { font-size: 22px; font-weight: 700; font-family: "Barlow Condensed", sans-serif; }
+.fa-report-summary__value--ok { color: #2d8a4e; }
+.fa-report-summary__value--warn { color: #c47a1a; }
+.fa-report-summary__value--alert { color: #c4302b; }
+.fa-table--cross { width: 100%; border-collapse: collapse; }
+.fa-table--cross th { text-align: left; padding: 12px 14px; font-size: 11px; text-transform: uppercase; letter-spacing: .06em; color: var(--fa-ink-soft); border-bottom: 1px solid var(--fa-line); }
+.fa-table--cross td { padding: 10px 14px; font-size: 13px; border-bottom: 1px solid var(--fa-line-soft); }
+.fa-table--cross .fa-num { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.fa-row--ok { background: rgba(45, 138, 78, .04); }
+.fa-row--diff { background: rgba(196, 48, 43, .06); }
+.fa-row--unmatched { background: rgba(196, 122, 26, .06); }
+.fa-diff--ok { color: #2d8a4e; }
+.fa-diff--alert { color: #c4302b; font-weight: 700; }
+.fa-badge { display: inline-block; border-radius: 999px; padding: 3px 10px; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; }
+.fa-badge--ok { background: rgba(45, 138, 78, .15); color: #2d8a4e; }
+.fa-badge--warn { background: rgba(196, 122, 26, .15); color: #c47a1a; }
+.fa-badge--alert { background: rgba(196, 48, 43, .15); color: #c4302b; }
+.fa-table-note { padding: 14px 24px; font-size: 12px; color: var(--fa-ink-soft); }
+.fa-report-list { list-style: none; padding: 0; margin: 16px 0 0; display: flex; flex-direction: column; gap: 12px; }
+.fa-report-list li { padding: 16px 20px; background: var(--fa-surface); border-radius: 12px; border: 1px solid var(--fa-line); font-size: 14px; line-height: 1.6; }
+.fa-report-list strong { color: var(--fa-accent); }

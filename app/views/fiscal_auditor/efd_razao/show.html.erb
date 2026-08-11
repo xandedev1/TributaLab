@@ -1,0 +1,167 @@
+<% content_for :title, "Cruzamento EFD × Razão | Auditor Fiscal" %>
+<% money = ->(value) { number_to_currency(value, unit: "R$ ", separator: ",", delimiter: ".") } %>
+<% abs_money = ->(value) { number_to_currency(value.abs, unit: "R$ ", separator: ",", delimiter: ".") } %>
+
+<div class="fa-shell">
+  <%= render "fiscal_auditor/shared/sidebar", active: :efd_razao, status: @dashboard.available? ? "Dados processados" : "Aguardando dados", detail: @dashboard.available? ? "EFD + Razão 2022" : "Nenhum arquivo subido" %>
+
+  <main class="fa-main" id="efd-razao">
+    <header class="fa-topbar">
+      <div>
+        <p class="fa-kicker">Auditoria de receitas</p>
+        <h1>Cruzamento EFD × Razão</h1>
+      </div>
+      <div class="fa-topbar__meta">
+        <span class="fa-pill"><span class="fa-status-dot"></span> 2022</span>
+      </div>
+    </header>
+
+    <% if @dashboard.available? %>
+      <!-- KPIs -->
+      <section class="fa-kpis" aria-label="Resumo do cruzamento">
+        <article class="fa-kpi fa-kpi--billed">
+          <div class="fa-kpi__icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 3v18h18M7 16l4-5 3 3 6-8"/></svg></div>
+          <p>EFD A100 (Serviços)</p><strong><%= number_with_delimiter(@dashboard.efd_a100_count, delimiter: ".") %></strong>
+          <small>registros na EFD PIS/COFINS</small>
+        </article>
+        <article class="fa-kpi fa-kpi--retained">
+          <div class="fa-kpi__icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 3v18h18M7 16l4-5 3 3 6-8"/></svg></div>
+          <p>EFD C100 (Vendas)</p><strong><%= number_with_delimiter(@dashboard.efd_c100_count, delimiter: ".") %></strong>
+          <small>registros na EFD PIS/COFINS</small>
+        </article>
+        <article class="fa-kpi fa-kpi--net">
+          <div class="fa-kpi__icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 19V9M10 19V5M16 19v-7M22 19V2"/></svg></div>
+          <p>Razão Serviços</p><strong><%= number_with_delimiter(@dashboard.razao_servicos_count, delimiter: ".") %></strong>
+          <small>lançamentos no Livro Razão</small>
+        </article>
+        <article class="fa-kpi fa-kpi--quality">
+          <div class="fa-kpi__icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 19V9M10 19V5M16 19v-7M22 19V2"/></svg></div>
+          <p>Razão Vendas</p><strong><%= number_with_delimiter(@dashboard.razao_vendas_count, delimiter: ".") %></strong>
+          <small>lançamentos no Livro Razão</small>
+        </article>
+      </section>
+
+      <!-- Report selector -->
+      <section class="fa-filterbar">
+        <div class="fa-filterbar__count">
+          <strong>4 relatórios</strong>
+          <span>de cruzamento</span>
+        </div>
+        <nav class="fa-report-nav">
+          <%= link_to "A100 · EFD → Razão", fiscal_auditor_efd_razao_path(report: "a100_txt_pdf"),
+              class: "fa-report-nav__item #{"fa-report-nav__item--active" if params[:report] == "a100_txt_pdf"}" %>
+          <%= link_to "A100 · Razão → EFD", fiscal_auditor_efd_razao_path(report: "a100_pdf_txt"),
+              class: "fa-report-nav__item #{"fa-report-nav__item--active" if params[:report] == "a100_pdf_txt"}" %>
+          <%= link_to "C100 · EFD → Razão", fiscal_auditor_efd_razao_path(report: "c100_txt_pdf"),
+              class: "fa-report-nav__item #{"fa-report-nav__item--active" if params[:report] == "c100_txt_pdf"}" %>
+          <%= link_to "C100 · Razão → EFD", fiscal_auditor_efd_razao_path(report: "c100_pdf_txt"),
+              class: "fa-report-nav__item #{"fa-report-nav__item--active" if params[:report] == "c100_pdf_txt"}" %>
+        </nav>
+      </section>
+
+      <% if @report %>
+        <!-- Report results -->
+        <section class="fa-panel">
+          <header class="fa-panel__header">
+            <div>
+              <p class="fa-kicker">Relatório</p>
+              <h2><%= @report[:title] %></h2>
+            </div>
+            <span class="fa-tag"><%= number_with_delimiter(@report[:records].size, delimiter: ".") %> registros</span>
+          </header>
+
+          <% matched = @report[:records].count(&:matched?) %>
+          <% unmatched = @report[:records].size - matched %>
+          <% total_diff = @report[:records].sum(&:diferenca) %>
+
+          <div class="fa-report-summary">
+            <div class="fa-report-summary__item">
+              <span class="fa-report-summary__label">Cruzados</span>
+              <strong class="fa-report-summary__value--ok"><%= number_with_delimiter(matched, delimiter: ".") %></strong>
+            </div>
+            <div class="fa-report-summary__item">
+              <span class="fa-report-summary__label">Sem correspondência</span>
+              <strong class="fa-report-summary__value--warn"><%= number_with_delimiter(unmatched, delimiter: ".") %></strong>
+            </div>
+            <div class="fa-report-summary__item">
+              <span class="fa-report-summary__label">Diferença total</span>
+              <strong class="fa-report-summary__value <%= total_diff.abs > 1 ? "fa-report-summary__value--alert" : "fa-report-summary__value--ok" %>"><%= money.call(total_diff) %></strong>
+            </div>
+          </div>
+
+          <div class="fa-table-wrap">
+            <table class="fa-table fa-table--cross">
+              <thead>
+                <tr>
+                  <th>Código</th>
+                  <th>NF</th>
+                  <th>Data EFD</th>
+                  <th class="fa-num">Valor EFD</th>
+                  <th>Data Razão</th>
+                  <th class="fa-num">Crédito Razão</th>
+                  <th class="fa-num">Diferença</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                <% @report[:records].first(200).each do |r| %>
+                  <tr class="<%= r.matched? ? (r.diferenca.abs > 0.05 ? "fa-row--diff" : "fa-row--ok") : "fa-row--unmatched" %>">
+                    <td><%= r.codigo || "—" %></td>
+                    <td><%= r.num_nf %></td>
+                    <td><%= r.data_emissao_txt || "—" %></td>
+                    <td class="fa-num"><%= money.call(r.valor_nf) if r.valor_nf.nonzero? %></td>
+                    <td><%= r.data_emissao_pdf || "—" %></td>
+                    <td class="fa-num"><%= money.call(r.credito) if r.credito.nonzero? %></td>
+                    <td class="fa-num <%= r.diferenca.abs > 0.05 ? "fa-diff--alert" : "fa-diff--ok" %>">
+                      <%= r.matched? ? money.call(r.diferenca) : "—" %>
+                    </td>
+                    <td>
+                      <% if !r.matched? %>
+                        <span class="fa-badge fa-badge--warn">Sem match</span>
+                      <% elsif r.diferenca.abs > 0.05 %>
+                        <span class="fa-badge fa-badge--alert">Divergência</span>
+                      <% else %>
+                        <span class="fa-badge fa-badge--ok">OK</span>
+                      <% end %>
+                    </td>
+                  </tr>
+                <% end %>
+              </tbody>
+            </table>
+          </div>
+          <% if @report[:records].size > 200 %>
+            <p class="fa-table-note">Mostrando 200 de <%= number_with_delimiter(@report[:records].size, delimiter: ".") %> registros.</p>
+          <% end %>
+        </section>
+      <% else %>
+        <!-- Overview / instructions -->
+        <section class="fa-panel">
+          <header class="fa-panel__header">
+            <div>
+              <p class="fa-kicker">Instruções</p>
+              <h2>Selecione um relatório acima</h2>
+            </div>
+          </header>
+          <p class="fa-empty-text">
+            São 4 relatórios de cruzamento entre a EFD PIS/COFINS (TXT) e o Livro Razão (PDF):
+          </p>
+          <ul class="fa-report-list">
+            <li><strong>A100 · EFD → Razão:</strong> Registros A100 (Serviços) da EFD como base, cruzados com o Razão. Mostra Diferença = Valor NF − Crédito.</li>
+            <li><strong>A100 · Razão → EFD:</strong> Lançamentos do Razão (Serviços) como base, cruzados com a EFD. Mostra Diferença = Crédito − Valor NF.</li>
+            <li><strong>C100 · EFD → Razão:</strong> Registros C100 (Vendas) da EFD como base, cruzados com o Razão. Mostra Diferença = Valor NF − Crédito.</li>
+            <li><strong>C100 · Razão → EFD:</strong> Lançamentos do Razão (Vendas) como base, cruzados com a EFD. Mostra Diferença = Crédito − Valor NF.</li>
+          </ul>
+        </section>
+      <% end %>
+    <% else %>
+      <section class="fa-empty fa-empty--module">
+        <div class="fa-empty__icon">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 7h11l-3-3M17 17H6l3 3M18 7l-3 3M6 17l3-3"/></svg>
+        </div>
+        <h2 class="fa-empty__title">Cruzamento EFD × Razão</h2>
+        <p class="fa-empty__text">Nenhum dado de EFD PIS/COFINS ou Livro Razão encontrado para esta empresa.</p>
+        <p class="fa-empty__hint">Os arquivos devem estar em <code>storage/private/fiscal_auditor/<%= current_fiscal_auditor_company %>/efd_razao/</code></p>
+      </section>
+    <% end %>
+  </main>
+</div>
