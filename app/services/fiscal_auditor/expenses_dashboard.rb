@@ -1,33 +1,35 @@
 module FiscalAuditor
   class ExpensesDashboard
-    SOURCE_GLOB = Rails.root.join("storage/private/fiscal_auditor/payables/*.xlsb").to_s.freeze
     PAGE_SIZE = 100
 
     class << self
-      def source_paths
-        Dir[SOURCE_GLOB].sort
+      def source_paths(company = "appa")
+        Dir[CompanyPath.payables_glob(company)].sort
       end
 
-      def records
-        signature = source_paths.map { |path| [ path, File.mtime(path).to_i, File.size(path) ] }
-        return @records if @records && @signature == signature
+      def records(company = "appa")
+        paths = source_paths(company)
+        signature = paths.map { |path| [ path, File.mtime(path).to_i, File.size(path) ] }
+        cache_key = "records_#{company}"
+        return instance_variable_get("@#{cache_key}") if instance_variable_get("@#{cache_key}_sig") == signature
 
-        records = ExpenseSnapshot.new(source_paths).records
-        @records = records
-        @signature = signature
+        records = ExpenseSnapshot.new(paths).records
+        instance_variable_set("@#{cache_key}", records)
+        instance_variable_set("@#{cache_key}_sig", signature)
         records
       end
     end
 
-    attr_reader :periods, :source_sheet, :identification, :page
+    attr_reader :periods, :source_sheet, :identification, :page, :company
 
-    def initialize(periods: [], source_sheet: nil, identification: nil, page: nil, expense_records: nil, receivable_records: nil)
+    def initialize(periods: [], source_sheet: nil, identification: nil, page: nil, expense_records: nil, receivable_records: nil, company: "appa")
       @periods = normalize_periods(periods)
       @source_sheet = normalize_source(source_sheet)
       @identification = identification.to_s.strip.presence
       @page = [ page.to_i, 1 ].max
       @expense_records = expense_records
       @receivable_records = receivable_records
+      @company = company
     end
 
     def available?

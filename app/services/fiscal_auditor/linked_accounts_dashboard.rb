@@ -20,31 +20,35 @@ module FiscalAuditor
     JSON_PATH = Rails.root.join("tmp/extrato_conta_vinculada.json").freeze
 
     class << self
-      def records
-        return @records if @records && !stale?
+      def records(company = "appa")
+        cache_key = "records_#{company}"
+        return instance_variable_get("@#{cache_key}") if instance_variable_get("@#{cache_key}") && !stale?(company)
 
-        run_extractor if stale?
-        @records = load_records
-        @source_mtime = source_mtime
-        @records
+        run_extractor(company) if stale?(company)
+        instance_variable_set("@#{cache_key}", load_records(company))
+        instance_variable_set("@#{cache_key}_mtime", source_mtime(company))
+        instance_variable_get("@#{cache_key}")
       end
 
       private
 
-      def stale?
-        !@records || @source_mtime != source_mtime
+      def stale?(company)
+        cache_key = "records_#{company}"
+        !instance_variable_get("@#{cache_key}") || instance_variable_get("@#{cache_key}_mtime") != source_mtime(company)
       end
 
-      def source_mtime
-        SOURCE_PATH.exist? ? SOURCE_PATH.mtime.to_i : nil
+      def source_mtime(company)
+        path = CompanyPath.linked_accounts_path(company)
+        path.exist? ? path.mtime.to_i : nil
       end
 
-      def run_extractor
+      def run_extractor(company)
         python = ENV.fetch("PYTHON", Rails.root.join(".venv/Scripts/python.exe").to_s)
-        system(python, EXTRACTOR_PATH.to_s, SOURCE_PATH.to_s, exception: true)
+        source = CompanyPath.linked_accounts_path(company)
+        system(python, EXTRACTOR_PATH.to_s, source.to_s, exception: true)
       end
 
-      def load_records
+      def load_records(company)
         return [] unless JSON_PATH.exist?
 
         JSON.parse(File.read(JSON_PATH)).map do |row|
@@ -67,7 +71,7 @@ module FiscalAuditor
     end
 
     def records
-      self.class.records
+      self.class.records(company)
     end
 
     def available?
@@ -76,6 +80,12 @@ module FiscalAuditor
 
     def total_records
       records.size
+    end
+
+    attr_reader :company
+
+    def initialize(company: "appa")
+      @company = company
     end
 
     def active_records

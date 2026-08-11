@@ -5,7 +5,8 @@ module FiscalAuditor
         periods: params[:periods],
         client_code: params[:client_code],
         statuses: params[:statuses],
-        page: params[:page]
+        page: params[:page],
+        company: current_fiscal_auditor_company
       )
     end
   end

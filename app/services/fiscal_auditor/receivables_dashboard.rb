@@ -1,28 +1,29 @@
 module FiscalAuditor
   class ReceivablesDashboard
-    SOURCE_GLOB = Rails.root.join("storage/private/fiscal_auditor/receivables/*.xlsb").to_s.freeze
-
     class << self
-      def source_paths
-        Dir[SOURCE_GLOB].sort
+      def source_paths(company = "appa")
+        Dir[CompanyPath.receivables_glob(company)].sort
       end
 
-      def records
-        signature = source_paths.map { |path| [ path, File.mtime(path).to_i, File.size(path) ] }
-        return @records if @records && @signature == signature
+      def records(company = "appa")
+        paths = source_paths(company)
+        signature = paths.map { |path| [ path, File.mtime(path).to_i, File.size(path) ] }
+        cache_key = "records_#{company}"
+        return instance_variable_get("@#{cache_key}") if instance_variable_get("@#{cache_key}_sig") == signature
 
-        records = ReceivableSnapshot.new(source_paths).records
-        @records = records
-        @signature = signature
+        records = ReceivableSnapshot.new(paths).records
+        instance_variable_set("@#{cache_key}", records)
+        instance_variable_set("@#{cache_key}_sig", signature)
         records
       end
     end
 
-    attr_reader :emission_month
+    attr_reader :emission_month, :company
 
-    def initialize(emission_month: nil, competence_months: [])
+    def initialize(emission_month: nil, competence_months: [], company: "appa")
       @emission_month = normalize_emission_month(emission_month)
       @requested_competence_months = normalize_months(competence_months)
+      @company = company
     end
 
     def available?

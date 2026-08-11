@@ -1,33 +1,35 @@
 module FiscalAuditor
   class PayrollDashboard
-    SOURCE_GLOB = Rails.root.join("storage/private/fiscal_auditor/payroll/*.xlsx").to_s.freeze
     PAGE_SIZE = 100
     STATUSES = %w[covered deficit missing_billing negative_payroll].freeze
 
     class << self
-      def source_paths
-        Dir[SOURCE_GLOB].sort
+      def source_paths(company = "appa")
+        Dir[CompanyPath.payroll_glob(company)].sort
       end
 
-      def records
-        signature = source_paths.map { |path| [ path, File.mtime(path).to_i, File.size(path) ] }
-        return @records if @records && @signature == signature
+      def records(company = "appa")
+        paths = source_paths(company)
+        signature = paths.map { |path| [ path, File.mtime(path).to_i, File.size(path) ] }
+        cache_key = "records_#{company}"
+        return instance_variable_get("@#{cache_key}") if instance_variable_get("@#{cache_key}_sig") == signature
 
-        records = PayrollSnapshot.new(source_paths).records
-        @records = records
-        @signature = signature
+        records = PayrollSnapshot.new(paths).records
+        instance_variable_set("@#{cache_key}", records)
+        instance_variable_set("@#{cache_key}_sig", signature)
         records
       end
     end
 
-    attr_reader :periods, :client_code, :statuses, :page
+    attr_reader :periods, :client_code, :statuses, :page, :company
 
-    def initialize(periods: [], client_code: nil, statuses: [], page: nil, payroll_records: nil, billing_records: nil)
+    def initialize(periods: [], client_code: nil, statuses: [], page: nil, payroll_records: nil, billing_records: nil, company: "appa")
       @periods = normalize_periods(periods)
       @client_code = client_code.to_s.strip.presence
       @statuses = Array(statuses).map(&:to_s).select { |status| STATUSES.include?(status) }.uniq.freeze
       @page = [ page.to_i, 1 ].max
       @payroll_records = payroll_records
+      @company = company
       @billing_records = billing_records
     end
 

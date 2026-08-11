@@ -1,6 +1,5 @@
 module FiscalAuditor
   class Dashboard
-    SOURCE_GLOB = Rails.root.join("storage/private/fiscal_auditor/source/**/*.xlsx").to_s.freeze
     TAXES = {
       inss: "INSS",
       irrf: "IRRF",
@@ -11,26 +10,29 @@ module FiscalAuditor
     }.freeze
 
     class << self
-      def source_paths
-        Dir[SOURCE_GLOB].sort
+      def source_paths(company = "appa")
+        Dir[CompanyPath.source_glob(company)].sort
       end
 
-      def records
-        signature = source_paths.map { |path| [ path, File.mtime(path).to_i, File.size(path) ] }
-        return @records if @records && @signature == signature
+      def records(company = "appa")
+        paths = source_paths(company)
+        signature = paths.map { |path| [ path, File.mtime(path).to_i, File.size(path) ] }
+        cache_key = "records_#{company}"
+        instance_variable_get("@#{cache_key}") if instance_variable_get("@#{cache_key}_sig") == signature
 
-        records = RetentionSnapshot.new(source_paths).records
-        @records = records
-        @signature = signature
+        records = RetentionSnapshot.new(paths).records
+        instance_variable_set("@#{cache_key}", records)
+        instance_variable_set("@#{cache_key}_sig", signature)
         records
       end
     end
 
-    attr_reader :emission_month
+    attr_reader :emission_month, :company
 
-    def initialize(emission_month: nil, competence_months: [])
+    def initialize(emission_month: nil, competence_months: [], company: "appa")
       @emission_month = normalize_month(emission_month)
       @requested_competence_months = normalize_months(competence_months)
+      @company = company
     end
 
     def available?
@@ -129,13 +131,13 @@ module FiscalAuditor
     end
 
     def source_count
-      self.class.source_paths.size
+      self.class.source_paths(company).size
     end
 
     private
 
     def all_records
-      @all_records ||= self.class.records
+      @all_records ||= self.class.records(company)
     end
 
     def records_for_emission
