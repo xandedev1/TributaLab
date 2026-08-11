@@ -42,8 +42,8 @@
       </section>
 
       <!-- Report selector -->
-      <section class="fa-filterbar fa-filterbar--centered">
-        <nav class="fa-report-nav fa-report-nav--centered">
+      <section class="fa-report-selector">
+        <nav class="fa-report-nav">
           <%= link_to "A100 · EFD → Razão", fiscal_auditor_efd_razao_path(report: "a100_txt_pdf"),
               class: "fa-report-nav__item #{"fa-report-nav__item--active" if params[:report] == "a100_txt_pdf"}" %>
           <%= link_to "A100 · Razão → EFD", fiscal_auditor_efd_razao_path(report: "a100_pdf_txt"),
@@ -69,6 +69,13 @@
           <% matched = @report[:records].count(&:matched?) %>
           <% unmatched = @report[:records].size - matched %>
           <% total_diff = @report[:records].sum(&:diferenca) %>
+          <% status_filter = params[:status].presence %>
+          <% filtered_records = case status_filter
+             when "ok" then @report[:records].select { |r| r.matched? && r.diferenca.abs <= 0.05 }
+             when "divergencia" then @report[:records].select { |r| r.matched? && r.diferenca.abs > 0.05 }
+             when "sem_match" then @report[:records].select { |r| !r.matched? }
+             else @report[:records]
+             end %>
 
           <div class="fa-report-summary">
             <div class="fa-report-summary__item">
@@ -83,6 +90,14 @@
               <span class="fa-report-summary__label">Diferença total</span>
               <strong class="fa-report-summary__value <%= total_diff.abs > 1 ? "fa-report-summary__value--alert" : "fa-report-summary__value--ok" %>"><%= money.call(total_diff) %></strong>
             </div>
+          </div>
+
+          <!-- Status filter -->
+          <div class="fa-status-filter">
+            <%= link_to "Todos", fiscal_auditor_efd_razao_path(report: params[:report]), class: "fa-status-filter__item #{"fa-status-filter__item--active" unless status_filter}" %>
+            <%= link_to "OK", fiscal_auditor_efd_razao_path(report: params[:report], status: "ok"), class: "fa-status-filter__item fa-status-filter__item--ok #{"fa-status-filter__item--active" if status_filter == "ok"}" %>
+            <%= link_to "Divergência", fiscal_auditor_efd_razao_path(report: params[:report], status: "divergencia"), class: "fa-status-filter__item fa-status-filter__item--alert #{"fa-status-filter__item--active" if status_filter == "divergencia"}" %>
+            <%= link_to "Sem match", fiscal_auditor_efd_razao_path(report: params[:report], status: "sem_match"), class: "fa-status-filter__item fa-status-filter__item--warn #{"fa-status-filter__item--active" if status_filter == "sem_match"}" %>
           </div>
 
           <div class="fa-table-wrap">
@@ -100,7 +115,7 @@
                 </tr>
               </thead>
               <tbody>
-                <% @report[:records].each do |r| %>
+                <% filtered_records.each do |r| %>
                   <tr class="<%= r.matched? ? (r.diferenca.abs > 0.05 ? "fa-row--diff" : "fa-row--ok") : "fa-row--unmatched" %>">
                     <td><%= r.codigo || "—" %></td>
                     <td><%= r.num_nf %></td>
