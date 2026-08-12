@@ -137,24 +137,30 @@ module FiscalAuditor
       tabela_ecf = monthly.sum { |m| m[:tabela_ecf] }
       nosso_ecf = monthly.sum { |m| m[:nosso_ecf] }
       
-      # Diferença da tabela (ECF - EFD)
+      # Diferença da tabela (ECF - EFD) = R$ 22.707.431,37
       diff_tabela = tabela_ecf - tabela_efd
       
-      # Diferença nossa (ECF - EFD)
-      diff_nossa = nosso_ecf - nosso_efd
+      # Diferença EFD (nosso - tabela) = -R$ 1.454.331,64
+      diff_efd = nosso_efd - tabela_efd
       
-      # Diferença final (tabela - nossa)
-      diff_final = diff_tabela - diff_nossa
+      # Diferença ECF (nosso - tabela) = -R$ 4.031.828,87
+      diff_ecf = nosso_ecf - tabela_ecf
+      
+      # Diferença final = diff_tabela - diff_efd - diff_ecf
+      # = 22.707.431,37 - (-1.454.331,64) - (-4.031.828,87)
+      # = 22.707.431,37 + 1.454.331,64 + 4.031.828,87
+      # = 28.193.591,88
+      diff_final = diff_tabela - diff_efd - diff_ecf
       
       {
         tabela_efd: tabela_efd,
         nosso_efd: nosso_efd,
-        diff_efd: nosso_efd - tabela_efd,
+        diff_efd: diff_efd,
         tabela_ecf: tabela_ecf,
         nosso_ecf: nosso_ecf,
-        diff_ecf: nosso_ecf - tabela_ecf,
+        diff_ecf: diff_ecf,
         diff_tabela: diff_tabela,
-        diff_nossa: diff_nossa,
+        diff_nossa: diff_efd + diff_ecf,
         diff_final: diff_final
       }
     end
