@@ -133,48 +133,48 @@ module FiscalAuditor
       data[:a100].any? || data[:c100].any? || data[:razao_servicos].any? || data[:razao_vendas].any?
     end
 
-    def efd_a100_count
-      self.class.records(company)[:a100].size
+    def efd_a100_count(month = nil)
+      self.class.filter_by_month(self.class.records(company)[:a100], month).size
     end
 
-    def efd_c100_count
-      self.class.records(company)[:c100].size
+    def efd_c100_count(month = nil)
+      self.class.filter_by_month(self.class.records(company)[:c100], month).size
     end
 
-    def razao_servicos_count
-      self.class.records(company)[:razao_servicos].size
+    def razao_servicos_count(month = nil)
+      self.class.filter_by_month(self.class.records(company)[:razao_servicos], month).size
     end
 
-    def razao_vendas_count
-      self.class.records(company)[:razao_vendas].size
+    def razao_vendas_count(month = nil)
+      self.class.filter_by_month(self.class.records(company)[:razao_vendas], month).size
     end
 
-    def efd_a100_total
-      self.class.records(company)[:a100].sum(&:valor_nf)
+    def efd_a100_total(month = nil)
+      self.class.filter_by_month(self.class.records(company)[:a100], month).sum(&:valor_nf)
     end
 
-    def efd_c100_total
-      self.class.records(company)[:c100].sum(&:valor_nf)
+    def efd_c100_total(month = nil)
+      self.class.filter_by_month(self.class.records(company)[:c100], month).sum(&:valor_nf)
     end
 
-    def razao_servicos_total
-      self.class.records(company)[:razao_servicos].sum(&:credito)
+    def razao_servicos_total(month = nil)
+      self.class.filter_by_month(self.class.records(company)[:razao_servicos], month).sum(&:credito)
     end
 
-    def razao_vendas_total
-      self.class.records(company)[:razao_vendas].sum(&:credito)
+    def razao_vendas_total(month = nil)
+      self.class.filter_by_month(self.class.records(company)[:razao_vendas], month).sum(&:credito)
     end
 
-    def efd_total
-      efd_a100_total + efd_c100_total
+    def efd_total(month = nil)
+      efd_a100_total(month) + efd_c100_total(month)
     end
 
-    def razao_total
-      razao_servicos_total + razao_vendas_total
+    def razao_total(month = nil)
+      razao_servicos_total(month) + razao_vendas_total(month)
     end
 
-    def diferenca_total
-      razao_total - efd_total
+    def diferenca_total(month = nil)
+      razao_total(month) - efd_total(month)
     end
 
     def available_months
@@ -187,40 +187,42 @@ module FiscalAuditor
       months.uniq.sort
     end
 
-    def filter_by_month(records, month)
-      return records unless month.present?
-      records.select { |r| r.data_emissao&.start_with?(month) }
+    class << self
+      def filter_by_month(records, month)
+        return records unless month.present?
+        records.select { |r| r.data_emissao&.start_with?(month) }
+      end
     end
 
     # Relatório 1: A100 TXT → PDF (EFD como base, cruzar com Razão Serviços)
     def report_a100_txt_to_pdf(month: nil)
       data = self.class.records(company)
-      efd_records = filter_by_month(data[:a100], month)
-      razao_records = filter_by_month(data[:razao_servicos], month)
+      efd_records = self.class.filter_by_month(data[:a100], month)
+      razao_records = self.class.filter_by_month(data[:razao_servicos], month)
       cross(efd_records, razao_records, :txt_to_pdf)
     end
 
     # Relatório 2: A100 PDF → TXT (Razão como base, cruzar com EFD)
     def report_a100_pdf_to_txt(month: nil)
       data = self.class.records(company)
-      efd_records = filter_by_month(data[:a100], month)
-      razao_records = filter_by_month(data[:razao_servicos], month)
+      efd_records = self.class.filter_by_month(data[:a100], month)
+      razao_records = self.class.filter_by_month(data[:razao_servicos], month)
       cross(razao_records, efd_records, :pdf_to_txt)
     end
 
     # Relatório 3: C100 TXT → PDF (EFD como base, cruzar com Razão Vendas)
     def report_c100_txt_to_pdf(month: nil)
       data = self.class.records(company)
-      efd_records = filter_by_month(data[:c100], month)
-      razao_records = filter_by_month(data[:razao_vendas], month)
+      efd_records = self.class.filter_by_month(data[:c100], month)
+      razao_records = self.class.filter_by_month(data[:razao_vendas], month)
       cross(efd_records, razao_records, :txt_to_pdf)
     end
 
     # Relatório 4: C100 PDF → TXT (Razão como base, cruzar com EFD)
     def report_c100_pdf_to_txt(month: nil)
       data = self.class.records(company)
-      efd_records = filter_by_month(data[:c100], month)
-      razao_records = filter_by_month(data[:razao_vendas], month)
+      efd_records = self.class.filter_by_month(data[:c100], month)
+      razao_records = self.class.filter_by_month(data[:razao_vendas], month)
       cross(razao_records, efd_records, :pdf_to_txt)
     end
 
