@@ -33,22 +33,22 @@
       <section class="fa-kpis" aria-label="Resumo do cruzamento">
         <article class="fa-kpi fa-kpi--billed">
           <div class="fa-kpi__icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 3v18h18M7 16l4-5 3 3 6-8"/></svg></div>
-          <p>EFD A100 (Serviços)</p><strong><%= number_with_delimiter(@dashboard.efd_a100_count, delimiter: ".") %></strong>
+          <p>EFD A100 (Serviços)</p><strong><%= number_with_delimiter(@dashboard.efd_a100_count(@selected_month), delimiter: ".") %></strong>
           <small>registros na EFD PIS/COFINS</small>
         </article>
         <article class="fa-kpi fa-kpi--retained">
           <div class="fa-kpi__icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 3v18h18M7 16l4-5 3 3 6-8"/></svg></div>
-          <p>EFD C100 (Vendas)</p><strong><%= number_with_delimiter(@dashboard.efd_c100_count, delimiter: ".") %></strong>
+          <p>EFD C100 (Vendas)</p><strong><%= number_with_delimiter(@dashboard.efd_c100_count(@selected_month), delimiter: ".") %></strong>
           <small>registros na EFD PIS/COFINS</small>
         </article>
         <article class="fa-kpi fa-kpi--net">
           <div class="fa-kpi__icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 19V9M10 19V5M16 19v-7M22 19V2"/></svg></div>
-          <p>Razão Serviços</p><strong><%= number_with_delimiter(@dashboard.razao_servicos_count, delimiter: ".") %></strong>
+          <p>Razão Serviços</p><strong><%= number_with_delimiter(@dashboard.razao_servicos_count(@selected_month), delimiter: ".") %></strong>
           <small>lançamentos no Livro Razão</small>
         </article>
         <article class="fa-kpi fa-kpi--quality">
           <div class="fa-kpi__icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 19V9M10 19V5M16 19v-7M22 19V2"/></svg></div>
-          <p>Razão Vendas</p><strong><%= number_with_delimiter(@dashboard.razao_vendas_count, delimiter: ".") %></strong>
+          <p>Razão Vendas</p><strong><%= number_with_delimiter(@dashboard.razao_vendas_count(@selected_month), delimiter: ".") %></strong>
           <small>lançamentos no Livro Razão</small>
         </article>
       </section>
@@ -57,17 +57,17 @@
       <section class="fa-totals">
         <div class="fa-totals__card">
           <span class="fa-totals__label">EFD Total</span>
-          <strong class="fa-totals__value"><%= money.call(@dashboard.efd_total) %></strong>
+          <strong class="fa-totals__value"><%= money.call(@dashboard.efd_total(@selected_month)) %></strong>
           <small>A100 + C100</small>
         </div>
         <div class="fa-totals__card">
           <span class="fa-totals__label">Razão Total</span>
-          <strong class="fa-totals__value"><%= money.call(@dashboard.razao_total) %></strong>
+          <strong class="fa-totals__value"><%= money.call(@dashboard.razao_total(@selected_month)) %></strong>
           <small>Serviços + Vendas</small>
         </div>
-        <div class="fa-totals__card fa-totals__card--diff <%= @dashboard.diferenca_total.abs > 1 ? "fa-totals__card--alert" : "fa-totals__card--ok" %>">
+        <div class="fa-totals__card fa-totals__card--diff <%= @dashboard.diferenca_total(@selected_month).abs > 1 ? "fa-totals__card--alert" : "fa-totals__card--ok" %>">
           <span class="fa-totals__label">Diferença</span>
-          <strong class="fa-totals__value"><%= money.call(@dashboard.diferenca_total) %></strong>
+          <strong class="fa-totals__value"><%= money.call(@dashboard.diferenca_total(@selected_month)) %></strong>
           <small>Razão − EFD</small>
         </div>
       </section>
@@ -82,8 +82,8 @@
             <span class="fa-report-nav__shine"></span>
             <span class="fa-report-nav__icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 3v18h18M7 16l4-5 3 3 6-8"/></svg></span>
             <span class="fa-report-nav__text">
-              <strong>A100 · EFD → Razão</strong>
-              <small>Serviços</small>
+              <strong>A100 − EFD(A100) − (Serviços)</strong>
+              <small>EFD menos Razão</small>
             </span>
           <% end %>
           <%= link_to fiscal_auditor_efd_razao_path(report: "a100_pdf_txt"),
@@ -91,8 +91,8 @@
             <span class="fa-report-nav__shine"></span>
             <span class="fa-report-nav__icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 3v18h18M7 16l4-5 3 3 6-8"/></svg></span>
             <span class="fa-report-nav__text">
-              <strong>A100 · Razão → EFD</strong>
-              <small>Serviços</small>
+              <strong>A100 − (Serviços) − EFD(A100)</strong>
+              <small>Razão menos EFD</small>
             </span>
           <% end %>
           <%= link_to fiscal_auditor_efd_razao_path(report: "c100_txt_pdf"),
@@ -100,8 +100,8 @@
             <span class="fa-report-nav__shine"></span>
             <span class="fa-report-nav__icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 19V9M10 19V5M16 19v-7M22 19V2"/></svg></span>
             <span class="fa-report-nav__text">
-              <strong>C100 · EFD → Razão</strong>
-              <small>Vendas</small>
+              <strong>C100 − EFD(C100) − (Vendas)</strong>
+              <small>EFD menos Razão</small>
             </span>
           <% end %>
           <%= link_to fiscal_auditor_efd_razao_path(report: "c100_pdf_txt"),
@@ -109,8 +109,8 @@
             <span class="fa-report-nav__shine"></span>
             <span class="fa-report-nav__icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 19V9M10 19V5M16 19v-7M22 19V2"/></svg></span>
             <span class="fa-report-nav__text">
-              <strong>C100 · Razão → EFD</strong>
-              <small>Vendas</small>
+              <strong>C100 − (Vendas) − EFD(C100)</strong>
+              <small>Razão menos EFD</small>
             </span>
           <% end %>
         </nav>
