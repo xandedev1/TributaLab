@@ -1,0 +1,99 @@
+<% content_for :title, "Devoluções | Auditor Fiscal" %>
+<% money = ->(value) { number_to_currency(value, unit: "R$ ", separator: ",", delimiter: ".") } %>
+
+<div class="fa-shell">
+  <%= render "fiscal_auditor/shared/sidebar", active: :devolucoes, status: @dashboard.available? ? "Dados processados" : "Aguardando dados", detail: @dashboard.available? ? "#{@dashboard.total_count} devoluções" : "Nenhum arquivo subido" %>
+
+  <main class="fa-main" id="devolucoes">
+    <header class="fa-topbar">
+      <div>
+        <p class="fa-kicker">Auditoria de devoluções</p>
+        <h1>Devoluções</h1>
+      </div>
+      <div class="fa-topbar__meta">
+        <span class="fa-pill"><span class="fa-status-dot"></span> 2022</span>
+      </div>
+    </header>
+
+    <% if @dashboard.available? %>
+      <!-- Month filter -->
+      <section class="fa-month-filter">
+        <%= form_with url: fiscal_auditor_devolucoes_path, method: :get, class: "fa-month-filter__form" do %>
+          <label class="fa-month-filter__label">Mês:</label>
+          <%= select_tag :month,
+              options_for_select([["Todos os meses", ""]] + @dashboard.available_months.map { |m| [Date.strptime(m, "%Y-%m").strftime("%b/%Y"), m] }, @selected_month),
+              class: "fa-month-filter__select",
+              onchange: "this.form.submit()" %>
+        <% end %>
+      </section>
+
+      <!-- KPIs -->
+      <section class="fa-kpis" aria-label="Resumo de devoluções">
+        <article class="fa-kpi fa-kpi--billed">
+          <div class="fa-kpi__icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div>
+          <p>Total de Devoluções</p><strong><%= number_with_delimiter(@dashboard.total_count, delimiter: ".") %></strong>
+          <small>registros no Livro Razão</small>
+        </article>
+        <article class="fa-kpi fa-kpi--retained">
+          <div class="fa-kpi__icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 3v18h18M7 16l4-5 3 3 6-8"/></svg></div>
+          <p>Valor Total</p><strong><%= money.call(@dashboard.total_value) %></strong>
+          <small>em devoluções de vendas</small>
+        </article>
+      </section>
+
+      <!-- Table -->
+      <section class="fa-panel">
+        <header class="fa-panel__header">
+          <div>
+            <p class="fa-kicker">Listagem</p>
+            <h2>Notas de Devolução</h2>
+          </div>
+          <span class="fa-tag"><%= number_with_delimiter(@records.size, delimiter: ".") %> registros</span>
+        </header>
+
+        <div class="fa-table-wrap">
+          <table class="fa-table fa-table--cross">
+            <thead>
+              <tr>
+                <th>NF</th>
+                <th>Data</th>
+                <th class="fa-num">Valor</th>
+                <th>Página</th>
+                <th>Arquivo</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% @records.each do |r| %>
+                <tr>
+                  <td><%= r.num_nf %></td>
+                  <td><%= r.data_emissao || "—" %></td>
+                  <td class="fa-num"><%= money.call(r.valor) %></td>
+                  <td class="fa-num"><%= r.page || "—" %></td>
+                  <td><%= r.source_file %></td>
+                </tr>
+              <% end %>
+            </tbody>
+            <tfoot>
+              <tr class="fa-row--total">
+                <td><strong>TOTAL</strong></td>
+                <td><%= number_with_delimiter(@records.size, delimiter: ".") %> regs</td>
+                <td class="fa-num"><strong><%= money.call(@records.sum(&:valor)) %></strong></td>
+                <td></td>
+                <td></td>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+      </section>
+    <% else %>
+      <section class="fa-empty fa-empty--module">
+        <div class="fa-empty__icon">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+        </div>
+        <h2 class="fa-empty__title">Devoluções</h2>
+        <p class="fa-empty__text">Nenhum dado de devolução encontrado para esta empresa.</p>
+        <p class="fa-empty__hint">O arquivo deve estar em <code>storage/private/fiscal_auditor/<%= current_fiscal_auditor_company %>/efd_razao/Razao/Devolucao.pdf</code></p>
+      </section>
+    <% end %>
+  </main>
+</div>

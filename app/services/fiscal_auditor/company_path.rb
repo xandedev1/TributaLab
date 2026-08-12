@@ -46,6 +46,14 @@ module FiscalAuditor
       base_path(company).join("efd_razao.marshal.gz")
     end
 
+    def devolucao_pdf(company)
+      base_path(company).join("efd_razao/Razao/Devolucao.pdf")
+    end
+
+    def devolucao_snapshot(company)
+      base_path(company).join("devolucao.marshal.gz")
+    end
+
     def payables_snapshot(company)
       base_path(company).join("payables.marshal.gz")
     end

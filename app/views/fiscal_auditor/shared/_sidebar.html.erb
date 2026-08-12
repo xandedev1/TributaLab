@@ -35,6 +35,10 @@
       <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 7h11l-3-3M17 17H6l3 3M18 7l-3 3M6 17l3-3"/></svg>
       Cruzamento EFD × Razão
     <% end %>
+    <%= link_to fiscal_auditor_devolucoes_path, class: "fa-nav__item #{"fa-nav__item--active" if active == :devolucoes}" do %>
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+      Devoluções
+    <% end %>
     <%= link_to fiscal_auditor_tax_lotations_path, class: "fa-nav__item #{"fa-nav__item--active" if active == :tax_lotations}" do %>
       <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4h16v16H4zM8 8h8M8 12h8M8 16h5"/></svg>
       Lotações tributárias
