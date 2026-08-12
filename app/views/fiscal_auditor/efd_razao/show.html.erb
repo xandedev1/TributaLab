@@ -17,6 +17,18 @@
     </header>
 
     <% if @dashboard.available? %>
+      <!-- Month filter -->
+      <section class="fa-month-filter">
+        <%= form_with url: fiscal_auditor_efd_razao_path, method: :get, class: "fa-month-filter__form" do %>
+          <%= hidden_field_tag :report, params[:report] if params[:report] %>
+          <label class="fa-month-filter__label">Mês:</label>
+          <%= select_tag :month,
+              options_for_select([["Todos os meses", ""]] + @dashboard.available_months.map { |m| [Date.strptime(m, "%Y-%m").strftime("%b/%Y"), m] }, @selected_month),
+              class: "fa-month-filter__select",
+              onchange: "this.form.submit()" %>
+        <% end %>
+      </section>
+
       <!-- KPIs -->
       <section class="fa-kpis" aria-label="Resumo do cruzamento">
         <article class="fa-kpi fa-kpi--billed">

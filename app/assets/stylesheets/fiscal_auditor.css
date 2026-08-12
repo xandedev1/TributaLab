@@ -513,3 +513,11 @@ turbo-frame#fiscal-results { display: block; }
 .fa-nf-link { color: var(--fa-accent); text-decoration: none; font-weight: 600; border-bottom: 1px dashed var(--fa-accent); cursor: pointer; }
 .fa-nf-link:hover { color: var(--fa-mint); border-bottom-color: var(--fa-mint); }
 .fa-nf-text { color: var(--fa-ink-soft); }
+
+/* Month filter */
+.fa-month-filter { display: flex; justify-content: center; padding: 20px 24px; }
+.fa-month-filter__form { display: flex; align-items: center; gap: 12px; }
+.fa-month-filter__label { font-size: 13px; font-weight: 600; color: var(--fa-ink); text-transform: uppercase; letter-spacing: .06em; }
+.fa-month-filter__select { padding: 10px 16px; border: 1px solid rgba(255,255,255,.14); border-radius: 12px; background: linear-gradient(135deg, rgba(255,255,255,.08), rgba(255,255,255,.03)); color: var(--fa-ink); font-size: 14px; font-weight: 600; backdrop-filter: blur(12px); cursor: pointer; transition: all .25s; }
+.fa-month-filter__select:hover { border-color: rgba(155,200,181,.4); box-shadow: 0 4px 12px rgba(0,0,0,.1); }
+.fa-month-filter__select:focus { outline: none; border-color: var(--fa-accent); box-shadow: 0 0 0 3px rgba(155,200,181,.2); }
