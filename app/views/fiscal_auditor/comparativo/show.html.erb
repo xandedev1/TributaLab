@@ -53,6 +53,25 @@
         </div>
       </section>
 
+      <!-- Diferenças principais -->
+      <section class="fa-totals">
+        <div class="fa-totals__card">
+          <span class="fa-totals__label">Diferença Tabela</span>
+          <strong class="fa-totals__value"><%= money.call(@totals[:diff_tabela]) %></strong>
+          <small>ECF - EFD (tabela)</small>
+        </div>
+        <div class="fa-totals__card">
+          <span class="fa-totals__label">Diferença Nossa</span>
+          <strong class="fa-totals__value"><%= money.call(@totals[:diff_nossa]) %></strong>
+          <small>ECF - EFD (nosso)</small>
+        </div>
+        <div class="fa-totals__card fa-totals__card--diff <%= @totals[:diff_final].abs > 1 ? "fa-totals__card--alert" : "fa-totals__card--ok" %>">
+          <span class="fa-totals__label">Diferença Final</span>
+          <strong class="fa-totals__value"><%= money.call(@totals[:diff_final]) %></strong>
+          <small>Tabela - Nossa</small>
+        </div>
+      </section>
+
       <!-- Monthly table -->
       <section class="fa-panel">
         <header class="fa-panel__header">
