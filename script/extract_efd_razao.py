@@ -89,10 +89,15 @@ def extract_records(txt_path):
                     "data_emissao": parse_date(fields[9]),
                     "valor_nf": parse_value(fields[11]),
                     "source_file": os.path.basename(txt_path),
+                    "page": None,  # EFD is text file, no page
                 })
 
             elif reg_type == "C100" and len(fields) >= 12:
-                # 1ª=Código(0), 8ª=NºNF(7), 10ª=Data(9), 12ª=Valor(11)
+                # 1ª=IND_OPER(1), 7ª=NºNF(7), 10ª=Data(9), 12ª=Valor(11)
+                ind_oper = fields[1].strip()
+                # Only include output/sales (IND_OPER=1)
+                if ind_oper != "1":
+                    continue
                 nf_raw = fields[7].strip()
                 c100_records.append({
                     "codigo": fields[0].strip(),
@@ -101,6 +106,7 @@ def extract_records(txt_path):
                     "data_emissao": parse_date(fields[9]),
                     "valor_nf": parse_value(fields[11]),
                     "source_file": os.path.basename(txt_path),
+                    "page": None,  # EFD is text file, no page
                 })
 
     return a100_records, c100_records
@@ -134,6 +140,16 @@ def main():
         "a100": all_a100,
         "c100": all_c100,
     }
+
+    # Sum duplicate NFs in C100 (same NF = same invoice, sum values)
+    summed_c100 = {}
+    for r in all_c100:
+        key = r["num_nf"]
+        if key not in summed_c100:
+            summed_c100[key] = r.copy()
+        else:
+            summed_c100[key]["valor_nf"] += r["valor_nf"]
+    result["c100"] = list(summed_c100.values())
 
     with open(output_json, "w", encoding="utf-8") as f:
         json.dump(result, f, ensure_ascii=False, indent=2)

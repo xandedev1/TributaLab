@@ -170,8 +170,10 @@
                 <tr>
                   <th>Código</th>
                   <th>NF</th>
+                  <th>Pág. EFD</th>
                   <th>Data EFD</th>
                   <th class="fa-num">Valor EFD</th>
+                  <th>Pág. Razão</th>
                   <th>Data Razão</th>
                   <th class="fa-num">Crédito Razão</th>
                   <th class="fa-num">Diferença</th>
@@ -182,9 +184,19 @@
                 <% filtered_records.each do |r| %>
                   <tr class="<%= r.matched? ? (r.diferenca.abs > 0.05 ? "fa-row--diff" : "fa-row--ok") : "fa-row--unmatched" %>">
                     <td><%= r.codigo || "—" %></td>
-                    <td><%= r.num_nf %></td>
+                    <td>
+                      <% if r.page_pdf.present? %>
+                        <%= link_to r.num_nf, "#", class: "fa-nf-link", data: { page: r.page_pdf, source: r.source_pdf }, title: "Abrir PDF na página #{r.page_pdf}" %>
+                      <% elsif r.page_txt.present? %>
+                        <span class="fa-nf-text" title="TXT: <%= r.source_txt %>"><%= r.num_nf %></span>
+                      <% else %>
+                        <%= r.num_nf %>
+                      <% end %>
+                    </td>
+                    <td class="fa-num"><%= r.page_txt || "—" %></td>
                     <td><%= r.data_emissao_txt || "—" %></td>
                     <td class="fa-num"><%= money.call(r.valor_nf) if r.valor_nf.nonzero? %></td>
+                    <td class="fa-num"><%= r.page_pdf || "—" %></td>
                     <td><%= r.data_emissao_pdf || "—" %></td>
                     <td class="fa-num"><%= money.call(r.credito) if r.credito.nonzero? %></td>
                     <td class="fa-num <%= r.diferenca.abs > 0.05 ? "fa-diff--alert" : "fa-diff--ok" %>">
@@ -207,7 +219,9 @@
                   <td><strong>TOTAL</strong></td>
                   <td><%= number_with_delimiter(filtered_records.size, delimiter: ".") %> regs</td>
                   <td></td>
+                  <td></td>
                   <td class="fa-num"><strong><%= money.call(filtered_records.sum(&:valor_nf)) %></strong></td>
+                  <td></td>
                   <td></td>
                   <td class="fa-num"><strong><%= money.call(filtered_records.sum(&:credito)) %></strong></td>
                   <td class="fa-num <%= filtered_records.sum(&:diferenca).abs > 1 ? "fa-diff--alert" : "fa-diff--ok" %>">
@@ -252,3 +266,26 @@
     <% end %>
   </main>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  // Handle NF link clicks to open PDF at specific page
+  document.querySelectorAll('.fa-nf-link').forEach(function(link) {
+    link.addEventListener('click', function(e) {
+      e.preventDefault();
+      const page = this.dataset.page;
+      const source = this.dataset.source;
+      
+      if (page && source) {
+        // Open PDF at specific page using PDF.js or browser's built-in viewer
+        // The source file path needs to be accessible via URL
+        // For now, we'll show an alert with the page info
+        alert('NF ' + this.textContent + '\nPágina: ' + page + '\nArquivo: ' + source);
+        
+        // TODO: Implement actual PDF opening
+        // window.open('/path/to/pdf#page=' + page, '_blank');
+      }
+    });
+  });
+});
+</script>

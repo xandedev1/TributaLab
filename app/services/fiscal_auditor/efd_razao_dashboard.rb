@@ -3,10 +3,10 @@ require "json"
 module FiscalAuditor
   class EfdRazaoDashboard
     # Record from EFD (TXT) - A100 (Serviços) or C100 (Vendas)
-    EfdRecord = Data.define(:codigo, :num_nf, :data_emissao, :valor_nf, :source_file)
+    EfdRecord = Data.define(:codigo, :num_nf, :data_emissao, :valor_nf, :source_file, :page)
 
     # Record from Razão (PDF)
-    RazaoRecord = Data.define(:num_nf, :data_emissao, :credito, :source_file)
+    RazaoRecord = Data.define(:num_nf, :data_emissao, :credito, :source_file, :page)
 
     # Cross-referenced record (TXT → PDF or PDF → TXT)
     CrossRecord = Data.define(
@@ -19,7 +19,9 @@ module FiscalAuditor
       :diferenca,
       :matched,
       :source_txt,
-      :source_pdf
+      :source_pdf,
+      :page_txt,
+      :page_pdf
     ) do
       def matched?
         matched
@@ -105,8 +107,8 @@ module FiscalAuditor
 
         data = JSON.parse(File.read(EFD_JSON))
         {
-          a100: (data["a100"] || []).map { |r| EfdRecord.new(r["codigo"], r["num_nf"], r["data_emissao"], r["valor_nf"]&.to_d || 0.to_d, r["source_file"]) },
-          c100: (data["c100"] || []).map { |r| EfdRecord.new(r["codigo"], r["num_nf"], r["data_emissao"], r["valor_nf"]&.to_d || 0.to_d, r["source_file"]) }
+          a100: (data["a100"] || []).map { |r| EfdRecord.new(r["codigo"], r["num_nf"], r["data_emissao"], r["valor_nf"]&.to_d || 0.to_d, r["source_file"], r["page"]) },
+          c100: (data["c100"] || []).map { |r| EfdRecord.new(r["codigo"], r["num_nf"], r["data_emissao"], r["valor_nf"]&.to_d || 0.to_d, r["source_file"], r["page"]) }
         }
       end
 
@@ -115,7 +117,7 @@ module FiscalAuditor
 
         data = JSON.parse(File.read(json_path))
         (data["records"] || []).map do |r|
-          RazaoRecord.new(r["num_nf"], r["data_emissao"], r["credito"]&.to_d || 0.to_d, r["source_file"])
+          RazaoRecord.new(r["num_nf"], r["data_emissao"], r["credito"]&.to_d || 0.to_d, r["source_file"], r["page"])
         end
       end
     end
@@ -235,7 +237,9 @@ module FiscalAuditor
               diferenca: diferenca,
               matched: true,
               source_txt: base.source_file,
-              source_pdf: match.source_file
+              source_pdf: match.source_file,
+              page_txt: base.page,
+              page_pdf: match.page
             )
           when :pdf_to_txt
             # base=RazaoRecord, match=EfdRecord
@@ -250,7 +254,9 @@ module FiscalAuditor
               diferenca: diferenca,
               matched: true,
               source_txt: match.source_file,
-              source_pdf: base.source_file
+              source_pdf: base.source_file,
+              page_txt: match.page,
+              page_pdf: base.page
             )
           end
         else
@@ -266,7 +272,9 @@ module FiscalAuditor
               diferenca: base.valor_nf,
               matched: false,
               source_txt: base.source_file,
-              source_pdf: nil
+              source_pdf: nil,
+              page_txt: base.page,
+              page_pdf: nil
             )
           when :pdf_to_txt
             CrossRecord.new(
@@ -279,7 +287,9 @@ module FiscalAuditor
               diferenca: base.credito,
               matched: false,
               source_txt: nil,
-              source_pdf: base.source_file
+              source_pdf: base.source_file,
+              page_txt: nil,
+              page_pdf: base.page
             )
           end
         end
