@@ -41,6 +41,25 @@
         </article>
       </section>
 
+      <!-- Totais de diferença -->
+      <section class="fa-totals">
+        <div class="fa-totals__card">
+          <span class="fa-totals__label">EFD Total</span>
+          <strong class="fa-totals__value"><%= money.call(@dashboard.efd_total) %></strong>
+          <small>A100 + C100</small>
+        </div>
+        <div class="fa-totals__card">
+          <span class="fa-totals__label">Razão Total</span>
+          <strong class="fa-totals__value"><%= money.call(@dashboard.razao_total) %></strong>
+          <small>Serviços + Vendas</small>
+        </div>
+        <div class="fa-totals__card fa-totals__card--diff <%= @dashboard.diferenca_total.abs > 1 ? "fa-totals__card--alert" : "fa-totals__card--ok" %>">
+          <span class="fa-totals__label">Diferença</span>
+          <strong class="fa-totals__value"><%= money.call(@dashboard.diferenca_total) %></strong>
+          <small>Razão − EFD</small>
+        </div>
+      </section>
+
       <!-- Report selector -->
       <section class="fa-report-selector">
         <div class="fa-report-selector__glow fa-report-selector__glow--a"></div>

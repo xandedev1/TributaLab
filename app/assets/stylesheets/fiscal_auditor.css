@@ -498,3 +498,13 @@ turbo-frame#fiscal-results { display: block; }
 .fa-report-list { list-style: none; padding: 0; margin: 16px 0 0; display: flex; flex-direction: column; gap: 12px; }
 .fa-report-list li { padding: 16px 20px; background: var(--fa-surface); border-radius: 12px; border: 1px solid var(--fa-line); font-size: 14px; line-height: 1.6; }
 .fa-report-list strong { color: var(--fa-accent); }
+
+/* ===== Totais EFD x Razao ===== */
+.fa-totals { display: flex; gap: 20px; padding: 24px; justify-content: center; flex-wrap: wrap; }
+.fa-totals__card { display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 24px 32px; background: linear-gradient(135deg, rgba(255,255,255,.08), rgba(255,255,255,.03)); border: 1px solid rgba(255,255,255,.12); border-radius: 20px; backdrop-filter: blur(16px) saturate(1.4); box-shadow: 0 12px 40px rgba(0,0,0,.15), inset 0 1px 0 rgba(255,255,255,.2); min-width: 220px; text-align: center; }
+.fa-totals__label { font-size: 12px; text-transform: uppercase; letter-spacing: .1em; color: var(--fa-ink-soft); font-weight: 600; }
+.fa-totals__value { font-size: 32px; font-weight: 700; font-family: "Barlow Condensed", sans-serif; }
+.fa-totals__card small { font-size: 11px; color: var(--fa-ink-soft); opacity: .7; }
+.fa-totals__card--ok .fa-totals__value { color: #2d8a4e; }
+.fa-totals__card--alert .fa-totals__value { color: #c4302b; }
+.fa-totals__card--diff { border-color: rgba(155,200,181,.3); background: linear-gradient(135deg, rgba(155,200,181,.1), rgba(155,200,181,.03)); }

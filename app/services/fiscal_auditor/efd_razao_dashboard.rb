@@ -147,6 +147,34 @@ module FiscalAuditor
       self.class.records(company)[:razao_vendas].size
     end
 
+    def efd_a100_total
+      self.class.records(company)[:a100].sum(&:valor_nf)
+    end
+
+    def efd_c100_total
+      self.class.records(company)[:c100].sum(&:valor_nf)
+    end
+
+    def razao_servicos_total
+      self.class.records(company)[:razao_servicos].sum(&:credito)
+    end
+
+    def razao_vendas_total
+      self.class.records(company)[:razao_vendas].sum(&:credito)
+    end
+
+    def efd_total
+      efd_a100_total + efd_c100_total
+    end
+
+    def razao_total
+      razao_servicos_total + razao_vendas_total
+    end
+
+    def diferenca_total
+      razao_total - efd_total
+    end
+
     # Relatório 1: A100 TXT → PDF (EFD como base, cruzar com Razão Serviços)
     def report_a100_txt_to_pdf
       data = self.class.records(company)
