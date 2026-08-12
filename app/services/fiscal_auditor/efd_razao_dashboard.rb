@@ -33,6 +33,7 @@ module FiscalAuditor
     EFD_JSON = Rails.root.join("tmp/efd_razao.json").freeze
     RAZAO_SERVICOS_JSON = Rails.root.join("tmp/razao_servicos.json").freeze
     RAZAO_VENDAS_JSON = Rails.root.join("tmp/razao_vendas.json").freeze
+    DEVOLUCAO_JSON = Rails.root.join("tmp/devolucao.json").freeze
 
     class << self
       def records(company = "solucoes")
@@ -119,6 +120,13 @@ module FiscalAuditor
         (data["records"] || []).map do |r|
           RazaoRecord.new(r["num_nf"], r["data_emissao"], r["credito"]&.to_d || 0.to_d, r["source_file"], r["page"])
         end
+      end
+
+      def devolucao_nfs
+        return [] unless DEVOLUCAO_JSON.exist?
+
+        data = JSON.parse(File.read(DEVOLUCAO_JSON))
+        (data["records"] || []).map { |r| r["num_nf"] }
       end
     end
 
@@ -235,22 +243,28 @@ module FiscalAuditor
         h[r.num_nf] << r
       end
 
+      # Load devolução NFs (these should be zeroed in the report)
+      devolucao_nfs = self.class.devolucao_nfs.to_set
+
       base_records.map do |base|
         matches = match_by_nf[base.num_nf]
+        is_devolucao = devolucao_nfs.include?(base.num_nf)
 
         if matches&.any?
           match = matches.first
           case direction
           when :txt_to_pdf
             # base=EfdRecord, match=RazaoRecord
-            diferenca = base.valor_nf - match.credito
+            # If devolução, zero the credito (Razão side)
+            credito = is_devolucao ? 0.to_d : match.credito
+            diferenca = base.valor_nf - credito
             CrossRecord.new(
               codigo: base.codigo,
               num_nf: base.num_nf,
               data_emissao_txt: base.data_emissao,
               valor_nf: base.valor_nf,
               data_emissao_pdf: match.data_emissao,
-              credito: match.credito,
+              credito: credito,
               diferenca: diferenca,
               matched: true,
               source_txt: base.source_file,
@@ -260,14 +274,16 @@ module FiscalAuditor
             )
           when :pdf_to_txt
             # base=RazaoRecord, match=EfdRecord
-            diferenca = base.credito - match.valor_nf
+            # If devolução, zero the credito (Razão side)
+            credito = is_devolucao ? 0.to_d : base.credito
+            diferenca = credito - match.valor_nf
             CrossRecord.new(
               codigo: match.codigo,
               num_nf: base.num_nf,
               data_emissao_txt: match.data_emissao,
               valor_nf: match.valor_nf,
               data_emissao_pdf: base.data_emissao,
-              credito: base.credito,
+              credito: credito,
               diferenca: diferenca,
               matched: true,
               source_txt: match.source_file,
