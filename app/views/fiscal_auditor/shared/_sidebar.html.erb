@@ -39,6 +39,10 @@
       <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
       Devoluções
     <% end %>
+    <%= link_to fiscal_auditor_comparativo_path, class: "fa-nav__item #{"fa-nav__item--active" if active == :comparativo}" do %>
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 3v18h18M7 16l4-5 3 3 6-8"/></svg>
+      Comparativo
+    <% end %>
     <%= link_to fiscal_auditor_tax_lotations_path, class: "fa-nav__item #{"fa-nav__item--active" if active == :tax_lotations}" do %>
       <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4h16v16H4zM8 8h8M8 12h8M8 16h5"/></svg>
       Lotações tributárias

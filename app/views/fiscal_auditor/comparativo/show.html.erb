@@ -1,0 +1,109 @@
+<% content_for :title, "Comparativo EFD × ECF | Auditor Fiscal" %>
+<% money = ->(value) { number_to_currency(value, unit: "R$ ", separator: ",", delimiter: ".") } %>
+
+<div class="fa-shell">
+  <%= render "fiscal_auditor/shared/sidebar", active: :comparativo, status: @dashboard.available? ? "Dados processados" : "Aguardando dados", detail: @dashboard.available? ? "Comparativo mensal" : "Nenhum arquivo subido" %>
+
+  <main class="fa-main" id="comparativo">
+    <header class="fa-topbar">
+      <div>
+        <p class="fa-kicker">Auditoria de receitas</p>
+        <h1>Comparativo EFD × ECF</h1>
+      </div>
+      <div class="fa-topbar__meta">
+        <span class="fa-pill"><span class="fa-status-dot"></span> 2022</span>
+      </div>
+    </header>
+
+    <% if @dashboard.available? %>
+      <!-- Totais -->
+      <section class="fa-totals">
+        <div class="fa-totals__card">
+          <span class="fa-totals__label">EFD Total</span>
+          <strong class="fa-totals__value"><%= money.call(@totals[:efd]) %></strong>
+          <small>A100 + C100</small>
+        </div>
+        <div class="fa-totals__card">
+          <span class="fa-totals__label">ECF Total</span>
+          <strong class="fa-totals__value"><%= money.call(@totals[:ecf]) %></strong>
+          <small>Serviços + Vendas</small>
+        </div>
+        <div class="fa-totals__card">
+          <span class="fa-totals__label">Devolução</span>
+          <strong class="fa-totals__value"><%= money.call(@totals[:devolucao]) %></strong>
+          <small>Devoluções</small>
+        </div>
+        <div class="fa-totals__card">
+          <span class="fa-totals__label">Faturamento ECF</span>
+          <strong class="fa-totals__value"><%= money.call(@totals[:faturamento_ecf]) %></strong>
+          <small>ECF - Devolução</small>
+        </div>
+        <div class="fa-totals__card fa-totals__card--diff <%= @totals[:diferenca].abs > 1 ? "fa-totals__card--alert" : "fa-totals__card--ok" %>">
+          <span class="fa-totals__label">Diferença</span>
+          <strong class="fa-totals__value"><%= money.call(@totals[:diferenca]) %></strong>
+          <small>ECF - EFD</small>
+        </div>
+      </section>
+
+      <!-- Monthly table -->
+      <section class="fa-panel">
+        <header class="fa-panel__header">
+          <div>
+            <p class="fa-kicker">Comparativo</p>
+            <h2>Mês a Mês</h2>
+          </div>
+          <span class="fa-tag"><%= @monthly.size %> meses</span>
+        </header>
+
+        <div class="fa-table-wrap">
+          <table class="fa-table fa-table--cross">
+            <thead>
+              <tr>
+                <th>Mês</th>
+                <th class="fa-num">EFD</th>
+                <th class="fa-num">ECF</th>
+                <th class="fa-num">Devolução</th>
+                <th class="fa-num">Faturamento ECF</th>
+                <th class="fa-num">Diferença</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% @monthly.each do |m| %>
+                <tr class="<%= m[:diferenca].abs > 1 ? "fa-row--diff" : "fa-row--ok" %>">
+                  <td><strong><%= Date.strptime(m[:month], "%Y-%m").strftime("%b/%Y") %></strong></td>
+                  <td class="fa-num"><%= money.call(m[:efd]) %></td>
+                  <td class="fa-num"><%= money.call(m[:ecf]) %></td>
+                  <td class="fa-num"><%= money.call(m[:devolucao]) %></td>
+                  <td class="fa-num"><%= money.call(m[:faturamento_ecf]) %></td>
+                  <td class="fa-num <%= m[:diferenca].abs > 1 ? "fa-diff--alert" : "fa-diff--ok" %>">
+                    <%= money.call(m[:diferenca]) %>
+                  </td>
+                </tr>
+              <% end %>
+            </tbody>
+            <tfoot>
+              <tr class="fa-row--total">
+                <td><strong>TOTAL</strong></td>
+                <td class="fa-num"><strong><%= money.call(@totals[:efd]) %></strong></td>
+                <td class="fa-num"><strong><%= money.call(@totals[:ecf]) %></strong></td>
+                <td class="fa-num"><strong><%= money.call(@totals[:devolucao]) %></strong></td>
+                <td class="fa-num"><strong><%= money.call(@totals[:faturamento_ecf]) %></strong></td>
+                <td class="fa-num <%= @totals[:diferenca].abs > 1 ? "fa-diff--alert" : "fa-diff--ok" %>">
+                  <strong><%= money.call(@totals[:diferenca]) %></strong>
+                </td>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+      </section>
+    <% else %>
+      <section class="fa-empty fa-empty--module">
+        <div class="fa-empty__icon">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 3v18h18M7 16l4-5 3 3 6-8"/></svg>
+        </div>
+        <h2 class="fa-empty__title">Comparativo EFD × ECF</h2>
+        <p class="fa-empty__text">Nenhum dado encontrado para esta empresa.</p>
+      </section>
+    <% end %>
+  </main>
+</div>
