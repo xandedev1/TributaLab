@@ -121,13 +121,13 @@ module FiscalAuditor
           RazaoRecord.new(r["num_nf"], r["data_emissao"], r["credito"]&.to_d || 0.to_d, r["source_file"], r["page"])
         end
       end
+    end
 
-      def devolucao_nfs
-        return [] unless DEVOLUCAO_JSON.exist?
+    def self.devolucao_nfs
+      return [] unless DEVOLUCAO_JSON.exist?
 
-        data = JSON.parse(File.read(DEVOLUCAO_JSON))
-        (data["records"] || []).map { |r| r["num_nf"] }
-      end
+      data = JSON.parse(File.read(DEVOLUCAO_JSON))
+      (data["records"] || []).map { |r| r["num_nf"] }
     end
 
     attr_reader :company
@@ -244,7 +244,7 @@ module FiscalAuditor
       end
 
       # Load devolução NFs (these should be zeroed in the report)
-      devolucao_nfs = self.class.devolucao_nfs.to_set
+      devolucao_nfs = EfdRazaoDashboard.devolucao_nfs.to_set
 
       base_records.map do |base|
         matches = match_by_nf[base.num_nf]
