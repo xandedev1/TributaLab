@@ -2,12 +2,25 @@ require "json"
 
 module FiscalAuditor
   class ComparativoDashboard
-    EXTRACTOR_EFD = Rails.root.join("script/extract_efd_razao.py").freeze
-    EXTRACTOR_PDF = Rails.root.join("script/extract_razao_pdf.py").freeze
     EFD_JSON = Rails.root.join("tmp/efd_razao.json").freeze
     RAZAO_SERVICOS_JSON = Rails.root.join("tmp/razao_servicos.json").freeze
     RAZAO_VENDAS_JSON = Rails.root.join("tmp/razao_vendas.json").freeze
-    DEVOLUCAO_JSON = Rails.root.join("tmp/devolucao.json").freeze
+
+    # Tabela de referência (valores da planilha enviada)
+    TABELA = {
+      "2022-01" => { efd: 53_282_520.82, ecf: 58_734_113.21 },
+      "2022-02" => { efd: 58_986_278.11, ecf: 58_985_862.00 },
+      "2022-03" => { efd: 75_800_013.97, ecf: 75_698_409.13 },
+      "2022-04" => { efd: 73_164_776.72, ecf: 73_033_536.34 },
+      "2022-05" => { efd: 77_076_251.39, ecf: 76_873_278.52 },
+      "2022-06" => { efd: 79_067_413.67, ecf: 74_140_069.74 },
+      "2022-07" => { efd: 73_756_187.16, ecf: 73_791_785.35 },
+      "2022-08" => { efd: 69_237_135.92, ecf: 69_420_175.78 },
+      "2022-09" => { efd: 91_168_741.92, ecf: 81_579_481.60 },
+      "2022-10" => { efd: 87_528_693.76, ecf: 87_105_007.17 },
+      "2022-11" => { efd: 84_452_515.24, ecf: 80_624_947.38 },
+      "2022-12" => { efd: 104_390_132.38, ecf: 135_145_265.70 }
+    }.freeze
 
     class << self
       def records(company = "solucoes")
@@ -32,8 +45,7 @@ module FiscalAuditor
         paths = [
           CompanyPath.efd_dir(company),
           CompanyPath.razao_servicos_pdf(company),
-          CompanyPath.razao_vendas_pdf(company),
-          CompanyPath.devolucao_pdf(company)
+          CompanyPath.razao_vendas_pdf(company)
         ]
         paths.filter_map { |p| p.exist? ? [ p.mtime.to_i, p.size ] : nil }
       end
@@ -42,14 +54,12 @@ module FiscalAuditor
         efd = load_efd
         razao_servicos = load_razao(RAZAO_SERVICOS_JSON)
         razao_vendas = load_razao(RAZAO_VENDAS_JSON)
-        devolucao = load_devolucao
 
         {
           a100: efd[:a100],
           c100: efd[:c100],
           razao_servicos: razao_servicos,
-          razao_vendas: razao_vendas,
-          devolucao: devolucao
+          razao_vendas: razao_vendas
         }
       end
 
@@ -58,8 +68,8 @@ module FiscalAuditor
 
         data = JSON.parse(File.read(EFD_JSON))
         {
-          a100: (data["a100"] || []).map { |r| { num_nf: r["num_nf"], data_emissao: r["data_emissao"], valor: r["valor_nf"]&.to_d || 0.to_d } },
-          c100: (data["c100"] || []).map { |r| { num_nf: r["num_nf"], data_emissao: r["data_emissao"], valor: r["valor_nf"]&.to_d || 0.to_d } }
+          a100: (data["a100"] || []).map { |r| { data_emissao: r["data_emissao"], valor: r["valor_nf"]&.to_d || 0.to_d } },
+          c100: (data["c100"] || []).map { |r| { data_emissao: r["data_emissao"], valor: r["valor_nf"]&.to_d || 0.to_d } }
         }
       end
 
@@ -68,16 +78,7 @@ module FiscalAuditor
 
         data = JSON.parse(File.read(json_path))
         (data["records"] || []).map do |r|
-          { num_nf: r["num_nf"], data_emissao: r["data_emissao"], valor: r["credito"]&.to_d || 0.to_d }
-        end
-      end
-
-      def load_devolucao
-        return [] unless DEVOLUCAO_JSON.exist?
-
-        data = JSON.parse(File.read(DEVOLUCAO_JSON))
-        (data["records"] || []).map do |r|
-          { num_nf: r["num_nf"], data_emissao: r["data_emissao"], valor: r["valor"]&.to_d || 0.to_d }
+          { data_emissao: r["data_emissao"], valor: r["credito"]&.to_d || 0.to_d }
         end
       end
     end
@@ -95,41 +96,36 @@ module FiscalAuditor
 
     def monthly_comparison
       data = self.class.records(company)
-      months = {}
-
-      # Group by month
+      
+      # Our monthly totals
+      our_efd = {}
+      our_razao = {}
+      
       (data[:a100] + data[:c100]).each do |r|
         month = r[:data_emissao]&.[](0..6)
         next unless month
-        months[month] ||= { efd: 0.to_d, ecf: 0.to_d, devolucao: 0.to_d }
-        months[month][:efd] += r[:valor]
+        our_efd[month] = (our_efd[month] || 0.to_d) + r[:valor]
       end
-
+      
       (data[:razao_servicos] + data[:razao_vendas]).each do |r|
         month = r[:data_emissao]&.[](0..6)
         next unless month
-        months[month] ||= { efd: 0.to_d, ecf: 0.to_d, devolucao: 0.to_d }
-        months[month][:ecf] += r[:valor]
+        our_razao[month] = (our_razao[month] || 0.to_d) + r[:valor]
       end
-
-      data[:devolucao].each do |r|
-        month = r[:data_emissao]&.[](0..6)
-        next unless month
-        months[month] ||= { efd: 0.to_d, ecf: 0.to_d, devolucao: 0.to_d }
-        months[month][:devolucao] += r[:valor]
-      end
-
-      # Calculate differences
-      months.map do |month, values|
-        faturamento_ecf = values[:ecf] - values[:devolucao]
-        diferenca = faturamento_ecf - values[:efd]
+      
+      # Build comparison
+      TABELA.map do |month, tabela|
+        our_efd_val = our_efd[month] || 0.to_d
+        our_razao_val = our_razao[month] || 0.to_d
+        
         {
           month: month,
-          efd: values[:efd],
-          ecf: values[:ecf],
-          devolucao: values[:devolucao],
-          faturamento_ecf: faturamento_ecf,
-          diferenca: diferenca
+          tabela_efd: tabela[:efd].to_d,
+          nosso_efd: our_efd_val,
+          diff_efd: our_efd_val - tabela[:efd].to_d,
+          tabela_ecf: tabela[:ecf].to_d,
+          nosso_ecf: our_razao_val,
+          diff_ecf: our_razao_val - tabela[:ecf].to_d
         }
       end.sort_by { |m| m[:month] }
     end
@@ -137,11 +133,12 @@ module FiscalAuditor
     def totals
       monthly = monthly_comparison
       {
-        efd: monthly.sum { |m| m[:efd] },
-        ecf: monthly.sum { |m| m[:ecf] },
-        devolucao: monthly.sum { |m| m[:devolucao] },
-        faturamento_ecf: monthly.sum { |m| m[:faturamento_ecf] },
-        diferenca: monthly.sum { |m| m[:diferenca] }
+        tabela_efd: monthly.sum { |m| m[:tabela_efd] },
+        nosso_efd: monthly.sum { |m| m[:nosso_efd] },
+        diff_efd: monthly.sum { |m| m[:diff_efd] },
+        tabela_ecf: monthly.sum { |m| m[:tabela_ecf] },
+        nosso_ecf: monthly.sum { |m| m[:nosso_ecf] },
+        diff_ecf: monthly.sum { |m| m[:diff_ecf] }
       }
     end
   end

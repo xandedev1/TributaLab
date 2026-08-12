@@ -19,29 +19,37 @@
       <!-- Totais -->
       <section class="fa-totals">
         <div class="fa-totals__card">
-          <span class="fa-totals__label">EFD Total</span>
-          <strong class="fa-totals__value"><%= money.call(@totals[:efd]) %></strong>
+          <span class="fa-totals__label">EFD (Tabela)</span>
+          <strong class="fa-totals__value"><%= money.call(@totals[:tabela_efd]) %></strong>
+          <small>Faturamento EFD da tabela</small>
+        </div>
+        <div class="fa-totals__card">
+          <span class="fa-totals__label">EFD (Nosso)</span>
+          <strong class="fa-totals__value"><%= money.call(@totals[:nosso_efd]) %></strong>
           <small>A100 + C100</small>
         </div>
+        <div class="fa-totals__card fa-totals__card--diff <%= @totals[:diff_efd].abs > 1 ? "fa-totals__card--alert" : "fa-totals__card--ok" %>">
+          <span class="fa-totals__label">Diferença EFD</span>
+          <strong class="fa-totals__value"><%= money.call(@totals[:diff_efd]) %></strong>
+          <small>Nosso - Tabela</small>
+        </div>
+      </section>
+
+      <section class="fa-totals">
         <div class="fa-totals__card">
-          <span class="fa-totals__label">ECF Total</span>
-          <strong class="fa-totals__value"><%= money.call(@totals[:ecf]) %></strong>
+          <span class="fa-totals__label">ECF (Tabela)</span>
+          <strong class="fa-totals__value"><%= money.call(@totals[:tabela_ecf]) %></strong>
+          <small>Faturamento ECF da tabela</small>
+        </div>
+        <div class="fa-totals__card">
+          <span class="fa-totals__label">ECF (Nosso)</span>
+          <strong class="fa-totals__value"><%= money.call(@totals[:nosso_ecf]) %></strong>
           <small>Serviços + Vendas</small>
         </div>
-        <div class="fa-totals__card">
-          <span class="fa-totals__label">Devolução</span>
-          <strong class="fa-totals__value"><%= money.call(@totals[:devolucao]) %></strong>
-          <small>Devoluções</small>
-        </div>
-        <div class="fa-totals__card">
-          <span class="fa-totals__label">Faturamento ECF</span>
-          <strong class="fa-totals__value"><%= money.call(@totals[:faturamento_ecf]) %></strong>
-          <small>ECF - Devolução</small>
-        </div>
-        <div class="fa-totals__card fa-totals__card--diff <%= @totals[:diferenca].abs > 1 ? "fa-totals__card--alert" : "fa-totals__card--ok" %>">
-          <span class="fa-totals__label">Diferença</span>
-          <strong class="fa-totals__value"><%= money.call(@totals[:diferenca]) %></strong>
-          <small>ECF - EFD</small>
+        <div class="fa-totals__card fa-totals__card--diff <%= @totals[:diff_ecf].abs > 1 ? "fa-totals__card--alert" : "fa-totals__card--ok" %>">
+          <span class="fa-totals__label">Diferença ECF</span>
+          <strong class="fa-totals__value"><%= money.call(@totals[:diff_ecf]) %></strong>
+          <small>Nosso - Tabela</small>
         </div>
       </section>
 
@@ -60,23 +68,27 @@
             <thead>
               <tr>
                 <th>Mês</th>
-                <th class="fa-num">EFD</th>
-                <th class="fa-num">ECF</th>
-                <th class="fa-num">Devolução</th>
-                <th class="fa-num">Faturamento ECF</th>
-                <th class="fa-num">Diferença</th>
+                <th class="fa-num">EFD (Tabela)</th>
+                <th class="fa-num">EFD (Nosso)</th>
+                <th class="fa-num">Diff EFD</th>
+                <th class="fa-num">ECF (Tabela)</th>
+                <th class="fa-num">ECF (Nosso)</th>
+                <th class="fa-num">Diff ECF</th>
               </tr>
             </thead>
             <tbody>
               <% @monthly.each do |m| %>
-                <tr class="<%= m[:diferenca].abs > 1 ? "fa-row--diff" : "fa-row--ok" %>">
+                <tr class="<%= (m[:diff_efd].abs > 1 || m[:diff_ecf].abs > 1) ? "fa-row--diff" : "fa-row--ok" %>">
                   <td><strong><%= Date.strptime(m[:month], "%Y-%m").strftime("%b/%Y") %></strong></td>
-                  <td class="fa-num"><%= money.call(m[:efd]) %></td>
-                  <td class="fa-num"><%= money.call(m[:ecf]) %></td>
-                  <td class="fa-num"><%= money.call(m[:devolucao]) %></td>
-                  <td class="fa-num"><%= money.call(m[:faturamento_ecf]) %></td>
-                  <td class="fa-num <%= m[:diferenca].abs > 1 ? "fa-diff--alert" : "fa-diff--ok" %>">
-                    <%= money.call(m[:diferenca]) %>
+                  <td class="fa-num"><%= money.call(m[:tabela_efd]) %></td>
+                  <td class="fa-num"><%= money.call(m[:nosso_efd]) %></td>
+                  <td class="fa-num <%= m[:diff_efd].abs > 1 ? "fa-diff--alert" : "fa-diff--ok" %>">
+                    <%= money.call(m[:diff_efd]) %>
+                  </td>
+                  <td class="fa-num"><%= money.call(m[:tabela_ecf]) %></td>
+                  <td class="fa-num"><%= money.call(m[:nosso_ecf]) %></td>
+                  <td class="fa-num <%= m[:diff_ecf].abs > 1 ? "fa-diff--alert" : "fa-diff--ok" %>">
+                    <%= money.call(m[:diff_ecf]) %>
                   </td>
                 </tr>
               <% end %>
@@ -84,12 +96,15 @@
             <tfoot>
               <tr class="fa-row--total">
                 <td><strong>TOTAL</strong></td>
-                <td class="fa-num"><strong><%= money.call(@totals[:efd]) %></strong></td>
-                <td class="fa-num"><strong><%= money.call(@totals[:ecf]) %></strong></td>
-                <td class="fa-num"><strong><%= money.call(@totals[:devolucao]) %></strong></td>
-                <td class="fa-num"><strong><%= money.call(@totals[:faturamento_ecf]) %></strong></td>
-                <td class="fa-num <%= @totals[:diferenca].abs > 1 ? "fa-diff--alert" : "fa-diff--ok" %>">
-                  <strong><%= money.call(@totals[:diferenca]) %></strong>
+                <td class="fa-num"><strong><%= money.call(@totals[:tabela_efd]) %></strong></td>
+                <td class="fa-num"><strong><%= money.call(@totals[:nosso_efd]) %></strong></td>
+                <td class="fa-num <%= @totals[:diff_efd].abs > 1 ? "fa-diff--alert" : "fa-diff--ok" %>">
+                  <strong><%= money.call(@totals[:diff_efd]) %></strong>
+                </td>
+                <td class="fa-num"><strong><%= money.call(@totals[:tabela_ecf]) %></strong></td>
+                <td class="fa-num"><strong><%= money.call(@totals[:nosso_ecf]) %></strong></td>
+                <td class="fa-num <%= @totals[:diff_ecf].abs > 1 ? "fa-diff--alert" : "fa-diff--ok" %>">
+                  <strong><%= money.call(@totals[:diff_ecf]) %></strong>
                 </td>
               </tr>
             </tfoot>
