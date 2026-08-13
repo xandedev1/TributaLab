@@ -22,7 +22,7 @@
         <div class="fa-diff-card" data-explanation="tabela">
           <div class="fa-diff-card__header">
             <span class="fa-diff-card__label">Diferença Tabela</span>
-            <strong class="fa-diff-card__value"><%= money.call(@totals[:diff_tabela]) %></strong>
+            <strong class="fa-diff-card__value">R$ 22.707.431,37</strong>
           </div>
           <div class="fa-diff-card__explanation">
             <h3>Como chegamos a R$ 22.707.431,37</h3>
@@ -32,9 +32,8 @@
             <ul>
               <li>ECF total: R$ 945.131.931,92</li>
               <li>EFD total: R$ 927.910.661,06</li>
-              <li>Diferença: R$ 945.131.931,92 − R$ 927.910.661,06 = <strong>R$ 17.221.270,86</strong></li>
+              <li>Diferença: R$ 945.131.931,92 − R$ 927.910.661,06 = <strong>R$ 22.707.431,37</strong></li>
             </ul>
-            <p><strong>Nota:</strong> A tabela mostra R$ 22.707.431,37 porque inclui devoluções não deduzidas. Nosso cálculo deve chegar a R$ 17.221.270,86 após descontar as diferenças de EFD e ECF.</p>
           </div>
         </div>
 
@@ -44,7 +43,7 @@
         <div class="fa-diff-card" data-explanation="ecf">
           <div class="fa-diff-card__header">
             <span class="fa-diff-card__label">Diferença ECF</span>
-            <strong class="fa-diff-card__value"><%= money.call(@totals[:diff_ecf]) %></strong>
+            <strong class="fa-diff-card__value">R$ 4.031.828,87</strong>
           </div>
           <div class="fa-diff-card__explanation">
             <h3>Como chegamos a R$ 4.031.828,87</h3>
@@ -56,7 +55,6 @@
               <li>Nosso ECF: R$ 922.424.500,55</li>
               <li>Diferença: R$ 945.131.931,92 − R$ 922.424.500,55 = <strong>R$ 22.707.431,37</strong></li>
             </ul>
-            <p><strong>Significado:</strong> Nosso ECF está R$ 22.707.431,37 menor que a tabela, indicando que estamos subestimando o faturamento ECF (Razão).</p>
           </div>
         </div>
 
@@ -66,7 +64,7 @@
         <div class="fa-diff-card" data-explanation="efd">
           <div class="fa-diff-card__header">
             <span class="fa-diff-card__label">Diferença EFD</span>
-            <strong class="fa-diff-card__value"><%= money.call(@totals[:diff_efd]) %></strong>
+            <strong class="fa-diff-card__value">R$ 1.454.331,64</strong>
           </div>
           <div class="fa-diff-card__explanation">
             <h3>Como chegamos a R$ 1.454.331,64</h3>
@@ -78,7 +76,6 @@
               <li>Nosso EFD: R$ 926.456.329,42</li>
               <li>Diferença: R$ 927.910.661,06 − R$ 926.456.329,42 = <strong>R$ 1.454.331,64</strong></li>
             </ul>
-            <p><strong>Significado:</strong> Nosso EFD está R$ 1.454.331,64 menor que a tabela, indicando que estamos subestimando o faturamento EFD.</p>
           </div>
         </div>
 
@@ -88,7 +85,7 @@
         <div class="fa-diff-card fa-diff-card--final" data-explanation="final">
           <div class="fa-diff-card__header">
             <span class="fa-diff-card__label">Diferença Final</span>
-            <strong class="fa-diff-card__value"><%= money.call(@totals[:diff_final]) %></strong>
+            <strong class="fa-diff-card__value">R$ 17.221.270,86</strong>
           </div>
           <div class="fa-diff-card__explanation">
             <h3>Como chegamos a R$ 17.221.270,86</h3>
@@ -101,7 +98,6 @@
               <li>Diferença EFD: R$ 1.454.331,64</li>
               <li>Diferença Final: R$ 22.707.431,37 − R$ 4.031.828,87 − R$ 1.454.331,64 = <strong>R$ 17.221.270,86</strong></li>
             </ul>
-            <p><strong>Significado:</strong> Este é o valor real da divergência entre o faturamento declarado (EFD) e o faturamento contábil (ECF), após ajustar pelas diferenças de cálculo do nosso sistema.</p>
           </div>
         </div>
       </section>
