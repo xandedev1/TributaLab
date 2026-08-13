@@ -81,17 +81,17 @@
         <div class="fa-diff-card" data-explanation="efd">
           <div class="fa-diff-card__header">
             <span class="fa-diff-card__label">Diferença EFD</span>
-            <strong class="fa-diff-card__value"><%= money.call(@totals[:diff_efd]) %></strong>
+            <strong class="fa-diff-card__value"><%= money.call(@totals[:diff_efd].abs) %></strong>
           </div>
           <div class="fa-diff-card__explanation">
-            <h3>Como chegamos a -R$ 1.454.331,64</h3>
+            <h3>Como chegamos a R$ 1.454.331,64</h3>
             <p><strong>Fonte:</strong> Nosso sistema (EFD A100 + C100)</p>
-            <p><strong>Cálculo:</strong> Nosso EFD − Tabela EFD</p>
+            <p><strong>Cálculo:</strong> Tabela EFD − Nosso EFD</p>
             <p><strong>Valores:</strong></p>
             <ul>
-              <li>Nosso EFD: R$ 926.456.329,42</li>
               <li>Tabela EFD: R$ 927.910.661,06</li>
-              <li>Diferença: R$ 926.456.329,42 − R$ 927.910.661,06 = <strong>-R$ 1.454.331,64</strong></li>
+              <li>Nosso EFD: R$ 926.456.329,42</li>
+              <li>Diferença: R$ 927.910.661,06 − R$ 926.456.329,42 = <strong>R$ 1.454.331,64</strong></li>
             </ul>
             <p><strong>Significado:</strong> Nosso EFD está R$ 1.454.331,64 menor que a tabela, indicando que estamos subestimando o faturamento EFD.</p>
           </div>
@@ -103,17 +103,17 @@
         <div class="fa-diff-card" data-explanation="ecf">
           <div class="fa-diff-card__header">
             <span class="fa-diff-card__label">Diferença ECF</span>
-            <strong class="fa-diff-card__value"><%= money.call(@totals[:diff_ecf]) %></strong>
+            <strong class="fa-diff-card__value"><%= money.call(@totals[:diff_ecf].abs) %></strong>
           </div>
           <div class="fa-diff-card__explanation">
-            <h3>Como chegamos a -R$ 4.031.828,87</h3>
+            <h3>Como chegamos a R$ 4.031.828,87</h3>
             <p><strong>Fonte:</strong> Nosso sistema (Razão Serviços + Vendas)</p>
-            <p><strong>Cálculo:</strong> Nosso ECF − Tabela ECF</p>
+            <p><strong>Cálculo:</strong> Tabela ECF − Nosso ECF</p>
             <p><strong>Valores:</strong></p>
             <ul>
-              <li>Nosso ECF: R$ 922.424.500,55</li>
               <li>Tabela ECF: R$ 945.131.931,92</li>
-              <li>Diferença: R$ 922.424.500,55 − R$ 945.131.931,92 = <strong>-R$ 22.707.431,37</strong></li>
+              <li>Nosso ECF: R$ 922.424.500,55</li>
+              <li>Diferença: R$ 945.131.931,92 − R$ 922.424.500,55 = <strong>R$ 22.707.431,37</strong></li>
             </ul>
             <p><strong>Significado:</strong> Nosso ECF está R$ 22.707.431,37 menor que a tabela, indicando que estamos subestimando o faturamento ECF (Razão).</p>
           </div>
@@ -130,13 +130,13 @@
           <div class="fa-diff-card__explanation">
             <h3>Como chegamos a R$ 17.221.270,86</h3>
             <p><strong>Fonte:</strong> Cálculo combinado</p>
-            <p><strong>Cálculo:</strong> Diferença Tabela + Diferença EFD + Diferença ECF</p>
+            <p><strong>Cálculo:</strong> Diferença Tabela − Diferença EFD − Diferença ECF</p>
             <p><strong>Valores:</strong></p>
             <ul>
               <li>Diferença Tabela: R$ 22.707.431,37</li>
-              <li>Diferença EFD: -R$ 1.454.331,64</li>
-              <li>Diferença ECF: -R$ 4.031.828,87</li>
-              <li>Diferença Final: R$ 22.707.431,37 + (-R$ 1.454.331,64) + (-R$ 4.031.828,87) = <strong>R$ 17.221.270,86</strong></li>
+              <li>Diferença EFD: R$ 1.454.331,64</li>
+              <li>Diferença ECF: R$ 4.031.828,87</li>
+              <li>Diferença Final: R$ 22.707.431,37 − R$ 1.454.331,64 − R$ 4.031.828,87 = <strong>R$ 17.221.270,86</strong></li>
             </ul>
             <p><strong>Significado:</strong> Este é o valor real da divergência entre o faturamento declarado (EFD) e o faturamento contábil (ECF), após ajustar pelas diferenças de cálculo do nosso sistema.</p>
           </div>
