@@ -28,7 +28,7 @@
           <strong class="fa-totals__value"><%= money.call(@totals[:nosso_efd]) %></strong>
           <small>A100 + C100</small>
         </div>
-        <div class="fa-totals__card fa-totals__card--diff fa-totals__card--ok">
+        <div class="fa-totals__card fa-totals__card--diff <%= @totals[:diff_efd].abs > 1 ? "fa-totals__card--alert" : "fa-totals__card--ok" %>">
           <span class="fa-totals__label">Diferença EFD</span>
           <strong class="fa-totals__value"><%= money.call(@totals[:diff_efd]) %></strong>
           <small>Nosso - Tabela</small>
@@ -46,7 +46,7 @@
           <strong class="fa-totals__value"><%= money.call(@totals[:nosso_ecf]) %></strong>
           <small>Serviços + Vendas</small>
         </div>
-        <div class="fa-totals__card fa-totals__card--diff fa-totals__card--ok">
+        <div class="fa-totals__card fa-totals__card--diff <%= @totals[:diff_ecf].abs > 1 ? "fa-totals__card--alert" : "fa-totals__card--ok" %>">
           <span class="fa-totals__label">Diferença ECF</span>
           <strong class="fa-totals__value"><%= money.call(@totals[:diff_ecf]) %></strong>
           <small>Nosso - Tabela</small>
