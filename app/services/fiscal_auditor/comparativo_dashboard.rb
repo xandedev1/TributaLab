@@ -146,11 +146,11 @@ module FiscalAuditor
       # Diferença ECF (nosso - tabela) = -R$ 4.031.828,87
       diff_ecf = nosso_ecf - tabela_ecf
       
-      # Diferença final = diff_tabela - diff_efd - diff_ecf
-      # = 22.707.431,37 - (-1.454.331,64) - (-4.031.828,87)
-      # = 22.707.431,37 + 1.454.331,64 + 4.031.828,87
-      # = 28.193.591,88
-      diff_final = diff_tabela - diff_efd - diff_ecf
+      # Diferença final = diff_tabela + diff_efd + diff_ecf
+      # = 22.707.431,37 + (-1.454.331,64) + (-4.031.828,87)
+      # = 22.707.431,37 - 1.454.331,64 - 4.031.828,87
+      # = 17.221.270,86
+      diff_final = diff_tabela + diff_efd + diff_ecf
       
       {
         tabela_efd: tabela_efd,
