@@ -518,6 +518,23 @@ turbo-frame#fiscal-results { display: block; }
 .fa-month-filter { display: flex; justify-content: center; padding: 20px 24px; }
 .fa-month-filter__form { display: flex; align-items: center; gap: 12px; }
 .fa-month-filter__label { font-size: 13px; font-weight: 600; color: var(--fa-ink); text-transform: uppercase; letter-spacing: .06em; }
+
+/* Diff cards */
+.fa-diff-cards { display: flex; align-items: center; justify-content: center; gap: 16px; padding: 24px; flex-wrap: wrap; }
+.fa-diff-card { position: relative; display: flex; flex-direction: column; align-items: center; gap: 8px; padding: 28px 32px; background: linear-gradient(135deg, rgba(255,255,255,.08), rgba(255,255,255,.03)); border: 1px solid rgba(255,255,255,.12); border-radius: 20px; backdrop-filter: blur(16px) saturate(1.4); box-shadow: 0 12px 40px rgba(0,0,0,.15), inset 0 1px 0 rgba(255,255,255,.2); min-width: 240px; text-align: center; cursor: pointer; transition: all .3s; }
+.fa-diff-card:hover { transform: translateY(-4px); box-shadow: 0 20px 60px rgba(0,0,0,.25), 0 0 0 1px rgba(155,200,181,.3); }
+.fa-diff-card__header { display: flex; flex-direction: column; gap: 4px; }
+.fa-diff-card__label { font-size: 12px; text-transform: uppercase; letter-spacing: .1em; color: var(--fa-ink-soft); font-weight: 600; }
+.fa-diff-card__value { font-size: 36px; font-weight: 700; font-family: "Barlow Condensed", sans-serif; }
+.fa-diff-card__explanation { display: none; position: absolute; top: 100%; left: 50%; transform: translateX(-50%); margin-top: 12px; padding: 20px; background: var(--fa-surface); border: 1px solid var(--fa-line); border-radius: 12px; box-shadow: 0 12px 40px rgba(0,0,0,.2); z-index: 100; min-width: 400px; text-align: left; }
+.fa-diff-card:hover .fa-diff-card__explanation { display: block; }
+.fa-diff-card__explanation h3 { margin: 0 0 12px; font-size: 16px; font-weight: 700; }
+.fa-diff-card__explanation p { margin: 8px 0; font-size: 13px; line-height: 1.5; }
+.fa-diff-card__explanation ul { margin: 8px 0; padding-left: 20px; font-size: 13px; }
+.fa-diff-card__explanation li { margin: 4px 0; }
+.fa-diff-card--final { border-color: rgba(155,200,181,.4); background: linear-gradient(135deg, rgba(155,200,181,.15), rgba(155,200,181,.05)); }
+.fa-diff-card--final .fa-diff-card__value { color: var(--fa-mint); }
+.fa-diff-operator { font-size: 32px; font-weight: 700; color: var(--fa-ink-soft); padding: 0 8px; }
 .fa-month-filter__select { padding: 10px 16px; border: 1px solid rgba(255,255,255,.14); border-radius: 12px; background: linear-gradient(135deg, rgba(255,255,255,.08), rgba(255,255,255,.03)); color: var(--fa-ink); font-size: 14px; font-weight: 600; backdrop-filter: blur(12px); cursor: pointer; transition: all .25s; }
 .fa-month-filter__select:hover { border-color: rgba(155,200,181,.4); box-shadow: 0 4px 12px rgba(0,0,0,.1); }
 .fa-month-filter__select:focus { outline: none; border-color: var(--fa-accent); box-shadow: 0 0 0 3px rgba(155,200,181,.2); }
