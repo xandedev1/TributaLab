@@ -106,7 +106,12 @@ module FiscalAuditor
     def build_record(row, headers, shared_strings)
       values = row_values(row, shared_strings)
       cnpj = value_at(values, headers, :cnpj)
-      return unless cnpj.match?(/\A\d{2}\.\d{3}\.\d{3}\/\d{4}-\d{2}\z/)
+      client_code = identifier_at(values, headers, :client_code)
+      unless cnpj.match?(/\A\d{2}\.\d{3}\.\d{3}\/\d{4}-\d{2}\z/)
+        # Relatorios de faturamento (ex.: NFs Emitidas) nao trazem CNPJ;
+        # aceita a linha quando ha codigo de cliente para formar a chave do cruzamento.
+        return if client_code.blank? || value_at(values, headers, :client).blank?
+      end
 
       Record.new(
         source: path.basename.to_s,
