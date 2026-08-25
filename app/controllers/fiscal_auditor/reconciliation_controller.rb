@@ -8,7 +8,8 @@ module FiscalAuditor
         receivable_emission_periods: params[:receivable_emission_periods],
         receivable_competence_periods: params[:receivable_competence_periods],
         receivable_value_type: params[:receivable_value_type],
-        page: params[:page]
+        page: params[:page],
+        company: current_fiscal_auditor_company
       )
     end
   end

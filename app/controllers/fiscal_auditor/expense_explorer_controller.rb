@@ -5,7 +5,8 @@ module FiscalAuditor
         periods: params[:periods],
         source_sheet: params[:source_sheet],
         identification: params[:identification],
-        page: params[:page]
+        page: params[:page],
+        company: current_fiscal_auditor_company
       )
     end
   end

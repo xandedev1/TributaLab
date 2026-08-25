@@ -91,6 +91,9 @@ module FiscalAuditor
       end
 
       def load_records(company)
+        # Os JSONs em tmp/ sao compartilhados; so entregue dados a empresa que possui a fonte propria.
+        return { a100: [], c100: [], razao_servicos: [], razao_vendas: [] } unless any_source?(company)
+
         efd = load_efd
         razao_servicos = load_razao(RAZAO_SERVICOS_JSON)
         razao_vendas = load_razao(RAZAO_VENDAS_JSON)

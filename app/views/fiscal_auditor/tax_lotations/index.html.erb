@@ -1,7 +1,7 @@
 <% content_for :title, "Lotações tributárias | Auditor Fiscal" %>
 
 <div class="fa-shell">
-  <%= render "fiscal_auditor/shared/sidebar", active: :tax_lotations, status: "#{@reference.sources.size} referências disponíveis", detail: "Leitura independente, sem cruzamentos" %>
+  <%= render "fiscal_auditor/shared/sidebar", active: :tax_lotations, status: @available ? "#{@reference.sources.size} referências disponíveis" : "Sem dados", detail: @available ? "Leitura independente, sem cruzamentos" : "Nenhum dado carregado" %>
 
   <main class="fa-main">
     <header class="fa-topbar">
@@ -16,6 +16,7 @@
       </div>
     </header>
 
+    <% if @available %>
     <nav class="fa-reference-tabs" aria-label="Tabelas de lotações tributárias">
       <% @reference.sources.each do |source| %>
         <%= link_to source.label, fiscal_auditor_tax_lotations_path(table: source.key), class: "fa-reference-tabs__item #{'fa-reference-tabs__item--active' if source.key == @reference.source.key}" %>
@@ -51,5 +52,8 @@
         </article>
       <% end %>
     </section>
+    <% else %>
+      <section class="fa-empty fa-empty--module"><div class="fa-empty__icon">LT</div><p class="fa-kicker">Sem dados</p><h2>Nenhuma lotação tributária disponível.</h2><p>Assim que os dados forem carregados, as informações aparecerão aqui.</p></section>
+    <% end %>
   </main>
 </div>

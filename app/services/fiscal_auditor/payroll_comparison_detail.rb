@@ -2,14 +2,15 @@ module FiscalAuditor
   class PayrollComparisonDetail
     Result = Data.define(:summary, :events, :invoices)
 
-    def initialize(client_code:, period:, payroll_records: nil, billing_records: nil)
+    def initialize(client_code:, period:, payroll_records: nil, billing_records: nil, company: "appa")
       @client_code = client_code.to_s.strip.sub(/\.0\z/, "")
       @period = period.to_s
       raise ArgumentError, "Cliente ou competência inválidos" if @client_code.blank? || !@period.match?(/\A\d{4}-(?:0[1-9]|1[0-2])\z/)
 
       @dashboard = PayrollDashboard.new(
         periods: [ @period ], client_code: @client_code,
-        payroll_records: payroll_records, billing_records: billing_records
+        payroll_records: payroll_records, billing_records: billing_records,
+        company: company
       )
     end
 

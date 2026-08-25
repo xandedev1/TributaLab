@@ -145,7 +145,7 @@ module FiscalAuditor
     private
 
     def all_records
-      @all_records ||= @payroll_records || self.class.records
+      @all_records ||= @payroll_records || self.class.records(company)
     end
 
     def payroll_groups
@@ -165,7 +165,7 @@ module FiscalAuditor
     end
 
     def filtered_billing_records
-      (@billing_records || Dashboard.records).select do |record|
+      (@billing_records || Dashboard.records(company)).select do |record|
         record.client_code.present? && record.competence && period_selected?(record.competence) &&
           (client_code.blank? || normalize_identifier(record.client_code) == client_code) && !cancelled?(record)
       end

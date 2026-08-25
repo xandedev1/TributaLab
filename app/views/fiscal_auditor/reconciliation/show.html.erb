@@ -1,4 +1,4 @@
-<% content_for :title, "Cruzamento Financeiro | Auditor Fiscal" %>
+<% content_for :title, "Faturamento × Contas a receber | Auditor Fiscal" %>
 <% month_abbreviations = %w[jan fev mar abr mai jun jul ago set out nov dez] %>
 <% month_name = ->(month) { date = Date.strptime(month, "%Y-%m"); "#{month_abbreviations.fetch(date.month - 1)}/#{date.year}" } %>
 <% money = ->(value) { number_to_currency(value, unit: "R$ ", separator: ",", delimiter: ".") } %>
@@ -14,7 +14,7 @@
 
   <main class="fa-main">
     <header class="fa-topbar">
-      <div><p class="fa-kicker">Conciliação de receita</p><h1>Faturamento × recebimentos</h1></div>
+      <div><p class="fa-kicker">Conciliação de receita</p><h1>Faturamento × Contas a receber</h1></div>
       <div class="fa-topbar__meta"><span class="fa-pill"><span class="fa-status-dot"></span> Duas fontes cruzadas</span><span class="fa-avatar">XA</span><span><strong>Xande</strong><small>Auditor responsável</small></span></div>
     </header>
 

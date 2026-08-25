@@ -97,7 +97,9 @@ module FiscalAuditor
     end
 
     def monthly_flow
-      @monthly_flow ||= records.group_by { |record| month_key(record.emission_date) }.sort.to_h.transform_values do |month_records|
+      @monthly_flow ||= records.group_by { |record| month_key(record.emission_date) }
+        .reject { |month, _| month.nil? }
+        .sort_by { |month, _| month }.to_h.transform_values do |month_records|
         {
           billed: month_records.sum(&:billed),
           retained: month_records.sum(&:retained),

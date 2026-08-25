@@ -6,7 +6,8 @@ module FiscalAuditor
         filename: params[:filename],
         row: params[:row],
         sheet: params[:sheet],
-        page: params[:page]
+        page: params[:page],
+        company: current_fiscal_auditor_company
       ).result
       @active_module = active_module
       @return_path = return_path

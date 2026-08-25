@@ -5,7 +5,8 @@ module FiscalAuditor
         module_name: params[:module_name],
         metric: params[:metric],
         params: params,
-        page: params[:page]
+        page: params[:page],
+        company: current_fiscal_auditor_company
       )
       @result = @detail.result
       @active_module = active_module

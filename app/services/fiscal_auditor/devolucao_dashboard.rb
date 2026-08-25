@@ -37,7 +37,12 @@ module FiscalAuditor
       end
 
       def any_source?(company)
-        CompanyPath.devolucao_pdf(company).exist?
+        # Devolucao integra o dataset EFD/Razao da empresa; o PDF pode ter sido removido
+        # apos a extracao, entao considere tambem o razao ja processado da empresa.
+        CompanyPath.devolucao_pdf(company).exist? ||
+          CompanyPath.razao_servicos_pdf(company).exist? ||
+          CompanyPath.razao_vendas_pdf(company).exist? ||
+          CompanyPath.efd_dir(company).exist?
       end
 
       def extract(company)
@@ -47,6 +52,8 @@ module FiscalAuditor
       end
 
       def load_records(company)
+        # O JSON em tmp/ e compartilhado; so entregue dados a empresa que possui a fonte propria.
+        return [] unless any_source?(company)
         return [] unless DEVOLUCAO_JSON.exist?
 
         data = JSON.parse(File.read(DEVOLUCAO_JSON))

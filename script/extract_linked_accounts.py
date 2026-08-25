@@ -58,6 +58,9 @@ def summarize(rows: list[dict]) -> None:
 
 
 def main() -> None:
+    # Windows stdout defaults to cp1252 and crashes on chars like U+2713 present in the data.
+    if hasattr(sys.stdout, "reconfigure"):
+        sys.stdout.reconfigure(encoding="utf-8", errors="replace")
     source = Path(sys.argv[1]) if len(sys.argv) > 1 else Path.home() / "Downloads" / "EXTRATO CONTA VINCULADA.xlsx"
     output = Path("tmp/extrato_conta_vinculada.json")
     output.parent.mkdir(parents=True, exist_ok=True)

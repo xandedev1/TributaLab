@@ -51,6 +51,8 @@ module FiscalAuditor
       end
 
       def load_records(company)
+        # O JSON em tmp/ e compartilhado; so entregue dados a empresa que possui a planilha propria.
+        return [] unless CompanyPath.linked_accounts_path(company).exist?
         return [] unless JSON_PATH.exist?
 
         JSON.parse(File.read(JSON_PATH)).map do |row|

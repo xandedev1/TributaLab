@@ -7,7 +7,7 @@
 <% totals = @dashboard.totals %>
 
 <div class="fa-shell" data-controller="fiscal-dashboard" data-action="click@window->fiscal-dashboard#closePeriodSelectors">
-  <%= render "fiscal_auditor/shared/sidebar", active: :payroll, status: "Encargos conciliados", detail: "INSS e FGTS de 2025" %>
+  <%= render "fiscal_auditor/shared/sidebar", active: :payroll_charges, status: "Encargos conciliados", detail: "INSS e FGTS de 2025" %>
 
   <main class="fa-main">
     <header class="fa-topbar">
@@ -131,7 +131,7 @@
         <section class="fa-empty fa-empty--module"><div class="fa-empty__icon">EC</div><p class="fa-kicker">Filtro sem resultado</p><h2>Nenhuma competência corresponde ao filtro.</h2><p>Limpe a seleção para voltar ao período completo.</p></section>
       <% end %>
     <% else %>
-      <section class="fa-empty fa-empty--module"><div class="fa-empty__icon">EC</div><p class="fa-kicker">Fontes não localizadas</p><h2>As bases de INSS e FGTS ainda não estão disponíveis.</h2><p>Adicione os arquivos XLSX em <code>storage/private/fiscal_auditor/payroll_charges</code>.</p></section>
+      <section class="fa-empty fa-empty--module"><div class="fa-empty__icon">EC</div><p class="fa-kicker">Sem dados</p><h2>Nenhum dado de encargos (INSS/FGTS) disponível.</h2><p>Assim que os dados forem carregados, as informações aparecerão aqui.</p></section>
     <% end %>
   </main>
 </div>

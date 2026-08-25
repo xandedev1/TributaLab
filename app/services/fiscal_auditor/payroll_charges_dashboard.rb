@@ -1,31 +1,31 @@
 module FiscalAuditor
   class PayrollChargesDashboard
-    SOURCE_GLOB = Rails.root.join("storage/private/fiscal_auditor/payroll_charges/*.xlsx").to_s.freeze
     INSS_DISCOUNT_CODES = %w[566 596 641 757].freeze
 
     class << self
-      def source_paths
-        Dir[SOURCE_GLOB].sort
+      def source_paths(company = "appa")
+        Dir[CompanyPath.payroll_charges_glob(company)].sort
       end
 
-      def inss_entries
-        inss_path = source_paths.find { |path| File.basename(path).upcase.start_with?("INSS") }
+      def inss_entries(company = "appa")
+        inss_path = source_paths(company).find { |path| File.basename(path).upcase.start_with?("INSS") }
         inss_path ? PayrollChargesWorkbook.new(inss_path).inss_entries.freeze : []
       end
 
-      def fgts_entries
-        source_paths.reject { |path| File.basename(path).upcase.start_with?("INSS") }
+      def fgts_entries(company = "appa")
+        source_paths(company).reject { |path| File.basename(path).upcase.start_with?("INSS") }
           .map { |path| PayrollChargesWorkbook.new(path).fgts_entry }.freeze
       end
     end
 
-    attr_reader :periods
+    attr_reader :periods, :company
 
-    def initialize(periods: [], payroll_records: nil, inss_entries: nil, fgts_entries: nil)
+    def initialize(periods: [], payroll_records: nil, inss_entries: nil, fgts_entries: nil, company: "appa")
       @periods = normalize_periods(periods)
       @payroll_records = payroll_records
       @inss_entries = inss_entries
       @fgts_entries = fgts_entries
+      @company = company
     end
 
     def available?
@@ -90,15 +90,15 @@ module FiscalAuditor
     private
 
     def inss_entries
-      @inss_entries ||= self.class.inss_entries
+      @inss_entries ||= self.class.inss_entries(company)
     end
 
     def fgts_entries
-      @fgts_entries ||= self.class.fgts_entries
+      @fgts_entries ||= self.class.fgts_entries(company)
     end
 
     def payroll_records
-      @payroll_records ||= PayrollDashboard.records
+      @payroll_records ||= PayrollDashboard.records(company)
     end
 
     def discount_records

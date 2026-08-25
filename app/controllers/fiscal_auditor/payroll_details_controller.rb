@@ -5,7 +5,8 @@ module FiscalAuditor
     def show
       @result = PayrollComparisonDetail.new(
         client_code: params[:client_code],
-        period: params[:period]
+        period: params[:period],
+        company: current_fiscal_auditor_company
       ).result
       @return_path = return_path
     rescue ArgumentError

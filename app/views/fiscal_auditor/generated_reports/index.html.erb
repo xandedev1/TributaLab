@@ -1,0 +1,48 @@
+<% content_for :title, "Relatórios Gerados | Auditor Fiscal" %>
+
+<div class="fa-shell">
+  <%= render "fiscal_auditor/shared/sidebar", active: :generated_reports, status: @available ? "#{@reports.size} relatórios" : "Sem dados", detail: @available ? "Central de documentos" : "Nenhum relatório gerado" %>
+
+  <main class="fa-main">
+    <header class="fa-topbar">
+      <div>
+        <p class="fa-kicker">Central de documentos</p>
+        <h1>Relatórios Gerados</h1>
+      </div>
+      <div class="fa-topbar__meta">
+        <span class="fa-pill"><span class="fa-status-dot"></span> Documentos e evidências</span>
+        <span class="fa-avatar">XA</span>
+        <span><strong>Xande</strong><small>Auditor responsável</small></span>
+      </div>
+    </header>
+
+    <% if @available %>
+      <% report_path = ->(target) { target == :payroll ? fiscal_auditor_payroll_path : fiscal_auditor_root_path } %>
+      <section class="fa-reports-intro">
+        <p class="fa-kicker">Arquivo de relatórios</p>
+        <h2>Documentos gerados pela auditoria</h2>
+        <p>Cada relatório reúne as evidências geradas pela auditoria. Clique para abrir o relatório no módulo de origem.</p>
+      </section>
+
+      <section class="fa-reports-grid">
+        <% @reports.each do |report| %>
+          <%= link_to report_path.call(report[:target]), class: "fa-report-card" do %>
+            <header class="fa-report-card__head">
+              <span class="fa-report-card__icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3h9l5 5v13H6zM15 3v5h5"/><path d="M9 13h6M9 17h4"/></svg></span>
+              <div>
+                <h3><%= report[:name] %></h3>
+                <p><%= report[:description] %></p>
+              </div>
+            </header>
+            <div class="fa-report-card__body">
+              <p class="fa-report-card__empty">Abrir relatório</p>
+              <small><%= report[:entry] %></small>
+            </div>
+          <% end %>
+        <% end %>
+      </section>
+    <% else %>
+      <section class="fa-empty fa-empty--module"><div class="fa-empty__icon">RG</div><p class="fa-kicker">Sem dados</p><h2>Nenhum relatório gerado para esta empresa.</h2><p>Assim que os dados forem carregados, as informações aparecerão aqui.</p></section>
+    <% end %>
+  </main>
+</div>

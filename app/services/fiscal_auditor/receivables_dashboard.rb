@@ -118,7 +118,7 @@ module FiscalAuditor
     private
 
     def all_records
-      @all_records ||= self.class.records
+      @all_records ||= self.class.records(company)
     end
 
     def records_for_emission

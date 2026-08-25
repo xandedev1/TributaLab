@@ -5,11 +5,11 @@ module FiscalAuditor
   class SpreadsheetViewer
     PAGE_SIZE = 100
     SOURCE_PATHS = {
-      "billing" => -> { Dashboard.source_paths },
-      "receivables" => -> { ReceivablesDashboard.source_paths },
-      "payables" => -> { ExpensesDashboard.source_paths },
-      "payroll" => -> { PayrollDashboard.source_paths },
-      "payroll_charges" => -> { PayrollChargesDashboard.source_paths }
+      "billing" => ->(company) { Dashboard.source_paths(company) },
+      "receivables" => ->(company) { ReceivablesDashboard.source_paths(company) },
+      "payables" => ->(company) { ExpensesDashboard.source_paths(company) },
+      "payroll" => ->(company) { PayrollDashboard.source_paths(company) },
+      "payroll_charges" => ->(company) { PayrollChargesDashboard.source_paths(company) }
     }.freeze
     DEFAULT_SHEETS = {
       "receivables" => "APPA"
@@ -20,12 +20,13 @@ module FiscalAuditor
       :total_rows, :total_columns, :page, :total_pages, :highlighted_row
     )
 
-    def initialize(source_kind:, filename:, row: nil, sheet: nil, page: nil)
+    def initialize(source_kind:, filename:, row: nil, sheet: nil, page: nil, company: "appa")
       @source_kind = source_kind.to_s
       @filename = filename.to_s
       @highlighted_row = positive_integer(row)
       @requested_sheet = sheet.to_s.presence || DEFAULT_SHEETS[@source_kind]
       @requested_page = positive_integer(page)
+      @company = company
     end
 
     def result
@@ -68,7 +69,7 @@ module FiscalAuditor
     end
 
     def source_path
-      paths = SOURCE_PATHS.fetch(source_kind) { raise ArgumentError, "Origem de planilha inválida" }.call
+      paths = SOURCE_PATHS.fetch(source_kind) { raise ArgumentError, "Origem de planilha inválida" }.call(@company)
       paths.map { |path| Pathname(path) }.find { |path| path.basename.to_s == filename } ||
         raise(ArgumentError, "Planilha não autorizada")
     end

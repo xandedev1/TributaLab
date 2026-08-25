@@ -126,7 +126,7 @@ module FiscalAuditor
     private
 
     def all_records
-      @all_records ||= @expense_records || self.class.records
+      @all_records ||= @expense_records || self.class.records(company)
     end
 
     def records_for_period_and_source
@@ -148,7 +148,7 @@ module FiscalAuditor
     end
 
     def filtered_receivables
-      @filtered_receivables ||= (@receivable_records || ReceivablesDashboard.records).select do |record|
+      @filtered_receivables ||= (@receivable_records || ReceivablesDashboard.records(company)).select do |record|
         record.payment_date && period_selected?(record.payment_date)
       end
     end

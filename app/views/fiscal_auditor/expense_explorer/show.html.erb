@@ -38,7 +38,7 @@
         <footer class="fa-pagination"><span>Exibindo <strong><%= number_with_delimiter(page_start, delimiter: ".") %>–<%= number_with_delimiter([@dashboard.page * FiscalAuditor::ExpensesDashboard::PAGE_SIZE, @dashboard.records.size].min, delimiter: ".") %></strong> de <%= number_with_delimiter(@dashboard.records.size, delimiter: ".") %></span><div><% if @dashboard.page > 1 %><%= link_to "Anterior", request.query_parameters.merge(page: @dashboard.page - 1), rel: "prev" %><% end %><small>Página <%= @dashboard.page %> de <%= @dashboard.total_pages %></small><% if @dashboard.page < @dashboard.total_pages %><%= link_to "Próxima", request.query_parameters.merge(page: @dashboard.page + 1), rel: "next" %><% end %></div></footer>
       </section>
     <% else %>
-      <section class="fa-empty fa-empty--module"><div class="fa-empty__icon">ED</div><p class="fa-kicker">Fonte não localizada</p><h2>A base de contas a pagar ainda não está disponível.</h2><p>Adicione a planilha XLSB em <code>storage/private/fiscal_auditor/payables</code>.</p></section>
+      <section class="fa-empty fa-empty--module"><div class="fa-empty__icon">ED</div><p class="fa-kicker">Sem dados</p><h2>Nenhum dado de contas a pagar disponível.</h2><p>Assim que os dados forem carregados, as informações aparecerão aqui.</p></section>
     <% end %>
   </main>
 </div>

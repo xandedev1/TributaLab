@@ -28,6 +28,7 @@ Rails.application.routes.draw do
     get "devolucoes", to: "devolucao#show", as: :devolucoes
     get "comparativo", to: "comparativo#show", as: :comparativo
     get "lotacoes-tributarias", to: "tax_lotations#index", as: :tax_lotations
+    get "relatorios", to: "generated_reports#index", as: :generated_reports
     get "memoria-de-calculo/:module_name/:metric", to: "calculation_details#show", as: :calculation_detail
     get "visualizador-de-planilha", to: "spreadsheets#show", as: :spreadsheet
     get "login", to: "sessions#new", as: :login

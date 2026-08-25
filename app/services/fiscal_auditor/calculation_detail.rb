@@ -14,7 +14,7 @@ module FiscalAuditor
 
     attr_reader :module_name, :metric, :page
 
-    def initialize(module_name:, metric:, params: {}, page: nil, billing_records: nil, receivable_records: nil, expense_records: nil, payroll_records: nil)
+    def initialize(module_name:, metric:, params: {}, page: nil, billing_records: nil, receivable_records: nil, expense_records: nil, payroll_records: nil, company: "appa")
       @module_name = module_name.to_s
       @metric = metric.to_s
       @params = params
@@ -23,6 +23,7 @@ module FiscalAuditor
       @receivable_records = receivable_records
       @expense_records = expense_records
       @payroll_records = payroll_records
+      @company = company
     end
 
     def result
@@ -55,7 +56,8 @@ module FiscalAuditor
 
       dashboard = Dashboard.new(
         emission_month: params[:emission_month],
-        competence_months: params[:competence_months]
+        competence_months: params[:competence_months],
+        company: @company
       )
       dashboard.instance_variable_set(:@all_records, @billing_records) if @billing_records
       records = billing_records_for(dashboard)
@@ -104,7 +106,8 @@ module FiscalAuditor
 
       dashboard = ReceivablesDashboard.new(
         emission_month: params[:emission_month],
-        competence_months: params[:competence_months]
+        competence_months: params[:competence_months],
+        company: @company
       )
       dashboard.instance_variable_set(:@all_records, @receivable_records) if @receivable_records
       records = receivable_records_for(dashboard)
@@ -152,7 +155,8 @@ module FiscalAuditor
       dashboard = ExpensesDashboard.new(
         periods: params[:periods],
         expense_records: @expense_records,
-        receivable_records: @receivable_records
+        receivable_records: @receivable_records,
+        company: @company
       )
       rows, title, formula, value, components = expense_values(dashboard)
       build_result(title, formula, value, :money, rows, components)
@@ -164,7 +168,8 @@ module FiscalAuditor
       dashboard = PayrollDashboard.new(
         periods: params[:periods], client_code: params[:client_code],
         statuses: params[:statuses],
-        payroll_records: @payroll_records, billing_records: @billing_records
+        payroll_records: @payroll_records, billing_records: @billing_records,
+        company: @company
       )
 
       case metric
@@ -310,7 +315,8 @@ module FiscalAuditor
         billing_value_type: params[:billing_value_type],
         receivable_emission_periods: params[:receivable_emission_periods],
         receivable_competence_periods: params[:receivable_competence_periods],
-        receivable_value_type: params[:receivable_value_type]
+        receivable_value_type: params[:receivable_value_type],
+        company: @company
       ).tap do |dashboard|
         dashboard.instance_variable_set(:@all_billing_records, @billing_records) if @billing_records
         dashboard.instance_variable_set(:@all_receivable_records, @receivable_records) if @receivable_records

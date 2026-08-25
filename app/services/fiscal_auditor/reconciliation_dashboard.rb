@@ -9,8 +9,9 @@ module FiscalAuditor
     def initialize(
       billing_emission_periods: [], billing_competence_periods: [], billing_value_type: nil,
       receivable_emission_periods: [], receivable_competence_periods: [], receivable_value_type: nil,
-      page: nil
+      page: nil, company: "appa"
     )
+      @company = company
       @requested_billing_emission_periods = normalize_periods(billing_emission_periods)
       @requested_billing_competence_periods = normalize_periods(billing_competence_periods)
       @requested_receivable_emission_periods = normalize_periods(receivable_emission_periods)
@@ -153,11 +154,11 @@ module FiscalAuditor
     end
 
     def all_billing_records
-      @all_billing_records ||= Dashboard.records
+      @all_billing_records ||= Dashboard.records(@company)
     end
 
     def all_receivable_records
-      @all_receivable_records ||= ReceivablesDashboard.records
+      @all_receivable_records ||= ReceivablesDashboard.records(@company)
     end
 
     def filtered_records(source_records, emission_periods:, competence_periods:)

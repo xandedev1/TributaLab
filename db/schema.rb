@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_08_06_150000) do
+ActiveRecord::Schema[8.1].define(version: 2026_08_25_120000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -187,6 +187,20 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_06_150000) do
     t.datetime "updated_at", null: false
     t.string "username", null: false
     t.index ["username"], name: "index_fiscal_auditor_users_on_username", unique: true
+  end
+
+  create_table "fiscal_companies", force: :cascade do |t|
+    t.string "cnpj", limit: 14, null: false
+    t.datetime "created_at", null: false
+    t.string "legal_name", null: false
+    t.jsonb "settings", default: {}, null: false
+    t.string "slug", null: false
+    t.string "status", default: "active", null: false
+    t.string "trade_name"
+    t.datetime "updated_at", null: false
+    t.index ["cnpj"], name: "index_fiscal_companies_on_cnpj", unique: true
+    t.index ["slug"], name: "index_fiscal_companies_on_slug", unique: true
+    t.index ["status"], name: "index_fiscal_companies_on_status"
   end
 
   create_table "inss_payroll_employees", force: :cascade do |t|
