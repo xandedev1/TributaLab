@@ -1,10 +1,17 @@
 <% content_for :title, "Acesso | Auditor Fiscal" %>
 
 <main class="fa-login">
-  <section class="fa-login__story" aria-label="Real Audit Tech — Auditor Fiscal">
+  <section class="fa-login__story fa-login__story--hero" aria-label="Real Audit Tech — Auditor Fiscal">
+    <span class="fa-hero-bg" style="--fa-bg-hero: url('/originkit/hero-24/bg.png')" aria-hidden="true"></span>
     <div class="fa-login__brand">
       <%= image_tag "real-audit-tech-logo.png", alt: "Real Audit Tech", class: "fa-login__logo" %>
       <span class="fa-kicker fa-kicker--light">Núcleo de inteligência fiscal</span>
+    </div>
+
+    <div class="fa-hero-stage" aria-hidden="true">
+      <span class="fa-hero-glow"></span>
+      <canvas class="fa-hero-globe" data-fa-globe width="460" height="460"></canvas>
+      <img class="fa-hero-hands" src="/originkit/hero-24/hands.png" alt="" loading="eager" decoding="async">
     </div>
 
     <div class="fa-login__headline">
@@ -50,3 +57,74 @@
     </div>
   </section>
 </main>
+
+<script>
+  (() => {
+    const canvas = document.querySelector("[data-fa-globe]");
+    if (!canvas || canvas.dataset.faInit) return;
+    canvas.dataset.faInit = "1";
+    const ctx = canvas.getContext("2d");
+    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    const draw = () => {
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      const size = canvas.clientWidth || 460;
+      canvas.width = size * dpr;
+      canvas.height = size * dpr;
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      return size;
+    };
+    let size = draw();
+
+    const N = 640;
+    const pts = [];
+    for (let i = 0; i < N; i++) {
+      const y = 1 - (i / (N - 1)) * 2;
+      const r = Math.sqrt(Math.max(0, 1 - y * y));
+      const phi = i * Math.PI * (3 - Math.sqrt(5));
+      pts.push([Math.cos(phi) * r, y, Math.sin(phi) * r]);
+    }
+    const markers = [[0.32, 0.18, 0.9], [-0.6, 0.5, 0.6], [0.1, -0.7, 0.7]];
+    const tilt = -0.42, cosT = Math.cos(tilt), sinT = Math.sin(tilt);
+    let rot = 0.6;
+
+    const render = () => {
+      const cx = size / 2, cy = size / 2, R = size * 0.37;
+      ctx.clearRect(0, 0, size, size);
+      const cosR = Math.cos(rot), sinR = Math.sin(rot);
+      const project = (p) => {
+        const x = p[0] * cosR - p[2] * sinR;
+        const z = p[0] * sinR + p[2] * cosR;
+        const y = p[1] * cosT - z * sinT;
+        const zz = p[1] * sinT + z * cosT;
+        return [x, y, zz];
+      };
+      const drawn = pts.map(project).sort((a, b) => a[2] - b[2]);
+      for (const [x, y, z] of drawn) {
+        const depth = (z + 1) / 2;
+        ctx.beginPath();
+        ctx.arc(cx + x * R, cy + y * R, 0.5 + depth * 1.7, 0, Math.PI * 2);
+        ctx.fillStyle = "rgba(155,200,181," + (0.12 + depth * 0.7).toFixed(3) + ")";
+        ctx.fill();
+      }
+      for (const m of markers.map(project)) {
+        if (m[2] < -0.1) continue;
+        const depth = (m[2] + 1) / 2;
+        ctx.beginPath();
+        ctx.arc(cx + m[0] * R, cy + m[1] * R, 2 + depth * 2.4, 0, Math.PI * 2);
+        ctx.fillStyle = "rgba(214,110,84," + (0.5 + depth * 0.5).toFixed(3) + ")";
+        ctx.fill();
+      }
+      if (!reduce) {
+        rot += 0.0028;
+        requestAnimationFrame(render);
+      }
+    };
+    render();
+    let t;
+    window.addEventListener("resize", () => {
+      clearTimeout(t);
+      t = setTimeout(() => { size = draw(); if (reduce) render(); }, 150);
+    });
+  })();
+</script>

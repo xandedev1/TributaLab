@@ -68,6 +68,16 @@ svg { fill: none; stroke: currentColor; stroke-linecap: round; stroke-linejoin: 
 .fa-login__security { display: flex; align-items: center; justify-content: center; gap: 8px; margin: 28px 0 0; color: var(--fa-muted); font-size: 11px; }
 .fa-login__security svg { width: 17px; color: var(--fa-mint-dark); }
 
+/* Login hero — planeta nas mãos (Originkit Hero 24 adaptado) */
+.fa-login__story--hero { background: var(--fa-ink-strong); }
+.fa-login__story--hero .fa-hero-bg { position: absolute; z-index: -1; inset: 0; background: radial-gradient(125% 88% at 50% 4%, #10393b 0%, rgba(12, 41, 42, 0) 58%), var(--fa-bg-hero, none) center / cover no-repeat; }
+.fa-hero-stage { position: relative; z-index: 1; display: grid; flex: 1 1 auto; place-items: center; width: 100%; min-height: clamp(240px, 34vh, 420px); margin: 10px 0 2px; }
+.fa-hero-glow { position: absolute; z-index: 1; width: min(64%, 360px); aspect-ratio: 1; border-radius: 50%; background: radial-gradient(circle, rgba(155, 200, 181, 0.32), rgba(155, 200, 181, 0) 66%); filter: blur(4px); transform: translateY(-9%); animation: fa-hero-pulse 6s ease-in-out infinite; }
+.fa-hero-globe { position: relative; z-index: 2; width: min(68%, 380px); height: auto; aspect-ratio: 1; transform: translateY(-9%); }
+.fa-hero-hands { position: absolute; z-index: 3; bottom: -6%; left: 50%; width: min(116%, 660px); transform: translateX(-50%); pointer-events: none; filter: drop-shadow(0 0 30px rgba(76, 140, 120, 0.28)); -webkit-mask-image: linear-gradient(to bottom, black 58%, transparent 97%); mask-image: linear-gradient(to bottom, black 58%, transparent 97%); }
+@keyframes fa-hero-pulse { 0%, 100% { opacity: 0.7; transform: translateY(-9%) scale(1); } 50% { opacity: 1; transform: translateY(-9%) scale(1.06); } }
+@media (prefers-reduced-motion: reduce) { .fa-hero-glow { animation: none; } }
+
 /* Shell */
 .fa-shell { min-height: 100vh; background-color: var(--fa-paper); background-image: linear-gradient(rgba(23, 58, 59, .025) 1px, transparent 1px); background-size: 100% 48px; }
 .fa-sidebar { position: fixed; z-index: 20; inset: 0 auto 0 0; display: flex; width: 248px; flex-direction: column; border-right: 1px solid rgba(255,255,255,.08); background: var(--fa-ink-strong); padding: 34px 24px 25px; color: white; }
