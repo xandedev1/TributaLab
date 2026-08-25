@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_08_25_120000) do
+ActiveRecord::Schema[8.1].define(version: 2026_08_25_130002) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -189,6 +189,52 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_25_120000) do
     t.index ["username"], name: "index_fiscal_auditor_users_on_username", unique: true
   end
 
+  create_table "fiscal_billings", force: :cascade do |t|
+    t.string "client_cnpj", limit: 14
+    t.string "client_code"
+    t.string "client_name"
+    t.decimal "cofins", precision: 15, scale: 2, default: "0.0", null: false
+    t.date "competencia"
+    t.virtual "competencia_month", type: :integer, as: "EXTRACT(month FROM competencia)", stored: true
+    t.virtual "competencia_year", type: :integer, as: "EXTRACT(year FROM competencia)", stored: true
+    t.datetime "created_at", null: false
+    t.decimal "csll", precision: 15, scale: 2, default: "0.0", null: false
+    t.bigint "fiscal_client_id"
+    t.bigint "fiscal_company_id", null: false
+    t.decimal "gross_amount", precision: 15, scale: 2, default: "0.0", null: false
+    t.decimal "inss", precision: 15, scale: 2, default: "0.0", null: false
+    t.string "invoice_number"
+    t.decimal "irrf", precision: 15, scale: 2, default: "0.0", null: false
+    t.decimal "iss", precision: 15, scale: 2, default: "0.0", null: false
+    t.virtual "issued_month", type: :integer, as: "EXTRACT(month FROM issued_on)", stored: true
+    t.date "issued_on"
+    t.virtual "issued_year", type: :integer, as: "EXTRACT(year FROM issued_on)", stored: true
+    t.decimal "net_amount", precision: 15, scale: 2, default: "0.0", null: false
+    t.decimal "pis", precision: 15, scale: 2, default: "0.0", null: false
+    t.string "rps"
+    t.string "source_file"
+    t.integer "source_row"
+    t.string "status"
+    t.datetime "updated_at", null: false
+    t.index ["fiscal_client_id"], name: "index_fiscal_billings_on_fiscal_client_id"
+    t.index ["fiscal_company_id", "client_code", "invoice_number"], name: "idx_fiscal_billings_cross_key"
+    t.index ["fiscal_company_id", "competencia_year", "competencia_month"], name: "idx_fiscal_billings_competencia"
+    t.index ["fiscal_company_id", "issued_year", "issued_month"], name: "idx_fiscal_billings_issued"
+    t.index ["fiscal_company_id"], name: "index_fiscal_billings_on_fiscal_company_id"
+  end
+
+  create_table "fiscal_clients", force: :cascade do |t|
+    t.string "cnpj", limit: 14
+    t.string "code", null: false
+    t.datetime "created_at", null: false
+    t.bigint "fiscal_company_id", null: false
+    t.string "name"
+    t.datetime "updated_at", null: false
+    t.index ["fiscal_company_id", "code"], name: "idx_fiscal_clients_company_code", unique: true
+    t.index ["fiscal_company_id", "name"], name: "idx_fiscal_clients_company_name"
+    t.index ["fiscal_company_id"], name: "index_fiscal_clients_on_fiscal_company_id"
+  end
+
   create_table "fiscal_companies", force: :cascade do |t|
     t.string "cnpj", limit: 14, null: false
     t.datetime "created_at", null: false
@@ -201,6 +247,184 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_25_120000) do
     t.index ["cnpj"], name: "index_fiscal_companies_on_cnpj", unique: true
     t.index ["slug"], name: "index_fiscal_companies_on_slug", unique: true
     t.index ["status"], name: "index_fiscal_companies_on_status"
+  end
+
+  create_table "fiscal_devolucoes", force: :cascade do |t|
+    t.decimal "amount", precision: 15, scale: 2, default: "0.0", null: false
+    t.datetime "created_at", null: false
+    t.bigint "fiscal_company_id", null: false
+    t.virtual "issued_month", type: :integer, as: "EXTRACT(month FROM issued_on)", stored: true
+    t.date "issued_on"
+    t.virtual "issued_year", type: :integer, as: "EXTRACT(year FROM issued_on)", stored: true
+    t.string "num_nf"
+    t.integer "page"
+    t.string "source_file"
+    t.datetime "updated_at", null: false
+    t.index ["fiscal_company_id", "issued_year", "issued_month"], name: "idx_fiscal_devolucoes_scope"
+    t.index ["fiscal_company_id"], name: "index_fiscal_devolucoes_on_fiscal_company_id"
+  end
+
+  create_table "fiscal_efd_records", force: :cascade do |t|
+    t.decimal "amount", precision: 15, scale: 2, default: "0.0", null: false
+    t.string "codigo"
+    t.datetime "created_at", null: false
+    t.string "doc_type"
+    t.bigint "fiscal_company_id", null: false
+    t.virtual "issued_month", type: :integer, as: "EXTRACT(month FROM issued_on)", stored: true
+    t.date "issued_on"
+    t.virtual "issued_year", type: :integer, as: "EXTRACT(year FROM issued_on)", stored: true
+    t.string "num_nf"
+    t.integer "page"
+    t.string "source_file"
+    t.datetime "updated_at", null: false
+    t.index ["fiscal_company_id", "doc_type", "issued_year", "issued_month"], name: "idx_fiscal_efd_scope"
+    t.index ["fiscal_company_id"], name: "index_fiscal_efd_records_on_fiscal_company_id"
+  end
+
+  create_table "fiscal_linked_account_balances", force: :cascade do |t|
+    t.decimal "balance", precision: 15, scale: 2, default: "0.0", null: false
+    t.datetime "created_at", null: false
+    t.bigint "fiscal_company_id", null: false
+    t.bigint "fiscal_linked_account_id", null: false
+    t.date "reference", null: false
+    t.virtual "reference_month", type: :integer, as: "EXTRACT(month FROM reference)", stored: true
+    t.virtual "reference_year", type: :integer, as: "EXTRACT(year FROM reference)", stored: true
+    t.datetime "updated_at", null: false
+    t.index ["fiscal_company_id"], name: "index_fiscal_linked_account_balances_on_fiscal_company_id"
+    t.index ["fiscal_linked_account_id", "reference"], name: "idx_fiscal_lab_account_reference", unique: true
+    t.index ["fiscal_linked_account_id"], name: "idx_on_fiscal_linked_account_id_f9c82c54fd"
+  end
+
+  create_table "fiscal_linked_accounts", force: :cascade do |t|
+    t.string "banco"
+    t.string "client_code"
+    t.string "client_name"
+    t.string "conta"
+    t.string "contrato"
+    t.datetime "created_at", null: false
+    t.bigint "fiscal_company_id", null: false
+    t.string "obs"
+    t.string "status"
+    t.string "uf"
+    t.datetime "updated_at", null: false
+    t.index ["fiscal_company_id", "status"], name: "idx_fiscal_linked_accounts_scope"
+    t.index ["fiscal_company_id"], name: "index_fiscal_linked_accounts_on_fiscal_company_id"
+  end
+
+  create_table "fiscal_payables", force: :cascade do |t|
+    t.decimal "amount", precision: 15, scale: 2, default: "0.0", null: false
+    t.string "client"
+    t.boolean "competence_expense", default: false, null: false
+    t.datetime "created_at", null: false
+    t.string "description"
+    t.string "document"
+    t.date "due_date"
+    t.virtual "due_month", type: :integer, as: "EXTRACT(month FROM due_date)", stored: true
+    t.virtual "due_year", type: :integer, as: "EXTRACT(year FROM due_date)", stored: true
+    t.bigint "fiscal_company_id", null: false
+    t.string "identification"
+    t.virtual "paid_month", type: :integer, as: "EXTRACT(month FROM payment_date)", stored: true
+    t.virtual "paid_year", type: :integer, as: "EXTRACT(year FROM payment_date)", stored: true
+    t.string "party"
+    t.date "payment_date"
+    t.string "source_file"
+    t.integer "source_row"
+    t.string "source_sheet"
+    t.datetime "updated_at", null: false
+    t.index ["fiscal_company_id", "paid_year", "paid_month"], name: "idx_fiscal_payables_paid"
+    t.index ["fiscal_company_id"], name: "index_fiscal_payables_on_fiscal_company_id"
+  end
+
+  create_table "fiscal_payroll_charges", force: :cascade do |t|
+    t.decimal "amount", precision: 15, scale: 2, default: "0.0", null: false
+    t.string "code"
+    t.date "competencia"
+    t.virtual "competencia_month", type: :integer, as: "EXTRACT(month FROM competencia)", stored: true
+    t.virtual "competencia_year", type: :integer, as: "EXTRACT(year FROM competencia)", stored: true
+    t.datetime "created_at", null: false
+    t.string "description"
+    t.bigint "fiscal_company_id", null: false
+    t.string "formula"
+    t.string "kind"
+    t.string "source_column"
+    t.string "source_file"
+    t.integer "source_row"
+    t.datetime "updated_at", null: false
+    t.index ["fiscal_company_id", "kind", "competencia_year", "competencia_month"], name: "idx_fiscal_payroll_charges_scope"
+    t.index ["fiscal_company_id"], name: "index_fiscal_payroll_charges_on_fiscal_company_id"
+  end
+
+  create_table "fiscal_payroll_entries", force: :cascade do |t|
+    t.decimal "amount", precision: 15, scale: 2, default: "0.0", null: false
+    t.string "client_code"
+    t.string "client_name"
+    t.date "competencia"
+    t.virtual "competencia_month", type: :integer, as: "EXTRACT(month FROM competencia)", stored: true
+    t.virtual "competencia_year", type: :integer, as: "EXTRACT(year FROM competencia)", stored: true
+    t.datetime "created_at", null: false
+    t.string "employer_code"
+    t.string "event_code"
+    t.string "event_description"
+    t.string "event_type"
+    t.bigint "fiscal_client_id"
+    t.bigint "fiscal_company_id", null: false
+    t.string "source_file"
+    t.integer "source_row"
+    t.datetime "updated_at", null: false
+    t.index ["fiscal_client_id"], name: "index_fiscal_payroll_entries_on_fiscal_client_id"
+    t.index ["fiscal_company_id", "client_code", "competencia_year", "competencia_month"], name: "idx_fiscal_payroll_scope"
+    t.index ["fiscal_company_id"], name: "index_fiscal_payroll_entries_on_fiscal_company_id"
+  end
+
+  create_table "fiscal_razao_records", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.decimal "credit", precision: 15, scale: 2, default: "0.0", null: false
+    t.bigint "fiscal_company_id", null: false
+    t.virtual "issued_month", type: :integer, as: "EXTRACT(month FROM issued_on)", stored: true
+    t.date "issued_on"
+    t.virtual "issued_year", type: :integer, as: "EXTRACT(year FROM issued_on)", stored: true
+    t.string "kind"
+    t.string "num_nf"
+    t.integer "page"
+    t.string "source_file"
+    t.datetime "updated_at", null: false
+    t.index ["fiscal_company_id", "issued_year", "issued_month"], name: "idx_fiscal_razao_scope"
+    t.index ["fiscal_company_id"], name: "index_fiscal_razao_records_on_fiscal_company_id"
+  end
+
+  create_table "fiscal_receivables", force: :cascade do |t|
+    t.string "bank"
+    t.string "client_code"
+    t.string "client_name"
+    t.date "competencia"
+    t.virtual "competencia_month", type: :integer, as: "EXTRACT(month FROM competencia)", stored: true
+    t.virtual "competencia_year", type: :integer, as: "EXTRACT(year FROM competencia)", stored: true
+    t.decimal "contingency", precision: 15, scale: 2, default: "0.0", null: false
+    t.string "cost_center"
+    t.datetime "created_at", null: false
+    t.bigint "fiscal_client_id"
+    t.bigint "fiscal_company_id", null: false
+    t.decimal "gross_amount", precision: 15, scale: 2, default: "0.0", null: false
+    t.string "invoice_number"
+    t.virtual "issued_month", type: :integer, as: "EXTRACT(month FROM issued_on)", stored: true
+    t.date "issued_on"
+    t.virtual "issued_year", type: :integer, as: "EXTRACT(year FROM issued_on)", stored: true
+    t.decimal "outstanding", precision: 15, scale: 2, default: "0.0", null: false
+    t.decimal "paid_amount", precision: 15, scale: 2, default: "0.0", null: false
+    t.virtual "paid_month", type: :integer, as: "EXTRACT(month FROM payment_date)", stored: true
+    t.virtual "paid_year", type: :integer, as: "EXTRACT(year FROM payment_date)", stored: true
+    t.date "payment_date"
+    t.string "reconciliation_status"
+    t.string "rps"
+    t.string "situation"
+    t.string "source_file"
+    t.integer "source_row"
+    t.datetime "updated_at", null: false
+    t.index ["fiscal_client_id"], name: "index_fiscal_receivables_on_fiscal_client_id"
+    t.index ["fiscal_company_id", "client_code", "invoice_number"], name: "idx_fiscal_receivables_cross_key"
+    t.index ["fiscal_company_id", "competencia_year", "competencia_month"], name: "idx_fiscal_receivables_competencia"
+    t.index ["fiscal_company_id", "paid_year", "paid_month"], name: "idx_fiscal_receivables_paid"
+    t.index ["fiscal_company_id"], name: "index_fiscal_receivables_on_fiscal_company_id"
   end
 
   create_table "inss_payroll_employees", force: :cascade do |t|
@@ -718,6 +942,21 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_25_120000) do
   add_foreign_key "credit_categories", "tax_modules"
   add_foreign_key "esocial_access_logs", "esocial_sync_runs"
   add_foreign_key "esocial_company_authorizations", "esocial_certificates"
+  add_foreign_key "fiscal_billings", "fiscal_clients"
+  add_foreign_key "fiscal_billings", "fiscal_companies"
+  add_foreign_key "fiscal_clients", "fiscal_companies"
+  add_foreign_key "fiscal_devolucoes", "fiscal_companies"
+  add_foreign_key "fiscal_efd_records", "fiscal_companies"
+  add_foreign_key "fiscal_linked_account_balances", "fiscal_companies"
+  add_foreign_key "fiscal_linked_account_balances", "fiscal_linked_accounts"
+  add_foreign_key "fiscal_linked_accounts", "fiscal_companies"
+  add_foreign_key "fiscal_payables", "fiscal_companies"
+  add_foreign_key "fiscal_payroll_charges", "fiscal_companies"
+  add_foreign_key "fiscal_payroll_entries", "fiscal_clients"
+  add_foreign_key "fiscal_payroll_entries", "fiscal_companies"
+  add_foreign_key "fiscal_razao_records", "fiscal_companies"
+  add_foreign_key "fiscal_receivables", "fiscal_clients"
+  add_foreign_key "fiscal_receivables", "fiscal_companies"
   add_foreign_key "inss_payroll_employees", "inss_payroll_imports"
   add_foreign_key "inss_payroll_entries", "inss_payroll_employees"
   add_foreign_key "operations", "tax_modules"
