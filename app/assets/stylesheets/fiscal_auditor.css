@@ -57,8 +57,8 @@ svg { fill: none; stroke: currentColor; stroke-linecap: round; stroke-linejoin: 
 @keyframes fa-signal { to { height: 15%; opacity: .55; } }
 .fa-login__access { display: grid; place-items: center; min-height: 100vh; padding: 42px; background: var(--fa-paper); }
 .fa-login__form-wrap { width: min(100%, 430px); animation: fa-rise 650ms ease both; }
-.fa-login__mark { display: grid; width: 54px; height: 54px; margin-bottom: 46px; place-items: center; background: var(--fa-coral); color: white; font-family: "Barlow Condensed", sans-serif; font-size: 22px; font-weight: 700; }
-.fa-login__form-wrap h2 { margin: 0 0 10px; color: var(--fa-ink-strong); font-family: "Barlow Condensed", sans-serif; font-size: 48px; font-weight: 600; letter-spacing: 0; line-height: 1; text-transform: uppercase; }
+.fa-login__badge { display: block; width: 62px; height: 62px; margin-bottom: 28px; border-radius: 15px; box-shadow: 0 12px 30px rgba(12, 41, 42, 0.22); }
+.fa-login__form-wrap h2 { margin: 0 0 10px; color: var(--fa-ink-strong); font-family: "DM Sans", sans-serif; font-size: 35px; font-weight: 700; letter-spacing: -0.025em; line-height: 1.06; text-transform: none; }
 .fa-form { display: grid; gap: 21px; margin-top: 38px; }
 .fa-field { display: grid; gap: 8px; color: var(--fa-ink-soft); font-size: 12px; font-weight: 700; text-transform: uppercase; }
 .fa-input-wrap { display: flex; min-height: 54px; align-items: center; gap: 12px; border: 1px solid var(--fa-line); background: var(--fa-white); padding: 0 15px; transition: border 180ms ease, box-shadow 180ms ease; }
