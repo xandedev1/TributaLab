@@ -1,8 +1,8 @@
-# TributaLab
+# Real Audit Tech
 
-TributaLab e uma plataforma Rails para inteligencia tributaria operacional. O primeiro modulo e **Reforma Tributaria Imobiliaria**, com PostgreSQL, Hotwire e Tailwind.
+Real Audit Tech é uma plataforma Rails de **auditoria fiscal multiempresa**. O produto cruza faturamento, contas a receber, folha e obrigações fiscais de cada empresa — nota a nota — sobre PostgreSQL, Hotwire e Tailwind.
 
-O briefing completo da criacao do projeto esta preservado em `docs/00_brief/README_INICIAL_TRIBUTALAB.md`. A coordenacao por etapas fica em `docs/03_comunicacao/`.
+> Observação: o diretório do repositório e o módulo Rails interno ainda usam o nome legado `TributaLab`/`tributa_lab` (não alterar — é infraestrutura). A marca do produto é **Real Audit Tech**.
 
 ## Setup local
 
