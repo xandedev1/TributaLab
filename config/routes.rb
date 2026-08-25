@@ -12,7 +12,7 @@ Rails.application.routes.draw do
   # O app é exclusivamente o Auditor Fiscal, servido na raiz do domínio.
   # Helpers permanecem `fiscal_auditor_*`; as URLs ficam sem o prefixo /auditor-fiscal.
   namespace :fiscal_auditor, path: "" do
-    root "dashboard#show"
+    get "painel", to: "dashboard#show", as: :root
     get "contas-a-receber", to: "receivables#show", as: :receivables
     get "cruzamento", to: "reconciliation#show", as: :reconciliation
     get "folha", to: "payroll#show", as: :payroll
@@ -36,5 +36,6 @@ Rails.application.routes.draw do
     resources :users, path: "usuarios", except: %i[show]
   end
 
-  root "fiscal_auditor/dashboard#show"
+  # Landing page pública (Real Audit Tech) na raiz do domínio.
+  root "marketing#home"
 end
