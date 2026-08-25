@@ -21,6 +21,7 @@ namespace :fiscal do
       cid = company.id
       puts "== Empresa #{slug} (##{cid}) =="
 
+      # nucleo (parsers Ruby puros) - transacional
       ActiveRecord::Base.transaction do
         # limpeza idempotente (ordem respeita FKs)
         Fiscal::LinkedAccountBalance.for_company(cid).delete_all
@@ -99,14 +100,22 @@ namespace :fiscal do
             source_file: e.source, source_row: e.source_row, created_at: now, updated_at: now }
         end
         Fiscal::PayrollCharge.insert_all(charge_rows) if charge_rows.any?
+      end
 
+      # conta vinculada (extrator Python) - resiliente
+      begin
         FiscalAuditor::LinkedAccountsDashboard.records(slug).each do |r|
           la = Fiscal::LinkedAccount.create!(fiscal_company_id: cid, client_code: r.codigo, client_name: r.cliente,
             uf: r.uf, contrato: r.contrato, banco: r.banco, conta: r.conta, status: r.status, obs: r.obs)
           Fiscal::LinkedAccountBalance.create!(fiscal_company_id: cid, fiscal_linked_account_id: la.id, reference: Date.new(2026, 1, 1), balance: r.saldo_jan) if r.saldo_jan
           Fiscal::LinkedAccountBalance.create!(fiscal_company_id: cid, fiscal_linked_account_id: la.id, reference: Date.new(2026, 5, 1), balance: r.saldo_mai) if r.saldo_mai
         end
+      rescue => e
+        puts "  [aviso] conta vinculada pulada: #{e.class}: #{e.message}"
+      end
 
+      # EFD / Razao / Devolucao (extrator Python) - resiliente
+      begin
         efd = FiscalAuditor::EfdRazaoDashboard.records(slug)
         efd_rows = []
         (efd[:a100] || []).each { |r| efd_rows << { fiscal_company_id: cid, doc_type: "a100", codigo: r.codigo, num_nf: r.num_nf, issued_on: to_date.call(r.data_emissao), amount: r.valor_nf, source_file: r.source_file, page: r.page, created_at: now, updated_at: now } }
@@ -122,6 +131,8 @@ namespace :fiscal do
           { fiscal_company_id: cid, num_nf: r.num_nf, issued_on: to_date.call(r.data_emissao), amount: r.valor, source_file: r.source_file, page: r.page, created_at: now, updated_at: now }
         end
         Fiscal::Devolucao.insert_all(dev_rows) if dev_rows.any?
+      rescue => e
+        puts "  [aviso] efd/razao/devolucao pulada: #{e.class}: #{e.message}"
       end
 
       puts "   clientes=#{Fiscal::Client.for_company(cid).count} faturamento=#{Fiscal::Billing.for_company(cid).count} " \
