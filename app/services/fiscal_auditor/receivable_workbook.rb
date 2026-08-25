@@ -41,7 +41,8 @@ module FiscalAuditor
       output, error, status = Open3.capture3(python_executable, extractor_path.to_s, path.to_s)
       raise ArgumentError, "Could not read #{path.basename}: #{error.presence || output}" unless status.success?
 
-      normalized_output = output.force_encoding(Encoding::Windows_1252).encode(Encoding::UTF_8)
+      normalized_output = output.dup.force_encoding(Encoding::UTF_8)
+      normalized_output = output.force_encoding(Encoding::Windows_1252).encode(Encoding::UTF_8, invalid: :replace, undef: :replace) unless normalized_output.valid_encoding?
       JSON.parse(normalized_output).map { |attributes| build_record(attributes) }
     end
 
