@@ -9,12 +9,9 @@ Rails.application.routes.draw do
   # get "manifest" => "rails/pwa#manifest", as: :pwa_manifest
   # get "service-worker" => "rails/pwa#service_worker", as: :pwa_service_worker
 
-  # Defines the root path route ("/")
-  root "fiscal_auditor/dashboard#show"
-
-  get "legal_basis", to: "legal_basis#index", as: :legal_basis
-
-  namespace :fiscal_auditor, path: "auditor-fiscal" do
+  # O app é exclusivamente o Auditor Fiscal, servido na raiz do domínio.
+  # Helpers permanecem `fiscal_auditor_*`; as URLs ficam sem o prefixo /auditor-fiscal.
+  namespace :fiscal_auditor, path: "" do
     root "dashboard#show"
     get "contas-a-receber", to: "receivables#show", as: :receivables
     get "cruzamento", to: "reconciliation#show", as: :reconciliation
@@ -39,51 +36,5 @@ Rails.application.routes.draw do
     resources :users, path: "usuarios", except: %i[show]
   end
 
-  namespace :rubric_recovery do
-    get "radar", to: "radar#show", as: :radar
-    get "adequacy", to: "adequacy#index", as: :adequacy
-    get "adequacy/:rubric_event_id", to: "adequacy#show", as: :adequacy_event
-    post "adequacy/:rubric_event_id/assignments", to: "adequacy_assignments#create", as: :adequacy_assignments
-    get "rubrics_natures", to: "rubrics_natures#index", as: :rubrics_natures
-    patch "rubrics_natures/:assignment_id", to: "rubrics_natures#update", as: :rubrics_nature
-  end
-
-  # TEMP: Upload endpoint for fiscal data (remove after use)
-  post "upload-fiscal-data", to: "fiscal_auditor/upload#create"
-
-  namespace :rubricas_cte do
-    root "chain_walk#index"
-    get "dashboard", to: "dashboard#index", as: :dashboard
-    get "chain_walk", to: "chain_walk#index", as: :chain_walk
-  end
-
-  namespace :esocial do
-    get "certificado", to: "preflight#index", as: :certificado
-    get "preflight", to: redirect("/esocial/certificado"), as: :preflight
-    resources :certificates, only: [:create, :destroy] do
-      post "test_connection", on: :member
-    end
-    resources :company_authorizations, only: [:create, :destroy]
-    get "sync", to: "sync#index", as: :sync
-    post "sync/runs", to: "sync_runs#create", as: :sync_runs
-    get "tabelas_empresa", to: "company_tables#index", as: :company_tables
-    get "tabelas_empresa/s1005.xlsx", to: "company_tables#s1005_xlsx", as: :company_tables_s1005_xlsx
-    get "tabelas_empresa/s1005/xml", to: "company_tables#s1005_xml", as: :company_tables_s1005_xml
-    get "tabelas_empresa/s1020.xlsx", to: "company_tables#s1020_xlsx", as: :company_tables_s1020_xlsx
-    get "tabelas_empresa/s1020/xml", to: "company_tables#s1020_xml", as: :company_tables_s1020_xml
-    get "lotacoes", to: "lotacoes#index", as: :lotacoes
-    get "estabelecimentos_obras", to: "estabelecimentos_obras#index", as: :estabelecimentos_obras
-  end
-
-  namespace :inss do
-    root "dashboard#index"
-    get "dashboard", to: "dashboard#index", as: :dashboard
-    resources :imports, only: [:index, :new, :create, :destroy]
-    resources :employees, only: [:show]
-  end
-
-  resources :case_files, only: [:index, :new, :create, :show]
-  resources :simulations, only: [:index, :new, :create, :show]
-  resources :tax_parameters, only: [:index]
-  resources :assumptions, only: [:index]
+  root "fiscal_auditor/dashboard#show"
 end
