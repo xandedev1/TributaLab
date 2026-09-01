@@ -1,0 +1,76 @@
+<% content_for :title, "Uniformes e material | Auditor Fiscal" %>
+<% money = ->(value) { number_to_currency(value, unit: "R$ ", separator: ",", delimiter: ".") } %>
+<% totals = @dashboard.totals %>
+<% grand_total = totals[:total].to_d %>
+<% share = ->(value) { grand_total.zero? ? 0 : (value.to_d / grand_total * 100).round(1) } %>
+
+<div class="fa-shell" data-controller="fiscal-dashboard" data-action="click@window->fiscal-dashboard#closePeriodSelectors">
+  <%= render "fiscal_auditor/shared/sidebar", active: :uniforms, status: "Despesas classificadas", detail: "Uniformes e limpeza 2025" %>
+
+  <main class="fa-main">
+    <header class="fa-topbar">
+      <div><p class="fa-kicker">Despesas de material vinculadas ao contrato</p><h1>Uniformes e material de limpeza</h1></div>
+      <div class="fa-topbar__meta"><span class="fa-pill"><span class="fa-status-dot"></span> Fontes locais conciliadas</span><span class="fa-avatar">XA</span><span><strong>Xande</strong><small>Auditor responsável</small></span></div>
+    </header>
+
+    <nav class="fa-payroll-tabs" aria-label="Visões da folha">
+      <%= link_to "Visão da folha", fiscal_auditor_payroll_path %>
+      <%= link_to "Descontos e encargos", fiscal_auditor_payroll_charges_path %>
+      <%= link_to "Uniformes e material", fiscal_auditor_uniforms_path, class: "fa-payroll-tab--active", aria: { current: "page" } %>
+    </nav>
+
+    <% if @dashboard.available? %>
+      <section class="fa-charge-kpis" aria-label="Totais das despesas de material">
+        <article><span>Material de limpeza</span><strong><%= money.call(totals[:cleaning]) %></strong><small>Compras de produtos de limpeza</small></article>
+        <article><span>Uniformes</span><strong><%= money.call(totals[:uniforms]) %></strong><small>Uniformes e EPIs</small></article>
+        <article class="fa-charge-kpi--result"><span>Total geral</span><strong><%= money.call(totals[:total]) %></strong><small>Valores pagos em 2025</small></article>
+        <article><span>Alocado a empresa</span><strong><%= money.call(totals[:allocated]) %></strong><small><%= share.call(totals[:allocated]) %>% com cliente vinculado</small></article>
+        <article class="fa-charge-kpi--deduction"><span>Sem empresa relacionada</span><strong><%= money.call(totals[:unallocated]) %></strong><small><%= share.call(totals[:unallocated]) %>% interno / matriz</small></article>
+      </section>
+
+      <section class="fa-panel fa-documents fa-charge-table">
+        <header class="fa-panel__header"><div><p class="fa-kicker">Despesa por empresa</p><h2>Uniformes e limpeza por cliente</h2></div><span class="fa-panel__tag"><%= @dashboard.rows.size %> <%= @dashboard.rows.one? ? "empresa" : "empresas" %> com despesa vinculada</span></header>
+        <div class="fa-table-wrap">
+          <table class="fa-table fa-table--charges">
+            <thead><tr><th>Empresa (cliente)</th><th>Código</th><th>Limpeza</th><th>Uniformes</th><th>Total</th><th>%</th><th>Notas</th></tr></thead>
+            <tbody>
+              <% @dashboard.rows.each do |row| %>
+                <tr>
+                  <td><strong><%= row[:client] %></strong></td>
+                  <td><%= row[:client_code] %></td>
+                  <td><%= row[:cleaning].zero? ? "—" : money.call(row[:cleaning]) %></td>
+                  <td><%= row[:uniforms].zero? ? "—" : money.call(row[:uniforms]) %></td>
+                  <td><strong><%= money.call(row[:total]) %></strong></td>
+                  <td><%= share.call(row[:total]) %>%</td>
+                  <td><%= row[:count] %></td>
+                </tr>
+              <% end %>
+              <% if @dashboard.unallocated[:total].positive? %>
+                <tr class="fa-charge-deduction">
+                  <td><strong><%= @dashboard.unallocated[:client] %></strong><small> · despesa interna / matriz</small></td>
+                  <td>—</td>
+                  <td><%= money.call(@dashboard.unallocated[:cleaning]) %></td>
+                  <td><%= money.call(@dashboard.unallocated[:uniforms]) %></td>
+                  <td><strong><%= money.call(@dashboard.unallocated[:total]) %></strong></td>
+                  <td><%= share.call(@dashboard.unallocated[:total]) %>%</td>
+                  <td><%= @dashboard.unallocated[:count] %></td>
+                </tr>
+              <% end %>
+            </tbody>
+            <tfoot class="fa-table-total"><tr><th>Total geral</th><td>—</td><td><strong><%= money.call(totals[:cleaning]) %></strong></td><td><strong><%= money.call(totals[:uniforms]) %></strong></td><td><strong><%= money.call(totals[:total]) %></strong></td><td>100%</td><td>—</td></tr></tfoot>
+          </table>
+        </div>
+      </section>
+
+      <section class="fa-charge-method-note">
+        <strong>Critério de leitura</strong>
+        <p>Cada despesa é alocada ao cliente pelo código registrado na coluna "Despesa/Cliente" da planilha, casado com os códigos da folha. Linhas sem cliente vinculado (compras para matriz, filiais e estoque) ficam agrupadas em "Sem empresa relacionada". Os valores correspondem ao campo "Pago" das planilhas de uniformes e material de limpeza de 2025.</p>
+      </section>
+    <% else %>
+      <section class="fa-empty">
+        <h2>Nenhuma despesa de uniformes ou material de limpeza encontrada</h2>
+        <p>Adicione as planilhas em <code>storage/private/fiscal_auditor/<%= current_fiscal_auditor_company %>/payroll_uniforms/</code> para habilitar esta visão.</p>
+      </section>
+    <% end %>
+  </main>
+</div>

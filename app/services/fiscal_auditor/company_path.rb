@@ -26,6 +26,10 @@ module FiscalAuditor
       base_path(company).join("payroll_charges/*.xlsx").to_s
     end
 
+    def uniforms_glob(company)
+      base_path(company).join("payroll_uniforms/*.xlsx").to_s
+    end
+
     def linked_accounts_path(company)
       base_path(company).join("linked_accounts/EXTRATO CONTA VINCULADA.xlsx")
     end

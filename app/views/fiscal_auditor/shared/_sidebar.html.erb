@@ -49,7 +49,7 @@
       </div>
     </details>
 
-    <% mao_obra_active = %i[payroll payroll_charges tax_lotations].include?(active) %>
+    <% mao_obra_active = %i[payroll payroll_charges uniforms tax_lotations].include?(active) %>
     <details class="fa-nav__group"<%= " open".html_safe if mao_obra_active %>>
       <summary class="fa-nav__item fa-nav__group__summary <%= "fa-nav__item--active" if mao_obra_active %>">
         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
@@ -64,6 +64,10 @@
         <%= link_to fiscal_auditor_payroll_charges_path, class: "fa-nav__item fa-nav__item--sub #{"fa-nav__item--active" if active == :payroll_charges}" do %>
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 7h6M9 11h6M9 15h4M6 3h12v18H6zM15 3v4h3"/></svg>
           Encargos (INSS/FGTS)
+        <% end %>
+        <%= link_to fiscal_auditor_uniforms_path, class: "fa-nav__item fa-nav__item--sub #{"fa-nav__item--active" if active == :uniforms}" do %>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4h16v16H4zM8 8h8M8 12h8M8 16h5"/></svg>
+          Uniformes e material
         <% end %>
         <%= link_to fiscal_auditor_tax_lotations_path, class: "fa-nav__item fa-nav__item--sub #{"fa-nav__item--active" if active == :tax_lotations}" do %>
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4h16v16H4zM8 8h8M8 12h8M8 16h5"/></svg>

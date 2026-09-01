@@ -17,6 +17,7 @@ Rails.application.routes.draw do
     get "cruzamento", to: "reconciliation#show", as: :reconciliation
     get "folha", to: "payroll#show", as: :payroll
     get "folha/descontos-e-encargos", to: "payroll_charges#show", as: :payroll_charges
+    get "folha/uniformes-e-material", to: "uniforms#show", as: :uniforms
     get "folha/detalhamento/:client_code/:period", to: "payroll_details#show", as: :payroll_detail
     get "despesas", to: "expenses#show", as: :expenses
     get "explorador-de-despesas", to: "expense_explorer#show", as: :expense_explorer

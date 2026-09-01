@@ -19,6 +19,7 @@
     <nav class="fa-payroll-tabs" aria-label="Visões da folha">
       <%= link_to "Visão da folha", fiscal_auditor_payroll_path, class: "fa-payroll-tab--active", aria: { current: "page" } %>
       <%= link_to "Descontos e encargos", fiscal_auditor_payroll_charges_path %>
+      <%= link_to "Uniformes e material", fiscal_auditor_uniforms_path %>
     </nav>
 
     <% if @dashboard.available? %>
