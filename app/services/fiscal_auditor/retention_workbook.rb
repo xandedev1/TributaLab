@@ -8,6 +8,7 @@ module FiscalAuditor
       :source,
       :source_row,
       :cnpj,
+      :filial,
       :client_code,
       :client,
       :rps,
@@ -31,6 +32,7 @@ module FiscalAuditor
 
     HEADER_MATCHERS = {
       cnpj: /cnpj cliente/,
+      filial: /\Afilial\z/,
       client_code: /\A(?:(?:cod|cd) cliente|cleinte)\z/,
       client: /\Acliente\z/,
       rps: /\Arps\z/,
@@ -117,6 +119,7 @@ module FiscalAuditor
         source: path.basename.to_s,
         source_row: row.attributes["r"].to_i,
         cnpj: cnpj,
+        filial: value_at(values, headers, :filial),
         client_code: identifier_at(values, headers, :client_code),
         client: value_at(values, headers, :client),
         rps: identifier_at(values, headers, :rps),

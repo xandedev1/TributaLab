@@ -1,0 +1,78 @@
+<% content_for :title, "Base calc — Lotações | Auditor Fiscal" %>
+<% money = ->(value) { number_to_currency(value, unit: "R$ ", separator: ",", delimiter: ".") } %>
+
+<div class="fa-shell">
+  <%= render "fiscal_auditor/shared/sidebar", active: :prev_base,
+        status: (@available && @dashboard&.available?) ? "#{@dashboard.por_lotacao.size} lotações" : "Sem dados",
+        detail: (@available && @dashboard&.available?) ? "Base previdenciária recomposta" : "Nenhum dado processado" %>
+
+  <main class="fa-main" id="prev-base">
+    <div class="fa-topbar">
+      <div>
+        <p class="fa-kicker">Mão de Obra · Previdenciário</p>
+        <h1>Base calc — Lotações unificadas</h1>
+      </div>
+    </div>
+
+    <div style="padding: 26px clamp(24px, 4vw, 58px);">
+      <% if !@available %>
+        <p class="fa-muted">Este cruzamento está disponível apenas para empresas com eventos eSocial processados.</p>
+      <% elsif !@dashboard.available? %>
+        <div class="fa-report-card" style="max-width: 640px;">
+          <div class="fa-report-card__head">
+            <div class="fa-report-card__icon">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v18M4 21h16M5 7l-3 6a3 3 0 0 0 6 0L5 7zM19 7l-3 6a3 3 0 0 0 6 0l-3-6z"/></svg>
+            </div>
+            <div>
+              <h3>Dados ainda não processados</h3>
+              <p>Rode <code>rails fiscal:prev_base</code> para recompor a base previdenciária dos eventos S-1200 × S-1010 e gerar o snapshot.</p>
+            </div>
+          </div>
+        </div>
+      <% else %>
+        <% t = @dashboard.totais %>
+        <section class="fa-reports-grid" style="grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); margin-bottom: 26px;">
+          <div class="fa-report-card"><div class="fa-report-card__head"><div><p class="fa-report-card__empty">Base INSS</p><h3><%= money.call(t["base_inss"]) %></h3></div></div></div>
+          <div class="fa-report-card"><div class="fa-report-card__head"><div><p class="fa-report-card__empty">Patronal 20%</p><h3><%= money.call(t["patronal"]) %></h3></div></div></div>
+          <div class="fa-report-card"><div class="fa-report-card__head"><div><p class="fa-report-card__empty">RAT × FAP (2,3829%)</p><h3><%= money.call(t["rat_fap"]) %></h3></div></div></div>
+          <div class="fa-report-card"><div class="fa-report-card__head"><div><p class="fa-report-card__empty">Terceiros (5,8%)</p><h3><%= money.call(t["terceiros"]) %></h3></div></div></div>
+          <div class="fa-report-card" style="border-color: rgba(214,110,84,.5);"><div class="fa-report-card__head"><div><p class="fa-report-card__empty">Total previdenciário</p><h3><%= money.call(t["total_prev"]) %></h3></div></div></div>
+        </section>
+
+        <div class="fa-reports-intro">
+          <h2>Por lotação</h2>
+          <p>Competências: <%= @dashboard.competencias.join(", ") %>. Base recomposta de S-1200 × S-1010 (incidência CP), com dedup de retificação. FGTS sai por lotação no módulo de Encargos.</p>
+        </div>
+
+        <div class="fa-spreadsheet-grid">
+          <table>
+            <thead>
+              <tr>
+                <th style="text-align:left;">Lotação</th>
+                <th>Comp.</th>
+                <th style="text-align:right;">Base INSS</th>
+                <th style="text-align:right;">Patronal 20%</th>
+                <th style="text-align:right;">RAT × FAP</th>
+                <th style="text-align:right;">Terceiros</th>
+                <th style="text-align:right;">Total prev.</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% @dashboard.por_lotacao.each do |r| %>
+                <tr>
+                  <td style="text-align:left; font-weight:600;"><%= r[:lotacao] %></td>
+                  <td style="text-align:center;"><%= r[:competencias] %></td>
+                  <td style="text-align:right;"><%= money.call(r[:base_inss]) %></td>
+                  <td style="text-align:right;"><%= money.call(r[:patronal]) %></td>
+                  <td style="text-align:right;"><%= money.call(r[:rat_fap]) %></td>
+                  <td style="text-align:right;"><%= money.call(r[:terceiros]) %></td>
+                  <td style="text-align:right; font-weight:700;"><%= money.call(r[:total_prev]) %></td>
+                </tr>
+              <% end %>
+            </tbody>
+          </table>
+        </div>
+      <% end %>
+    </div>
+  </main>
+</div>

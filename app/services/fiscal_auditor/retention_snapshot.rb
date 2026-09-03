@@ -6,7 +6,7 @@ module FiscalAuditor
   class RetentionSnapshot
     DEFAULT_PATH = Rails.root.join("storage/private/fiscal_auditor/retentions.marshal.gz")
     LEGACY_PATH = Rails.root.join("storage/private/fiscal_auditor/retentions.json.gz")
-    FORMAT_VERSION = 4
+    FORMAT_VERSION = 5
     DECIMAL_FIELDS = %w[billed inss irrf pis cofins csll iss net].freeze
 
     def initialize(source_paths, snapshot_path: DEFAULT_PATH)

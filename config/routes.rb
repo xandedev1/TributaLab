@@ -18,6 +18,7 @@ Rails.application.routes.draw do
     get "folha", to: "payroll#show", as: :payroll
     get "folha/descontos-e-encargos", to: "payroll_charges#show", as: :payroll_charges
     get "folha/uniformes-e-material", to: "uniforms#show", as: :uniforms
+    get "base-calc-lotacoes", to: "prev_base#show", as: :prev_base
     get "folha/detalhamento/:client_code/:period", to: "payroll_details#show", as: :payroll_detail
     get "despesas", to: "expenses#show", as: :expenses
     get "explorador-de-despesas", to: "expense_explorer#show", as: :expense_explorer
